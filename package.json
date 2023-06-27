@@ -1,5 +1,5 @@
 {
-	"name": "mv-datacore-monorepo",
+	"name": "datacore-mv-monorepo",
 	"private": true,
 	"scripts": {
 		"build": "pnpm --recursive --filter '!docs' run build",
