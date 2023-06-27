@@ -53,7 +53,7 @@
 		"datacore-mv": "cli.js"
 	},
 	"dependencies": {
-		"@directus/api": "workspace:*",
+		"@datacore-mv/api": "workspace:*",
 		"@directus/update-check": "workspace:*"
 	},
 	"engines": {

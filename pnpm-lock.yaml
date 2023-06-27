@@ -47,7 +47,7 @@ importers:
       '@aws-sdk/client-ses':
         specifier: 3.332.0
         version: 3.332.0
-      '@directus/app':
+      '@datacore-mv/app':
         specifier: workspace:*
         version: link:../app
       '@directus/constants':
@@ -883,7 +883,7 @@ importers:
 
   directus:
     dependencies:
-      '@directus/api':
+      '@datacore-mv/api':
         specifier: workspace:*
         version: link:../api
       '@directus/update-check':
