@@ -9,18 +9,18 @@ env:
   GHCR_IMAGE: ghcr.io/${{ github.repository }}
   DOCKERHUB_IMAGE: ${{ github.repository }}
 
-# jobs:
-#   create-release:
-#     name: Create Release
-#     runs-on: ubuntu-latest
-#     steps:
-#       - name: Checkout repository
-#         uses: actions/checkout@v3
+jobs:
+  #   create-release:
+  #     name: Create Release
+  #     runs-on: ubuntu-latest
+  #     steps:
+  #       - name: Checkout repository
+  #         uses: actions/checkout@v3
 
-#       - name: Create release
-#         env:
-#           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#         run: gh release create "$GITHUB_REF_NAME" --notes "Directus $GITHUB_REF_NAME"
+  #       - name: Create release
+  #         env:
+  #           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #         run: gh release create "$GITHUB_REF_NAME" --notes "Directus $GITHUB_REF_NAME"
 
   publish-npm:
     name: Publish to NPM
