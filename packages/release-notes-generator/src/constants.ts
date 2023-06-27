@@ -9,7 +9,7 @@ export const UNTYPED_PACKAGES = {
 	'tests-blackbox': '🧪 Blackbox Tests',
 } as const satisfies Record<string, string>;
 
-export const PACKAGE_ORDER = ['@datacore-mv/app', '@datacore-mv/api'];
+export const PACKAGE_ORDER = ['@new-mv-datacore/app', '@new-mv-datacore/api'];
 
 export const TYPE_MAP = {
 	major: '⚠️ Potential Breaking Changes',

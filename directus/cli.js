@@ -12,4 +12,4 @@ if (version) {
 	await updateCheck(version);
 }
 
-import('@datacore-mv/api/cli/run.js');
+import('@new-mv-datacore/api/cli/run.js');

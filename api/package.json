@@ -1,5 +1,5 @@
 {
-	"name": "@datacore-mv/api",
+	"name": "@new-mv-datacore/api",
 	"version": "11.1.0",
 	"description": "Directus is a real-time API and App dashboard for managing SQL database content",
 	"keywords": [
@@ -66,7 +66,7 @@
 	"dependencies": {
 		"@authenio/samlify-node-xmllint": "2.0.0",
 		"@aws-sdk/client-ses": "3.332.0",
-		"@datacore-mv/app": "workspace:*",
+		"@new-mv-datacore/app": "workspace:*",
 		"@directus/constants": "workspace:*",
 		"@directus/exceptions": "workspace:*",
 		"@directus/extensions-sdk": "workspace:*",

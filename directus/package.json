@@ -1,5 +1,5 @@
 {
-	"name": "datacore-mv",
+	"name": "new-mv-datacore",
 	"version": "10.3.0",
 	"description": "Directus is a real-time API and App dashboard for managing SQL database content",
 	"keywords": [
@@ -50,10 +50,10 @@
 		"./package.json": "./package.json"
 	},
 	"bin": {
-		"datacore-mv": "cli.js"
+		"new-mv-datacore": "cli.js"
 	},
 	"dependencies": {
-		"@datacore-mv/api": "workspace:*",
+		"@new-mv-datacore/api": "workspace:*",
 		"@directus/update-check": "workspace:*"
 	},
 	"engines": {
