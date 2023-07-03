@@ -86,12 +86,12 @@ importers:
       '@godaddy/terminus':
         specifier: 4.12.0
         version: 4.12.0
-      '@new-datacore/extensions-sdk':
-        specifier: workspace:*
-        version: link:../packages/extensions-sdk
       '@new-mv-datacore/app':
         specifier: workspace:*
         version: link:../app
+      '@new-mv-datacore/extensions-sdk':
+        specifier: workspace:*
+        version: link:../packages/extensions-sdk
       '@rollup/plugin-alias':
         specifier: 5.0.0
         version: 5.0.0(rollup@3.22.0)
@@ -610,7 +610,7 @@ importers:
       '@mapbox/mapbox-gl-geocoder':
         specifier: 5.0.1
         version: 5.0.1(mapbox-gl@1.13.3)
-      '@new-datacore/extensions-sdk':
+      '@new-mv-datacore/extensions-sdk':
         specifier: workspace:*
         version: link:../packages/extensions-sdk
       '@pinia/testing':
@@ -1006,7 +1006,7 @@ importers:
       '@directus/constants':
         specifier: workspace:*
         version: link:../constants
-      '@new-datacore/extensions-sdk':
+      '@new-mv-datacore/extensions-sdk':
         specifier: workspace:*
         version: link:../extensions-sdk
       inquirer:

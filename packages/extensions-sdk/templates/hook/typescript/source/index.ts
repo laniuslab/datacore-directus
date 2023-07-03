@@ -1,4 +1,4 @@
-import { defineHook } from '@new-datacore/extensions-sdk';
+import { defineHook } from '@new-mv-datacore/extensions-sdk';
 
 export default defineHook(({ filter, action }) => {
 	filter('items.create', () => {

@@ -1,4 +1,4 @@
-import { defineLayout } from '@new-datacore/extensions-sdk';
+import { defineLayout } from '@new-mv-datacore/extensions-sdk';
 import { ref } from 'vue';
 import LayoutComponent from './layout.vue';
 

@@ -34,7 +34,7 @@
 		"@directus/composables": "workspace:*",
 		"@directus/constants": "workspace:*",
 		"@directus/errors": "workspace:*",
-		"@new-datacore/extensions-sdk": "workspace:*",
+		"@new-mv-datacore/extensions-sdk": "workspace:*",
 		"@directus/format-title": "10.0.0",
 		"@directus/stores": "workspace:*",
 		"@directus/types": "workspace:*",

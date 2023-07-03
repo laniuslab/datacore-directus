@@ -117,7 +117,7 @@ export default {
 </script>
 
 <script setup lang="ts">
-import { useSync } from '@new-datacore/extensions-sdk';
+import { useSync } from '@new-mv-datacore/extensions-sdk';
 import { useI18n } from 'vue-i18n';
 
 const props = withDefaults(

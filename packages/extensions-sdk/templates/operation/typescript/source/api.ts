@@ -1,4 +1,4 @@
-import { defineOperationApi } from '@new-datacore/extensions-sdk';
+import { defineOperationApi } from '@new-mv-datacore/extensions-sdk';
 
 type Options = {
 	text: string;

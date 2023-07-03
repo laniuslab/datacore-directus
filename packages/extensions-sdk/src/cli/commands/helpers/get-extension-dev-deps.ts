@@ -13,7 +13,7 @@ export default async function getExtensionDevDeps(
 	const languages = Array.isArray(language) ? language : [language];
 
 	const deps: Record<string, string> = {
-		'@new-datacore/extensions-sdk': getSdkVersion(),
+		'@new-mv-datacore/extensions-sdk': getSdkVersion(),
 	};
 
 	if (languages.includes('typescript')) {

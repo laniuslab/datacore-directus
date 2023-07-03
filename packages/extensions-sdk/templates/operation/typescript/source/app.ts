@@ -1,4 +1,4 @@
-import { defineOperationApp } from '@new-datacore/extensions-sdk';
+import { defineOperationApp } from '@new-mv-datacore/extensions-sdk';
 
 export default defineOperationApp({
 	id: 'custom',

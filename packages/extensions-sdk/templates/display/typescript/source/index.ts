@@ -1,4 +1,4 @@
-import { defineDisplay } from '@new-datacore/extensions-sdk';
+import { defineDisplay } from '@new-mv-datacore/extensions-sdk';
 import DisplayComponent from './display.vue';
 
 export default defineDisplay({

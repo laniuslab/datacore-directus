@@ -27,14 +27,14 @@
 	"main": "lib/index.js",
 	"bin": {
 		"cde": "./lib/index.js",
-		"create-new-datacore-extension": "./lib/index.js"
+		"create-new-mv-datacore-extension": "./lib/index.js"
 	},
 	"files": [
 		"lib/index.js"
 	],
 	"dependencies": {
 		"@directus/constants": "workspace:*",
-		"@new-datacore/extensions-sdk": "workspace:*",
+		"@new-mv-datacore/extensions-sdk": "workspace:*",
 		"inquirer": "9.2.4"
 	}
 }

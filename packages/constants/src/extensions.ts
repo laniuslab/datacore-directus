@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const APP_SHARED_DEPS = ['@new-datacore/extensions-sdk', 'vue', 'vue-router', 'vue-i18n', 'pinia'];
+export const APP_SHARED_DEPS = ['@new-mv-datacore/extensions-sdk', 'vue', 'vue-router', 'vue-i18n', 'pinia'];
 export const API_SHARED_DEPS = ['directus'];
 
 export const APP_EXTENSION_TYPES = ['interface', 'display', 'layout', 'module', 'panel'] as const;

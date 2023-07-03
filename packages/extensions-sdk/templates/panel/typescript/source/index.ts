@@ -1,4 +1,4 @@
-import { definePanel } from '@new-datacore/extensions-sdk';
+import { definePanel } from '@new-mv-datacore/extensions-sdk';
 import PanelComponent from './panel.vue';
 
 export default definePanel({
