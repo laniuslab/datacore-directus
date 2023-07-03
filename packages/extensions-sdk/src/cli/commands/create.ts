@@ -173,9 +173,9 @@ function getPackageManifest(name: string, options: ExtensionOptions, deps: Recor
 		type: 'module',
 		[EXTENSION_PKG_KEY]: options,
 		scripts: {
-			build: 'directus-extension build',
-			dev: 'directus-extension build -w --no-minify',
-			link: 'directus-extension link',
+			build: 'new-mv-datacore-extension build',
+			dev: 'new-mv-datacore-extension build -w --no-minify',
+			link: 'new-mv-datacore-extension link',
 		},
 		devDependencies: deps,
 	};
