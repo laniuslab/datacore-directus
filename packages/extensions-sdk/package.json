@@ -1,6 +1,6 @@
 {
-	"name": "@directus/extensions-sdk",
-	"version": "10.1.4",
+	"name": "@new-datacore/extensions-sdk",
+	"version": "10.1.5",
 	"description": "A toolkit to develop extensions to extend Directus",
 	"homepage": "https://directus.io",
 	"repository": {
@@ -19,7 +19,7 @@
 	},
 	"main": "dist/index.js",
 	"bin": {
-		"directus-extension": "cli.js"
+		"new-datacore-extension": "cli.js"
 	},
 	"files": [
 		"dist",

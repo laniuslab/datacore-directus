@@ -1,5 +1,5 @@
+import { defineLayout } from '@new-datacore/extensions-sdk';
 import { ref } from 'vue';
-import { defineLayout } from '@directus/extensions-sdk';
 import LayoutComponent from './layout.vue';
 
 export default defineLayout({

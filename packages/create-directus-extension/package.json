@@ -1,6 +1,6 @@
 {
-	"name": "create-directus-extension",
-	"version": "10.0.5",
+	"name": "create-new-datacore-extension",
+	"version": "10.0.6",
 	"description": "A small util that will scaffold a Directus extension",
 	"keywords": [
 		"directus",
@@ -27,14 +27,14 @@
 	"main": "lib/index.js",
 	"bin": {
 		"cde": "./lib/index.js",
-		"create-directus-extension": "./lib/index.js"
+		"create-new-datacore-extension": "./lib/index.js"
 	},
 	"files": [
 		"lib/index.js"
 	],
 	"dependencies": {
 		"@directus/constants": "workspace:*",
-		"@directus/extensions-sdk": "workspace:*",
+		"@new-datacore/extensions-sdk": "workspace:*",
 		"inquirer": "9.2.4"
 	}
 }
