@@ -10,7 +10,7 @@ export async function generateMigration(seederName?: string): Promise<void> {
 		} else {
 			logger.info('Create migration file');
 
-			const filePath = `./extensions/migrations/${+new Date()}_${seederName}.js`;
+			const filePath = `./extensions/migrations/${+new Date()}-${seederName}.js`;
 			const filename = path.resolve(process.cwd(), filePath);
 
 			const directory = path.dirname(filename);
