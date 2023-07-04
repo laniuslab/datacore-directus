@@ -24,7 +24,6 @@
 import { useSystem } from '@/composables/use-system';
 import { useServerStore } from '@/stores/server';
 import { useUserStore } from '@/stores/user';
-import { setFavicon } from '@/utils/set-favicon';
 import { useAppStore } from '@directus/stores';
 import { User } from '@directus/types';
 import { StyleValue, computed, onMounted, onUnmounted, toRefs, watch } from 'vue';
@@ -51,8 +50,8 @@ onUnmounted(() => stopIdleTracking());
 watch(
 	[() => serverStore.info?.project?.project_color ?? null, () => serverStore.info?.project?.project_logo ?? null],
 	() => {
-		const hasCustomLogo = !!serverStore.info?.project?.project_logo;
-		setFavicon(serverStore.info?.project?.project_color, hasCustomLogo);
+		// const hasCustomLogo = !!serverStore.info?.project?.project_logo;
+		// setFavicon(serverStore.info?.project?.project_color, hasCustomLogo);
 	},
 	{ immediate: true }
 );

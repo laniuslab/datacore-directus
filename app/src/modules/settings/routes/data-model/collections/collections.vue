@@ -36,6 +36,8 @@
 			</v-info>
 
 			<v-list v-else class="draggable-list">
+				<v-input v-model="search" placeholder="Search Collection" />
+
 				<draggable
 					:force-fallback="true"
 					:model-value="rootCollections"
@@ -125,6 +127,7 @@ import CollectionOptions from './components/collection-options.vue';
 const { t } = useI18n();
 
 const collectionDialogActive = ref(false);
+const search = ref<string>();
 const editCollection = ref<Collection | null>();
 
 const collectionsStore = useCollectionsStore();
@@ -141,7 +144,11 @@ const collections = computed(() => {
 });
 
 const rootCollections = computed(() => {
-	return collections.value.filter((collection) => !collection.meta?.group);
+	return collections.value.filter((collection) =>
+		!collection.meta?.group && search.value !== undefined && search.value !== null
+			? collection.collection.toLowerCase().includes(search.value?.toLocaleLowerCase() as string)
+			: true
+	);
 });
 
 const tableCollections = computed(() => {
@@ -160,7 +167,12 @@ const systemCollections = computed(() => {
 	return translate(
 		sortBy(
 			collectionsStore.collections
-				.filter((collection) => collection.collection.startsWith('directus_') === true)
+				.filter((collection) =>
+					search.value !== undefined && search.value !== null
+						? collection.collection.startsWith('directus_') === true &&
+						  collection.collection.toLowerCase().includes(search.value?.toLocaleLowerCase() as string)
+						: true
+				)
 				.map((collection) => ({ ...collection, icon: 'settings' })),
 			'collection'
 		)
