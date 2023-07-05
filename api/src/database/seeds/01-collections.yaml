@@ -44,3 +44,5 @@ columns:
     type: boolean
     nullable: false
     default: true
+  tags:
+    type: json

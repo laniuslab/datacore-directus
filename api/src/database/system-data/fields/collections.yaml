@@ -212,6 +212,18 @@ fields:
       label: $t:field_options.directus_collections.is_soft_delete
     width: half
 
+  - field: tags
+    interface: tags
+    special:
+      - cast-json
+    width: half
+    options:
+      iconRight: local_offer
+    display: labels
+    display_options:
+      choices: null
+      format: false
+
   - field: duplication_divider
     special:
       - alias
