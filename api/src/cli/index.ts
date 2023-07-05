@@ -7,7 +7,7 @@ import bootstrap from './commands/bootstrap/index.js';
 import count from './commands/count/index.js';
 import dbInstall from './commands/database/install.js';
 import dbMigrate from './commands/database/migrate.js';
-import { generateMigration as dbGenerate } from './commands/database/seed.js';
+import { generateSeeder as dbGenerateSeed, runSeeder as dbSeed } from './commands/database/seed.js';
 import init from './commands/init/index.js';
 import rolesCreate from './commands/roles/create.js';
 import { apply } from './commands/schema/apply.js';
@@ -56,10 +56,15 @@ export async function createCli(): Promise<Command> {
 		.action(() => dbMigrate('down'));
 
 	dbCommand
-		.command('migrate:generate')
-		.description('Generate migration file')
-		.argument('[name]', 'Migration name file')
-		.action(dbGenerate);
+		.command('generate:seed')
+		.description('Generate seeder file')
+		.option('--name <value>', `seeder name`)
+		.action(dbGenerateSeed);
+
+	dbCommand
+		.command('seed:all')
+		.description('Seed all file')
+		.action(() => dbSeed('latest'));
 
 	const usersCommand = program.command('users');
 
