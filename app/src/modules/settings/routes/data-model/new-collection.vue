@@ -39,6 +39,10 @@
 						<div class="type-label">{{ t('singleton') }}</div>
 						<v-checkbox v-model="singleton" block :label="t('singleton_label')" />
 					</div>
+					<div class="field full">
+						<div class="type-label">{{ t('soft_delete') }}</div>
+						<v-checkbox v-model="is_soft_delete" block :label="t('is_soft_delete')" />
+					</div>
 					<v-divider class="full" />
 					<div class="field half">
 						<div class="type-label">{{ t('primary_key_field') }}</div>
@@ -184,6 +188,20 @@ const defaultSystemFields = {
 		label: 'updated_by',
 		icon: 'account_circle',
 	},
+	dateDeleted: {
+		enabled: false,
+		inputDisabled: false,
+		name: 'date_deleted',
+		label: 'deleted_on',
+		icon: 'access_time',
+	},
+	userDeleted: {
+		enabled: false,
+		inputDisabled: false,
+		name: 'user_deleted',
+		label: 'deleted_by',
+		icon: 'account_circle',
+	},
 };
 
 const { t } = useI18n();
@@ -200,6 +218,7 @@ const currentTab = ref(['collection_setup']);
 
 const collectionName = ref(null);
 const singleton = ref(false);
+const is_soft_delete = ref(false);
 const primaryKeyFieldName = ref('id');
 const primaryKeyFieldType = ref<'auto_int' | 'auto_big_int' | 'uuid' | 'manual'>('auto_int');
 
@@ -234,6 +253,7 @@ async function save() {
 				archive_value: archiveValue.value,
 				unarchive_value: unarchiveValue.value,
 				singleton: singleton.value,
+				is_soft_delete: is_soft_delete.value,
 			},
 		});
 
@@ -452,6 +472,44 @@ function getSystemFields() {
 			type: 'timestamp',
 			meta: {
 				special: ['date-updated'],
+				interface: 'datetime',
+				readonly: true,
+				hidden: true,
+				width: 'half',
+				display: 'datetime',
+				display_options: {
+					relative: true,
+				},
+			},
+			schema: {},
+		});
+	}
+
+	if (systemFields.userDeleted.enabled === true) {
+		fields.push({
+			field: systemFields.userDeleted.name,
+			type: 'uuid',
+			meta: {
+				special: ['user-deleted'],
+				interface: 'select-dropdown-m2o',
+				options: {
+					template: '{{avatar.$thumbnail}} {{first_name}} {{last_name}}',
+				},
+				display: 'user',
+				readonly: true,
+				hidden: true,
+				width: 'half',
+			},
+			schema: {},
+		});
+	}
+
+	if (systemFields.dateDeleted.enabled === true) {
+		fields.push({
+			field: systemFields.dateDeleted.name,
+			type: 'timestamp',
+			meta: {
+				special: ['date-deleted'],
 				interface: 'datetime',
 				readonly: true,
 				hidden: true,
