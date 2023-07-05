@@ -14,16 +14,16 @@
 			</transition>
 			<img class="custom-logo" :src="customLogoPath" alt="Project Logo" />
 		</template>
-		<div v-else class="logo" :class="{ running: showLoader }" @animationiteration="stopSpinnerIfQueueIsEmpty" />
+		<img class="custom-logo" :src="initialLogoPath" alt="Project Logo" />
 	</component>
 </template>
 
 <script setup lang="ts">
 import { useRequestsStore } from '@/stores/requests';
 import { useSettingsStore } from '@/stores/settings';
+import { getRootPath } from '@/utils/get-root-path';
 import { computed, ref, toRefs, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { getRootPath } from '@/utils/get-root-path';
 
 const { t } = useI18n();
 
@@ -34,6 +34,10 @@ const customLogoPath = computed<string | null>(() => {
 	if (settingsStore.settings === null) return null;
 	if (!settingsStore.settings?.project_logo) return null;
 	return `${getRootPath()}assets/${settingsStore.settings.project_logo}`;
+});
+
+const initialLogoPath = computed(() => {
+	return `${getRootPath()}admin/mv.ico`;
 });
 
 const showLoader = ref(false);
