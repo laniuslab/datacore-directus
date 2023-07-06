@@ -29,6 +29,7 @@ export type CollectionMeta = {
 	group: string | null;
 	collapse: 'open' | 'closed' | 'locked';
 	tags: string[];
+	schema: 'public' | 'datacore' | 'configuration';
 };
 
 export interface Collection extends CollectionRaw {

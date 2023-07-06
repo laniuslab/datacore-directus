@@ -224,6 +224,18 @@ fields:
       choices: null
       format: false
 
+  - field: schema
+    interface: select-dropdown
+    options:
+      choices:
+        - text: Public
+          value: public
+        - text: Datacore
+          value: datacore
+        - text: Configuration
+          value: configuration
+    width: half
+
   - field: duplication_divider
     special:
       - alias

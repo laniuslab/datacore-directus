@@ -14,24 +14,37 @@
 			:mandatory="false"
 			:dense="dense"
 		>
-			<navigation-item
-				v-for="collection in rootItems"
-				:key="collection.collection"
-				:show-hidden="showHidden"
-				:collection="collection"
-				:search="search"
-			/>
-
-			<v-menu v-if="hasHiddenCollections" ref="contextMenu" show-arrow placement="bottom-start">
-				<v-list-item clickable @click="showHidden = !showHidden">
-					<v-list-item-icon>
-						<v-icon :name="showHidden ? 'visibility_off' : 'visibility'" />
-					</v-list-item-icon>
+			<v-list-group
+				v-for="(rootItem, schemaName) in rootItems"
+				:key="schemaName"
+				:clickable="true"
+				:open="isActive[schemaName]"
+				@click="() => (isActive[schemaName as keyof typeof myObj] = !isActive[schemaName])"
+			>
+				<template #activator>
 					<v-list-item-content>
-						<v-text-overflow :text="showHidden ? t('hide_hidden_collections') : t('show_hidden_collections')" />
+						<span>{{ schemaName.toString().toUpperCase() }}</span>
 					</v-list-item-content>
-				</v-list-item>
-			</v-menu>
+				</template>
+				<navigation-item
+					v-for="collection in rootItem"
+					:key="collection.collection"
+					:show-hidden="showHidden"
+					:collection="collection"
+					:search="search"
+				/>
+
+				<v-menu v-if="hasHiddenCollections" ref="contextMenu" show-arrow placement="bottom-start">
+					<v-list-item clickable @click="showHidden = !showHidden">
+						<v-list-item-icon>
+							<v-icon :name="showHidden ? 'visibility_off' : 'visibility'" />
+						</v-list-item-icon>
+						<v-list-item-content>
+							<v-text-overflow :text="showHidden ? t('hide_hidden_collections') : t('show_hidden_collections')" />
+						</v-list-item-content>
+					</v-list-item>
+				</v-menu>
+			</v-list-group>
 		</v-list>
 	</div>
 </template>
@@ -44,6 +57,12 @@ import { useI18n } from 'vue-i18n';
 import { useNavigation } from '../composables/use-navigation';
 import NavigationItem from './navigation-item.vue';
 
+interface IIsActive {
+	public: boolean;
+	datacore: boolean;
+	configuration: boolean;
+}
+
 const props = defineProps<{
 	currentCollection?: string;
 }>();
@@ -54,20 +73,33 @@ const { activeGroups, showHidden } = useNavigation(currentCollection);
 
 const search = ref('');
 
+const isActive = ref<IIsActive>({
+	public: false,
+	datacore: false,
+	configuration: false,
+});
+
 const collectionsStore = useCollectionsStore();
 
 const rootItems = computed(() => {
 	const shownCollections = showHidden.value ? collectionsStore.allCollections : collectionsStore.visibleCollections;
-	return orderBy(
-		shownCollections.filter((collection) => {
-			return isNil(collection?.meta?.group);
-		}),
-		['meta.sort', 'collection']
-	);
+	const mappedCollections: { [schemaName: string]: any } = {};
+
+	for (const collection of shownCollections) {
+		const schemaName = collection?.meta?.schema || 'public';
+		if (!mappedCollections[schemaName]) mappedCollections[schemaName] = [];
+		if (isNil(collection?.meta?.group)) mappedCollections[schemaName].push(collection);
+	}
+
+	for (const schemaName in mappedCollections) {
+		mappedCollections[schemaName] = orderBy(mappedCollections[schemaName], ['meta.sort', 'collection']);
+	}
+
+	return mappedCollections;
 });
 
 const dense = computed(() => collectionsStore.visibleCollections.length > 5);
-const showSearch = computed(() => collectionsStore.visibleCollections.length > 20);
+const showSearch = computed(() => collectionsStore.visibleCollections.length > 10);
 
 const hasHiddenCollections = computed(
 	() => collectionsStore.allCollections.length > collectionsStore.visibleCollections.length

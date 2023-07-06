@@ -39,9 +39,30 @@
 						<div class="type-label">{{ t('singleton') }}</div>
 						<v-checkbox v-model="singleton" block :label="t('singleton_label')" />
 					</div>
-					<div class="field full">
+					<v-divider class="full" />
+					<div class="field half">
 						<div class="type-label">{{ t('soft_delete') }}</div>
 						<v-checkbox v-model="is_soft_delete" block :label="t('is_soft_delete')" />
+					</div>
+					<div class="field half">
+						<div class="type-label">Schema</div>
+						<v-select
+							v-model="schema"
+							:items="[
+								{
+									text: 'Public',
+									value: 'public',
+								},
+								{
+									text: 'Datacore',
+									value: 'datacore',
+								},
+								{
+									text: 'Configuration',
+									value: 'configuration',
+								},
+							]"
+						/>
 					</div>
 					<v-divider class="full" />
 					<div class="field half">
@@ -219,6 +240,7 @@ const currentTab = ref(['collection_setup']);
 const collectionName = ref(null);
 const singleton = ref(false);
 const is_soft_delete = ref(false);
+const schema = ref<'public' | 'datacore' | 'configuration'>('public');
 const primaryKeyFieldName = ref('id');
 const primaryKeyFieldType = ref<'auto_int' | 'auto_big_int' | 'uuid' | 'manual'>('auto_int');
 
@@ -254,6 +276,7 @@ async function save() {
 				unarchive_value: unarchiveValue.value,
 				singleton: singleton.value,
 				is_soft_delete: is_soft_delete.value,
+				schema: schema.value,
 			},
 		});
 

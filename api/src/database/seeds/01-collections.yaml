@@ -46,3 +46,8 @@ columns:
     default: true
   tags:
     type: json
+  schema:
+    type: string
+    length: 255
+    nullable: false
+    default: public
