@@ -40,10 +40,6 @@ columns:
   sort_field:
     type: string
     length: 64
-  is_soft_delete:
-    type: boolean
-    nullable: false
-    default: true
   tags:
     type: json
   schema:

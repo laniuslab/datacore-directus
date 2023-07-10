@@ -9,12 +9,9 @@
 		:class="{ loading: showLoader }"
 	>
 		<template v-if="customLogoPath">
-			<transition name="fade">
-				<v-progress-linear v-if="showLoader" indeterminate rounded @animationiteration="stopSpinnerIfQueueIsEmpty" />
-			</transition>
 			<img class="custom-logo" :src="customLogoPath" alt="Project Logo" />
 		</template>
-		<img class="custom-logo" :src="initialLogoPath" alt="Project Logo" />
+		<img v-else class="custom-logo" :src="initialLogoPath" alt="Project Logo" />
 	</component>
 </template>
 
@@ -56,10 +53,6 @@ const url = computed(() => settingsStore.settings?.project_url);
 const urlTooltip = computed(() => {
 	return settingsStore.settings?.project_url ? t('view_project') : false;
 });
-
-function stopSpinnerIfQueueIsEmpty() {
-	if (queueHasItems.value === false) showLoader.value = false;
-}
 </script>
 
 <style lang="scss" scoped>

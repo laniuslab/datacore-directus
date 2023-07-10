@@ -204,14 +204,6 @@ fields:
           value: null
     width: half
 
-  - field: is_soft_delete
-    interface: boolean
-    special:
-      - cast-boolean
-    options:
-      label: $t:field_options.directus_collections.is_soft_delete
-    width: half
-
   - field: tags
     interface: tags
     special:
