@@ -80,7 +80,7 @@ watch(
 watch(
 	() => serverStore.info?.project?.project_name,
 	(projectName) => {
-		document.title = projectName || 'Directus';
+		document.title = projectName || 'Datacore';
 	},
 	{ immediate: true }
 );

@@ -12,7 +12,7 @@ export async function generateSeeder({ name }: { name: string }): Promise<void> 
 		} else {
 			logger.info('Create seeder file');
 
-			const filePath = `./extensions/seeders/${+new Date()}-${name}.ts`;
+			const filePath = `./extensions/seeders/${+new Date()}-${name}.js`;
 			const filename = path.resolve(process.cwd(), filePath);
 
 			const directory = path.dirname(filename);
