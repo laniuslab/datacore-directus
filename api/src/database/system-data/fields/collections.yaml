@@ -204,6 +204,7 @@ fields:
           value: null
     width: half
 
+  # MV-DATACORE
   - field: tags
     interface: tags
     special:
@@ -227,6 +228,7 @@ fields:
         - text: Configuration
           value: configuration
     width: half
+  # MV-DATACORE [END]
 
   - field: duplication_divider
     special:

@@ -36,7 +36,9 @@
 			</v-info>
 
 			<v-list v-else class="draggable-list">
+				<!-- MV-DATACORE -->
 				<v-input v-model="search" placeholder="Search Collection" />
+				<!-- MV-DATACORE [END] -->
 
 				<draggable
 					:force-fallback="true"
@@ -126,8 +128,11 @@ import CollectionOptions from './components/collection-options.vue';
 
 const { t } = useI18n();
 
-const collectionDialogActive = ref(false);
+// MV-DATACORE
 const search = ref<string>();
+// MV-DATACORE [END]
+
+const collectionDialogActive = ref(false);
 const editCollection = ref<Collection | null>();
 
 const collectionsStore = useCollectionsStore();
@@ -143,14 +148,6 @@ const collections = computed(() => {
 	);
 });
 
-const rootCollections = computed(() => {
-	return collections.value.filter((collection) =>
-		!collection.meta?.group && search.value !== undefined && search.value !== null
-			? collection.collection.toLowerCase().includes(search.value?.toLocaleLowerCase() as string)
-			: true
-	);
-});
-
 const tableCollections = computed(() => {
 	return translate(
 		sortBy(
@@ -160,6 +157,15 @@ const tableCollections = computed(() => {
 			),
 			['meta.sort', 'collection']
 		)
+	);
+});
+
+// MV-DATACORE
+const rootCollections = computed(() => {
+	return collections.value.filter((collection) =>
+		!collection.meta?.group && search.value !== undefined && search.value !== null
+			? collection.collection.toLowerCase().includes(search.value?.toLocaleLowerCase() as string)
+			: true
 	);
 });
 
@@ -178,6 +184,7 @@ const systemCollections = computed(() => {
 		)
 	);
 });
+// MV-DATACORE [END]
 
 async function onSort(updates: Collection[], removeGroup = false) {
 	const updatesWithSortValue = updates.map((collection, index) =>

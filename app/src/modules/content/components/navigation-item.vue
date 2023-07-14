@@ -10,6 +10,7 @@
 		:arrow-placement="collection.meta?.collapse === 'locked' ? false : 'after'"
 	>
 		<template #activator>
+			<!-- MV-DATACORE -->
 			<navigation-item-content
 				:search="search"
 				:name="collection.name"
@@ -17,6 +18,7 @@
 				:color="collection.meta?.color"
 				:tags="collection.meta?.tags"
 			/>
+			<!-- MV-DATACORE [END] -->
 		</template>
 		<navigation-item
 			v-for="childCollection in childCollections"
@@ -36,6 +38,7 @@
 		:class="{ hidden: collection.meta?.hidden }"
 		query
 	>
+		<!-- MV-DATACORE -->
 		<navigation-item-content
 			:search="search"
 			:name="collection.name"
@@ -43,6 +46,7 @@
 			:color="collection.meta?.color"
 			:tags="collection.meta?.tags"
 		/>
+		<!-- MV-DATACORE [END] -->
 	</v-list-item>
 
 	<v-menu v-if="hasContextMenu" ref="contextMenu" show-arrow placement="bottom-start">

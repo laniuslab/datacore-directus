@@ -9,11 +9,13 @@
 
 		<v-divider />
 
+		<!-- MV-DATACORE -->
 		<v-list-item href="https://github.com/directus/directus/releases" class="version">
 			<v-list-item-content>
 				<v-text-overflow class="version" :text="`Datacore ${version}`" />
 			</v-list-item-content>
 		</v-list-item>
+		<!-- MV-DATACORE [END] -->
 	</v-list>
 </template>
 

@@ -2,6 +2,7 @@ import { Type } from '@directus/types';
 
 export const VALIDATION_TYPES = ['FAILED_VALIDATION', 'RECORD_NOT_UNIQUE'];
 
+// MV-DATACORE
 export const DIRECTUS_LOGO = `
 
                          @                        
@@ -30,6 +31,7 @@ export const DIRECTUS_LOGO = `
                      @@@@@@@@#    
 
 `;
+// MV-DATACORE [END]
 
 /**
  * These are the system endpoints that don't have full/regular CRUD operations available.

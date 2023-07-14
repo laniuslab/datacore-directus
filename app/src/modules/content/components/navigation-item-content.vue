@@ -2,6 +2,8 @@
 	<v-list-item-icon>
 		<v-icon :name="icon ?? 'label'" :color="color" />
 	</v-list-item-icon>
+
+	<!-- MV-DATACORE -->
 	<v-list-item-content>
 		<v-text-overflow :text="name" :highlight="search" />
 		<div v-if="tags" class="tags">
@@ -12,6 +14,7 @@
 			</span>
 		</div>
 	</v-list-item-content>
+	<!-- MV-DATACORE[END] -->
 </template>
 
 <script setup lang="ts">
@@ -30,6 +33,7 @@ withDefaults(
 );
 </script>
 
+<!-- MV-DATACORE -->
 <style lang="scss" scoped>
 .tags {
 	display: flex;
@@ -70,3 +74,4 @@ withDefaults(
 	}
 }
 </style>
+<!-- MV-DATACORE [END] -->

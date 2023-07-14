@@ -8,10 +8,12 @@
 		class="module-bar-logo"
 		:class="{ loading: showLoader }"
 	>
+		<!-- MV-DATACORE -->
 		<template v-if="customLogoPath">
 			<img class="custom-logo" :src="customLogoPath" alt="Project Logo" />
 		</template>
 		<img v-else class="custom-logo" :src="initialLogoPath" alt="Project Logo" />
+		<!-- MV-DATACORE [END] -->
 	</component>
 </template>
 
@@ -33,9 +35,11 @@ const customLogoPath = computed<string | null>(() => {
 	return `${getRootPath()}assets/${settingsStore.settings.project_logo}`;
 });
 
+// MV-DATACORE
 const initialLogoPath = computed(() => {
 	return `${getRootPath()}admin/mv.ico`;
 });
+// MV-DATACORE [END]
 
 const showLoader = ref(false);
 

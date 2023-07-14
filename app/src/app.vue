@@ -50,8 +50,10 @@ onUnmounted(() => stopIdleTracking());
 watch(
 	[() => serverStore.info?.project?.project_color ?? null, () => serverStore.info?.project?.project_logo ?? null],
 	() => {
-		// const hasCustomLogo = !!serverStore.info?.project?.project_logo;
-		// setFavicon(serverStore.info?.project?.project_color, hasCustomLogo);
+		// MV-DATACORE
+		//
+		//
+		// MV-DATACORE [END]
 	},
 	{ immediate: true }
 );

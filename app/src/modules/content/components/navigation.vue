@@ -14,6 +14,7 @@
 			:mandatory="false"
 			:dense="dense"
 		>
+			<!-- MV-DATACORE -->
 			<v-list-group
 				v-for="(rootItem, schemaName) in rootItems"
 				:key="schemaName"
@@ -45,23 +46,19 @@
 					</v-list-item>
 				</v-menu>
 			</v-list-group>
+			<!-- MV-DATACORE [END] -->
 		</v-list>
 	</div>
 </template>
 
 <script setup lang="ts">
+import { IIsActive } from '@/__mv/interfaces';
 import { useCollectionsStore } from '@/stores/collections';
 import { isNil, orderBy } from 'lodash';
 import { computed, ref, toRefs } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useNavigation } from '../composables/use-navigation';
 import NavigationItem from './navigation-item.vue';
-
-interface IIsActive {
-	public: boolean;
-	datacore: boolean;
-	configuration: boolean;
-}
 
 const props = defineProps<{
 	currentCollection?: string;
@@ -81,6 +78,7 @@ const isActive = ref<IIsActive>({
 
 const collectionsStore = useCollectionsStore();
 
+// MV-DATACORE
 const rootItems = computed(() => {
 	const shownCollections = showHidden.value ? collectionsStore.allCollections : collectionsStore.visibleCollections;
 	const mappedCollections: { [schemaName: string]: any } = {};
@@ -97,9 +95,10 @@ const rootItems = computed(() => {
 
 	return mappedCollections;
 });
+// MV-DATACORE [END]
 
 const dense = computed(() => collectionsStore.visibleCollections.length > 5);
-const showSearch = computed(() => collectionsStore.visibleCollections.length > 10);
+const showSearch = computed(() => collectionsStore.visibleCollections.length > 10); // MV-DATACORE
 
 const hasHiddenCollections = computed(
 	() => collectionsStore.allCollections.length > collectionsStore.visibleCollections.length

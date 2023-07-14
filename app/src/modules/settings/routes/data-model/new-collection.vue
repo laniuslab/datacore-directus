@@ -39,6 +39,7 @@
 						<div class="type-label">{{ t('singleton') }}</div>
 						<v-checkbox v-model="singleton" block :label="t('singleton_label')" />
 					</div>
+					<!-- MV-DATACORE -->
 					<div class="field">
 						<div class="type-label">Schema</div>
 						<v-select
@@ -59,6 +60,7 @@
 							]"
 						/>
 					</div>
+					<!-- MV-DATACORE [END] -->
 					<v-divider class="full" />
 					<div class="field half">
 						<div class="type-label">{{ t('primary_key_field') }}</div>
@@ -220,7 +222,7 @@ const currentTab = ref(['collection_setup']);
 
 const collectionName = ref(null);
 const singleton = ref(false);
-const schema = ref<'public' | 'datacore' | 'configuration'>('public');
+const schema = ref<'public' | 'datacore' | 'configuration'>('public'); // MV-DATACORE
 const primaryKeyFieldName = ref('id');
 const primaryKeyFieldType = ref<'auto_int' | 'auto_big_int' | 'uuid' | 'manual'>('auto_int');
 
@@ -255,7 +257,7 @@ async function save() {
 				archive_value: archiveValue.value,
 				unarchive_value: unarchiveValue.value,
 				singleton: singleton.value,
-				schema: schema.value,
+				schema: schema.value, // MV-DATACORE
 			},
 		});
 

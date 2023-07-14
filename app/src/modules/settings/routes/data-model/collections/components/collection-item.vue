@@ -11,6 +11,8 @@
 			<v-list-item-icon>
 				<v-icon v-if="!disableDrag" class="drag-handle" name="drag_handle" />
 			</v-list-item-icon>
+
+			<!-- MV-DATACORE -->
 			<div class="collection-item-detail">
 				<v-icon
 					:color="collection.meta?.hidden ? 'var(--foreground-subdued)' : collection.color ?? 'var(--primary)'"
@@ -27,6 +29,7 @@
 				</div>
 				<span v-if="collection.meta?.note" class="collection-note">{{ collection.meta.note }}</span>
 			</div>
+			<!-- MV-DATACORE [END] -->
 
 			<v-icon
 				v-if="nestedCollections?.length"
@@ -157,6 +160,7 @@ function onGroupSortChange(collections: Collection[]) {
 }
 </style>
 
+<!-- MV-DATACORE -->
 <style lang="scss" scoped>
 .tags {
 	display: flex;
@@ -196,3 +200,4 @@ function onGroupSortChange(collections: Collection[]) {
 	}
 }
 </style>
+<!-- MV-DATACORE -->

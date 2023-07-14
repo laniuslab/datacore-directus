@@ -7,7 +7,6 @@ import bootstrap from './commands/bootstrap/index.js';
 import count from './commands/count/index.js';
 import dbInstall from './commands/database/install.js';
 import dbMigrate from './commands/database/migrate.js';
-import { generateSeeder as dbGenerateSeed, runSeeder as dbSeed } from './commands/database/seed.js';
 import init from './commands/init/index.js';
 import rolesCreate from './commands/roles/create.js';
 import { apply } from './commands/schema/apply.js';
@@ -16,6 +15,8 @@ import keyGenerate from './commands/security/key.js';
 import secretGenerate from './commands/security/secret.js';
 import usersCreate from './commands/users/create.js';
 import usersPasswd from './commands/users/passwd.js';
+
+import { generateSeeder as dbGenerateSeed, runSeeder as dbSeed } from '../__mv/cli/commands/seed.js'; // MV-DATACORE
 
 export async function createCli(): Promise<Command> {
 	const program = new Command();
@@ -55,6 +56,7 @@ export async function createCli(): Promise<Command> {
 		.description('Downgrade the database')
 		.action(() => dbMigrate('down'));
 
+	// MV-DATACORE
 	dbCommand
 		.command('generate:seed')
 		.description('Generate seeder file')
@@ -65,6 +67,7 @@ export async function createCli(): Promise<Command> {
 		.command('seed:all')
 		.description('Seed all file')
 		.action(() => dbSeed('latest'));
+	// MV-DATACORE [END]
 
 	const usersCommand = program.command('users');
 

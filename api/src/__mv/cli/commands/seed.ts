@@ -3,7 +3,7 @@ import path from 'path';
 import getDatabase from '../../../database/index.js';
 import run from '../../../database/migrations/run.js';
 import logger from '../../../logger.js';
-import { DEFAULT_SEED_JS } from '../../constants/seed.js';
+import { DEFAULT_SEED_JS } from '../constants/seed.js';
 
 export async function generateSeeder({ name }: { name: string }): Promise<void> {
 	try {
@@ -37,7 +37,7 @@ export async function runSeeder(direction: 'latest' | 'up' | 'down'): Promise<vo
 	const database = getDatabase();
 
 	try {
-		logger.info('Running migrations...');
+		logger.info('Running seeders...');
 
 		await run(database, direction, true, 'seeders');
 
