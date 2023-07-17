@@ -74,54 +74,11 @@ const urlTooltip = computed(() => {
 	padding: 12px;
 	background-color: var(--brand);
 
-	.v-progress-linear {
-		position: absolute;
-		right: 10px;
-		bottom: 5px;
-		left: 10px;
-		width: 40px;
-	}
-
 	.custom-logo {
 		display: block;
 		width: 40px;
 		height: 40px;
 		object-fit: contain;
-	}
-
-	.logo {
-		position: absolute;
-		top: 18px;
-		left: 10px;
-		width: 40px;
-		height: 32px;
-		margin: 0 auto;
-		background-image: url('../../../assets/sprite.svg');
-		background-position: 0% 0%;
-		background-size: 600px 32px;
-	}
-
-	.running {
-		animation: 560ms run steps(14) infinite;
-	}
-}
-
-.fade-enter-active {
-	transition: opacity var(--slow) var(--transition);
-}
-
-.fade-leave-active {
-	transition: opacity var(--medium) var(--transition);
-}
-
-.fade-enter-from,
-.fade-leave-to {
-	opacity: 0;
-}
-
-@keyframes run {
-	100% {
-		background-position: 100%;
 	}
 }
 </style>
