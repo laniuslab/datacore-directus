@@ -77,6 +77,36 @@ export class RelationsService {
 		return await this.filterForbidden(results);
 	}
 
+	// MV-DATACORE
+	async readAllRelated(collection?: string, opts?: QueryOptions): Promise<Relation[]> {
+		if (this.accountability && this.accountability.admin !== true && this.hasReadAccess === false) {
+			throw new ForbiddenError();
+		}
+
+		const metaReadQuery: Query = {
+			limit: -1,
+		};
+
+		if (collection) {
+			metaReadQuery.filter = {
+				_or: [{ one_collection: { _eq: collection } }, { many_collection: { _eq: collection } }],
+			};
+		}
+
+		const metaRows = [
+			...(await this.relationsItemService.readByQuery(metaReadQuery, opts)),
+			...systemRelationRows,
+		].filter((metaRow) => {
+			if (!collection) return true;
+			return metaRow.many_collection === collection || metaRow.one_collection === collection;
+		});
+
+		const schemaRows = await this.schemaInspector.foreignKeys(collection);
+		const results = this.stitchRelations(metaRows, schemaRows);
+		return await this.filterForbidden(results);
+	}
+	// MV-DATACORE [END]
+
 	async readOne(collection: string, field: string): Promise<Relation> {
 		if (this.accountability && this.accountability.admin !== true) {
 			if (this.hasReadAccess === false) {

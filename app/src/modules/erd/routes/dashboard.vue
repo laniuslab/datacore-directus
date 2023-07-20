@@ -27,7 +27,7 @@
 				@click="changeSchema"
 			/>
 		</v-card>
-		<div v-if="schema" v-viewer class="images">
+		<div v-if="schema" v-viewer class="ml-3 images">
 			<img v-for="src in [url]" :key="src" :src="src" style="max-height: 700px" />
 		</div>
 	</private-view>

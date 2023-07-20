@@ -23,83 +23,103 @@
 	</private-view>
 </template>
 
-<script setup lang="ts">
+<script lang="ts">
 import api from '@/api';
 import { useCollectionsStore } from '@/stores/collections';
 import { useUserStore } from '@/stores/user';
 import { Collection } from '@/types/collections';
 import { getRootPath } from '@/utils/get-root-path';
+import { md } from '@/utils/md';
 import { User } from '@directus/types';
-import { Ref, computed, ref } from 'vue';
+import { Ref, computed, defineComponent, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import ERDNavigation from '../components/navigation.vue';
 
-const props = defineProps<{
-	collectionName: string;
-}>();
+export default defineComponent({
+	name: 'CollectionOverview',
+	components: { ERDNavigation },
+	props: {
+		collectionName: {
+			type: String,
+			required: true,
+		},
+	},
+	setup(props) {
+		const { currentUser } = useUserStore();
+		const theme = (currentUser as User).theme || 'auto';
+		const { allCollections } = useCollectionsStore();
 
-const { currentUser } = useUserStore();
-const theme = (currentUser as User).theme || 'auto';
-const { allCollections } = useCollectionsStore();
+		const relatedCollections: Ref<
+			{
+				icon: string;
+				name: string;
+				label: string;
+				color: string;
+			}[]
+		> = ref([]);
 
-const relatedCollections: Ref<
-	{
-		icon: string;
-		name: string;
-		label: string;
-		color: string;
-	}[]
-> = ref([]);
+		const lineColor = theme == 'light' ? 'black' : 'white';
 
-const lineColor = theme == 'light' ? 'black' : 'white';
+		const { t } = useI18n();
 
-const { t } = useI18n();
-
-const url = computed(() => {
-	return `${getRootPath()}datacore/entities/mermaid-erd/collection/${props.collectionName}?lineColor=${lineColor}`;
-});
-
-const getRelatedCollections = async () => {
-	api
-		.get(`/datacore/entities/${props.collectionName}/related`)
-		.then((data) => {
-			const collections = data.data.data;
-			const collectionMap: { [key: string]: Collection } = {};
-
-			for (const collection of allCollections) {
-				collectionMap[`${collection.collection}`] = collection;
-			}
-
-			const result = [];
-
-			for (const collectionName of collections) {
-				const collectionMeta = collectionMap[collectionName];
-
-				if (collectionMeta) {
-					result.push({
-						icon: collectionMeta.meta?.icon || 'box',
-						label: collectionMeta.name,
-						name: collectionName,
-						color: collectionMeta.meta?.color || 'var(--foreground-normal)',
-					});
-				} else {
-					result.push({
-						icon: 'box',
-						label: collectionName,
-						name: collectionName,
-						color: 'var(--foreground-normal)',
-					});
-				}
-			}
-
-			relatedCollections.value = result;
-		})
-		.catch((_e) => {
-			relatedCollections.value = [];
+		const url = computed(() => {
+			return `${getRootPath()}datacore/entities/mermaid-erd/collection/${props.collectionName}?lineColor=${lineColor}`;
 		});
-};
 
-getRelatedCollections();
+		const getRelatedCollections = async () => {
+			api
+				.get(`/datacore/entities/${props.collectionName}/related`)
+				.then((data) => {
+					const collections = data.data.data;
+					const collectionMap: { [key: string]: Collection } = {};
+
+					for (const collection of allCollections) {
+						collectionMap[`${collection.collection}`] = collection;
+					}
+
+					const result = [];
+
+					for (const collectionName of collections) {
+						const collectionMeta = collectionMap[collectionName];
+
+						if (collectionMeta) {
+							result.push({
+								icon: collectionMeta.meta?.icon || 'box',
+								label: collectionMeta.name,
+								name: collectionName,
+								color: collectionMeta.meta?.color || 'var(--foreground-normal)',
+							});
+						} else {
+							result.push({
+								icon: 'box',
+								label: collectionName,
+								name: collectionName,
+								color: 'var(--foreground-normal)',
+							});
+						}
+					}
+
+					relatedCollections.value = result;
+				})
+				.catch((_e) => {
+					relatedCollections.value = [];
+				});
+		};
+
+		getRelatedCollections();
+
+		return {
+			t,
+			md,
+			url,
+			relatedCollections,
+			getRelatedCollections,
+		};
+	},
+	updated() {
+		this.getRelatedCollections();
+	},
+});
 </script>
 
 <style scoped>
