@@ -95,10 +95,10 @@ const rootItems = computed(() => {
 
 	return mappedCollections;
 });
-// MV-DATACORE [END]
 
 const dense = computed(() => collectionsStore.visibleCollections.length > 5);
 const showSearch = computed(() => collectionsStore.visibleCollections.length > 10); // MV-DATACORE
+// MV-DATACORE [END]
 
 const hasHiddenCollections = computed(
 	() => collectionsStore.allCollections.length > collectionsStore.visibleCollections.length

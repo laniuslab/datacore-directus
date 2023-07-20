@@ -69,6 +69,16 @@ export const MODULE_BAR_DEFAULT = [
 		enabled: true,
 	},
 	{
+		type: 'module',
+		id: 'erd-viewer',
+		enabled: false,
+	},
+	{
+		type: 'module',
+		id: 'fields-builder',
+		enabled: false,
+	},
+	{
 		type: 'link',
 		id: 'docs',
 		enabled: true,

@@ -853,6 +853,8 @@ operation_handle_resolve: 'Resolve: Click to Add or Drag to Reroute'
 operation_handle_reject: 'Reject: Click to Add or Drag to Reroute'
 insights: Insights
 dashboard: Dashboard
+erd_viewer: ERD Viewer
+fields-query-builder: Fields Query Builder
 panel: Panel
 panel_options: Panel Options
 panel_header: Panel Header
@@ -1583,6 +1585,7 @@ interfaces:
     collection_field: Collection field
     collection_field_not_setup: The collection field option is misconfigured
     select_a_collection: Select a Collection
+    select_a_schema: Select a Schema
   presentation-divider:
     divider: Divider
     description: Label and divide fields into sections
