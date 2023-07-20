@@ -13,11 +13,10 @@
 		<template #actions></template>
 
 		<template #sidebar>
-			<sidebar-detail icon="info_outline" :title="t('information')" close>
+			<sidebar-detail icon="info" :title="t('information')" close>
 				<div v-md="t('page_help_insights_overview')" class="page-description" />
 			</sidebar-detail>
 		</template>
-		<div></div>
 		<v-card class="ml-3">
 			<v-select
 				v-model="schema"
@@ -53,7 +52,7 @@ const { savePreset } = usePreset(ref('erd_viewer'));
 const lineColor = theme == 'light' ? 'black' : 'white';
 
 const url = computed(() => {
-	return `${getRootPath()}datacore/entities/mermaid-erd/schema/${schema.value}?lineColor=${lineColor}`;
+	return `${getRootPath()}datacore/entities/mermaid-erd/schema/${schema.value}?line_color=${lineColor}`;
 });
 
 const schemas = computed(() => {

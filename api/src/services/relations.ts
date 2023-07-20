@@ -18,6 +18,12 @@ import type { QueryOptions } from './items.js';
 import { ItemsService } from './items.js';
 import { PermissionsService } from './permissions.js';
 
+// MV-DATACORE
+interface IOpts {
+	includeUndefinedMeta?: boolean;
+}
+// MV-DATACORE [END]
+
 export class RelationsService {
 	knex: Knex;
 	permissionsService: PermissionsService;
@@ -78,6 +84,44 @@ export class RelationsService {
 	}
 
 	// MV-DATACORE
+	async readByQuery(opts: {
+		query?: Query;
+		opts?: QueryOptions;
+		includeSystemTable?: boolean;
+		includeUndefinedMeta?: boolean;
+	}): Promise<Relation[]> {
+		if (this.accountability && this.accountability.admin !== true && this.hasReadAccess === false) {
+			throw new ForbiddenError();
+		}
+
+		const collection = undefined;
+
+		const metaReadQuery: Query = {
+			...(opts.query || {}),
+			limit: -1,
+		};
+
+		if (opts?.query?.limit) {
+			metaReadQuery.limit = opts?.query.limit;
+		}
+
+		const metaRows = [
+			...(await this.relationsItemService.readByQuery(metaReadQuery, opts?.opts)),
+			...(opts?.includeSystemTable ? systemRelationRows : []),
+		].filter((metaRow) => {
+			if (!collection) return true;
+			return metaRow.many_collection === collection;
+		});
+
+		const schemaRows = await this.schemaInspector.foreignKeys(collection);
+
+		const results = this.combineRelations(metaRows, schemaRows, {
+			includeUndefinedMeta: opts.includeUndefinedMeta as boolean,
+		});
+
+		return await this.filterForbidden(results);
+	}
+
 	async readAllRelated(collection?: string, opts?: QueryOptions): Promise<Relation[]> {
 		if (this.accountability && this.accountability.admin !== true && this.hasReadAccess === false) {
 			throw new ForbiddenError();
@@ -104,6 +148,44 @@ export class RelationsService {
 		const schemaRows = await this.schemaInspector.foreignKeys(collection);
 		const results = this.stitchRelations(metaRows, schemaRows);
 		return await this.filterForbidden(results);
+	}
+
+	private combineRelations(metaRows: RelationMeta[], schemaRows: ForeignKey[], opts?: IOpts): Relation[] {
+		const results: Relation[] = [];
+
+		for (const foreignKey of schemaRows) {
+			const meta =
+				metaRows.find((meta) => {
+					if (meta.many_collection !== foreignKey.table) return false;
+					if (meta.many_field !== foreignKey.column) return false;
+					if (meta.one_collection && meta.one_collection !== foreignKey.foreign_key_table) return false;
+					return true;
+				}) || null;
+
+			const includeUndefinedMeta = typeof opts?.includeUndefinedMeta == 'undefined' ? true : opts.includeUndefinedMeta;
+
+			if (includeUndefinedMeta) {
+				results.push({
+					collection: foreignKey.table,
+					field: foreignKey.column,
+					related_collection: foreignKey.foreign_key_table,
+					schema: foreignKey,
+					meta,
+				});
+			} else {
+				if (meta) {
+					results.push({
+						collection: foreignKey.table,
+						field: foreignKey.column,
+						related_collection: foreignKey.foreign_key_table,
+						schema: foreignKey,
+						meta,
+					});
+				}
+			}
+		}
+
+		return results;
 	}
 	// MV-DATACORE [END]
 

@@ -1,6 +1,5 @@
 import type { SchemaInspector, Table } from '@directus/schema';
 import { createInspector } from '@directus/schema';
-import type { Accountability, FieldMeta, RawField, SchemaOverview } from '@directus/types';
 import { addFieldFlag } from '@directus/utils';
 import type Keyv from 'keyv';
 import type { Knex } from 'knex';
@@ -26,6 +25,11 @@ import type {
 import { getSchema } from '../utils/get-schema.js';
 import { shouldClearCache } from '../utils/should-clear-cache.js';
 
+// MV-DATACORE
+import type { Accountability, FieldMeta, Query, RawField, SchemaOverview } from '@directus/types';
+import type { CollectionMeta as NewCollectionMeta } from '../__mv/types/index.js';
+// MV-DATACORE [END]
+
 export type RawCollection = {
 	collection: string;
 	fields?: RawField[];
@@ -41,6 +45,14 @@ export class CollectionsService {
 	schema: SchemaOverview;
 	cache: Keyv<any> | null;
 	systemCache: Keyv<any>;
+
+	// MV-DATACORE
+	options:
+		| {
+				isSystem?: boolean;
+		  }
+		| undefined;
+	// MV-DATACORE [END]
 
 	constructor(options: AbstractServiceOptions) {
 		this.knex = options.knex || getDatabase();
@@ -348,6 +360,115 @@ export class CollectionsService {
 
 		return collections;
 	}
+
+	// MV-DATACORE
+	async readQueryRelation(opts?: {
+		includePhysicalTable?: boolean;
+		includeExternalTable?: boolean;
+		includeSystemTable?: boolean;
+		query?: Query;
+	}): Promise<Collection[]> {
+		const includePhysicalTable = typeof opts?.includePhysicalTable == 'undefined' ? false : opts.includePhysicalTable;
+		const includeSystemTable = typeof opts?.includeSystemTable == 'undefined' ? true : opts.includeSystemTable;
+
+		const collectionItemsService = new ItemsService('directus_collections', {
+			knex: this.knex,
+			schema: this.schema,
+			accountability: this.accountability,
+		});
+
+		let tablesInDatabase = await this.schemaInspector.tableInfo();
+
+		const query: Query = {
+			limit: -1,
+		};
+
+		if (opts?.query) {
+			query.limit = opts.query.limit || -1;
+
+			if (opts.query.filter) {
+				query.filter = { _and: [opts.query.filter] };
+			}
+		}
+
+		let meta = (await collectionItemsService.readByQuery(query)) as NewCollectionMeta[];
+
+		if (includeSystemTable) meta.push(...systemCollectionRows);
+
+		if (this.accountability && this.accountability.admin !== true) {
+			const collectionsGroups: { [key: string]: string } = meta.reduce(
+				(meta, item) => ({
+					...meta,
+					[item.collection]: item.group,
+				}),
+				{}
+			);
+
+			let collectionsYouHavePermissionToRead: string[] = this.accountability
+				.permissions!.filter((permission) => {
+					return permission.action === 'read';
+				})
+				.map(({ collection }) => collection);
+
+			for (const collection of collectionsYouHavePermissionToRead) {
+				const group = collectionsGroups[collection];
+				if (group) collectionsYouHavePermissionToRead.push(group);
+				delete collectionsGroups[collection];
+			}
+
+			collectionsYouHavePermissionToRead = [...new Set([...collectionsYouHavePermissionToRead])];
+
+			tablesInDatabase = tablesInDatabase.filter((table) => {
+				return collectionsYouHavePermissionToRead.includes(table.name);
+			});
+
+			meta = meta.filter((collectionMeta) => {
+				return collectionsYouHavePermissionToRead.includes(collectionMeta.collection);
+			});
+		}
+
+		const collections: Collection[] = [];
+
+		const allCollection: string[] = [];
+
+		for (const collectionMeta of meta) {
+			allCollection.push(collectionMeta.collection);
+			const { system } = collectionMeta;
+
+			const collection: Collection = {
+				collection: collectionMeta.collection,
+				meta: collectionMeta,
+				schema: tablesInDatabase.find((table) => table.name === collectionMeta.collection) ?? null,
+			};
+
+			if (typeof this.options?.isSystem == 'undefined') {
+				collections.push(collection);
+			} else if (this.options?.isSystem === true) {
+				if (system) collections.push(collection);
+			} else {
+				if (!system) collections.push(collection);
+			}
+		}
+
+		for (const table of tablesInDatabase) {
+			const exists = !!collections.find(({ collection }) => collection === table.name);
+
+			if (!exists && !allCollection.includes(table.name) && includePhysicalTable) {
+				collections.push({
+					collection: table.name,
+					schema: table,
+					meta: null,
+				});
+			}
+		}
+
+		if (env['DB_EXCLUDE_TABLES']) {
+			return collections.filter((collection) => env['DB_EXCLUDE_TABLES'].includes(collection.collection) === false);
+		}
+
+		return collections;
+	}
+	// MV-DATACORE [END]
 
 	/**
 	 * Get a single collection by name

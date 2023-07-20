@@ -12,11 +12,6 @@
 
 		<template #actions></template>
 
-		<template #sidebar>
-			<sidebar-detail icon="info" :title="t('information')" close>
-				<div v-md="t('page_help_insights_overview')" class="page-description" />
-			</sidebar-detail>
-		</template>
 		<div v-viewer class="images">
 			<img v-for="src in [url]" :key="src" :src="src" style="max-height: 700px" />
 		</div>
@@ -24,15 +19,14 @@
 </template>
 
 <script lang="ts">
-import api from '@/api';
-import { useCollectionsStore } from '@/stores/collections';
-import { useUserStore } from '@/stores/user';
-import { Collection } from '@/types/collections';
-import { getRootPath } from '@/utils/get-root-path';
-import { md } from '@/utils/md';
-import { User } from '@directus/types';
 import { Ref, computed, defineComponent, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+// import DashboardDialog from '../components/dashboard-dialog.vue';
+import api from '@/api';
+import { useCollectionsStore, useUserStore } from '@/stores/';
+import { getRootPath } from '@/utils/get-root-path';
+import { md } from '@/utils/md';
+import { Collection } from '@directus/shared/types';
 import ERDNavigation from '../components/navigation.vue';
 
 export default defineComponent({
@@ -46,7 +40,7 @@ export default defineComponent({
 	},
 	setup(props) {
 		const { currentUser } = useUserStore();
-		const theme = (currentUser as User).theme || 'auto';
+		const theme = currentUser?.theme || 'auto';
 		const { allCollections } = useCollectionsStore();
 
 		const relatedCollections: Ref<
@@ -146,5 +140,11 @@ export default defineComponent({
 .images {
 	display: flex;
 	justify-content: center;
+}
+.viewer-canvas {
+	background-color: red !important;
+}
+.viewer-backdrop {
+	background-color: red !important;
 }
 </style>
