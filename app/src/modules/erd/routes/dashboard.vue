@@ -79,6 +79,6 @@ async function changeSchema() {
 
 <style scoped lang="scss">
 .ml-3 {
-	margin-left: 2.25rem;
+	margin-left: 32px;
 }
 </style>

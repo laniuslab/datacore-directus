@@ -75,14 +75,17 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType, computed } from 'vue';
-import { Collection } from '@/types';
-import { Preset } from '@directus/shared/types';
-import { useUserStore, useCollectionsStore, usePresetsStore, useSettingsStore } from '@/stores';
-import NavigationItemContent from './navigation-item-content.vue';
-import { useI18n } from 'vue-i18n';
-import { orderBy } from 'lodash';
 import { MODULE_BAR_DEFAULT } from '@/constants';
+import { useCollectionsStore } from '@/stores/collections';
+import { usePresetsStore } from '@/stores/presets';
+import { useSettingsStore } from '@/stores/settings';
+import { useUserStore } from '@/stores/user';
+import { Collection } from '@/types/collections';
+import { Preset, SettingsModuleBarLink, SettingsModuleBarModule } from '@directus/types';
+import { orderBy } from 'lodash';
+import { PropType, computed, defineComponent } from 'vue';
+import { useI18n } from 'vue-i18n';
+import NavigationItemContent from './navigation-item-content.vue';
 
 export default defineComponent({
 	name: 'NavigationItem',
@@ -116,9 +119,10 @@ export default defineComponent({
 
 		const to = computed(() => (props.collection.schema ? `/content/${props.collection.collection}` : ''));
 
-		let moduleBars = MODULE_BAR_DEFAULT;
+		let moduleBars = MODULE_BAR_DEFAULT as (SettingsModuleBarLink | SettingsModuleBarModule)[];
 
 		const settingsStore = useSettingsStore();
+
 		if (typeof settingsStore.settings?.module_bar == 'string') {
 			moduleBars = JSON.parse(settingsStore.settings.module_bar);
 		} else {
@@ -174,18 +178,18 @@ export default defineComponent({
 
 		function getChildCollections(collection: Collection) {
 			let collections = collectionsStore.collections.filter(
-				(childCollection) => childCollection.meta?.group === collection.collection
+				(childCollection: Collection) => childCollection.meta?.group === collection.collection
 			);
 
 			if (props.showHidden === false) {
-				collections = collections.filter((collection) => collection.meta?.hidden !== true);
+				collections = collections.filter((collection: Collection) => collection.meta?.hidden !== true);
 			}
 
 			return orderBy(collections, ['meta.sort', 'collection']);
 		}
 
 		function getChildBookmarks(collection: Collection) {
-			return presetsStore.bookmarks.filter((bookmark) => bookmark.collection === collection.collection);
+			return presetsStore.bookmarks.filter((bookmark: Preset) => bookmark.collection === collection.collection);
 		}
 	},
 });

@@ -1,12 +1,12 @@
 <template>
 	<v-list-item-icon>
-		<v-icon :name="icon ?? 'label'" :color="color" />
+		<v-icon :name="props.icon ?? 'label'" :color="props.color" />
 	</v-list-item-icon>
 	<v-list-item-content>
-		<v-text-overflow :text="name" :highlight="search"></v-text-overflow>
+		<v-text-overflow :text="props.name" :highlight="props.search"></v-text-overflow>
 		<div>
 			<v-chip
-				v-for="(tag, i) in tags"
+				v-for="(tag, i) in props.tags"
 				:key="i"
 				style="color: white; font-size: 9pt; background-color: var(--primary)"
 				dense
@@ -18,31 +18,14 @@
 	</v-list-item-content>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script setup lang="ts">
+interface Props {
+	icon?: string | null;
+	name: string;
+	search: string;
+	color?: string | null;
+	tags?: string[];
+}
 
-export default defineComponent({
-	props: {
-		icon: {
-			type: String,
-			default: 'label',
-		},
-		color: {
-			type: String,
-			default: 'var(--foreground-normal)',
-		},
-		name: {
-			type: String,
-			required: true,
-		},
-		search: {
-			type: String,
-			default: null,
-		},
-		tags: {
-			type: Array,
-			default: () => [],
-		},
-	},
-});
+const props = defineProps<Props>();
 </script>

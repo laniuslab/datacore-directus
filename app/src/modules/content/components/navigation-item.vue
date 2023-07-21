@@ -59,6 +59,25 @@
 					<v-text-overflow :text="t('edit_collection')" />
 				</v-list-item-content>
 			</v-list-item>
+
+			<!-- MV-DATACORE -->
+			<v-list-item v-if="moduleEnabled['erd-viewer']" clickable :to="`/erd-viewer/${collection.collection}`">
+				<v-list-item-icon>
+					<v-icon name="device_hub" />
+				</v-list-item-icon>
+				<v-list-item-content>
+					<v-text-overflow :text="t('goto_collection_erd')" />
+				</v-list-item-content>
+			</v-list-item>
+			<v-list-item v-if="moduleEnabled['fields-builder']" clickable :to="`/fields-builder/${collection.collection}`">
+				<v-list-item-icon>
+					<v-icon name="memory" />
+				</v-list-item-icon>
+				<v-list-item-content>
+					<v-text-overflow :text="t('goto_collection_fields_builder')" />
+				</v-list-item-content>
+			</v-list-item>
+			<!-- MV-DATACORE -->
 		</v-list>
 	</v-menu>
 </template>
@@ -68,12 +87,17 @@ import { useCollectionsStore } from '@/stores/collections';
 import { usePresetsStore } from '@/stores/presets';
 import { useUserStore } from '@/stores/user';
 import { Collection } from '@/types/collections';
-import { Preset } from '@directus/types';
 import { orderBy } from 'lodash';
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import NavigationBookmark from './navigation-bookmark.vue';
 import NavigationItemContent from './navigation-item-content.vue';
+
+// MV-DATACORE
+import { MODULE_BAR_DEFAULT } from '@/constants';
+import { useSettingsStore } from '@/stores/settings';
+import { Preset, SettingsModuleBarLink, SettingsModuleBarModule } from '@directus/types';
+// MV-DATACORE [END]
 
 const props = defineProps<{
 	collection: Collection;
@@ -94,6 +118,23 @@ const childBookmarks = computed(() => getChildBookmarks(props.collection));
 const isGroup = computed(() => childCollections.value.length > 0 || childBookmarks.value.length > 0);
 
 const to = computed(() => (props.collection.schema ? `/content/${props.collection.collection}` : ''));
+
+// MV-DATACORE
+let moduleBars = MODULE_BAR_DEFAULT as (SettingsModuleBarLink | SettingsModuleBarModule)[];
+const settingsStore = useSettingsStore();
+
+if (typeof settingsStore.settings?.module_bar == 'string') {
+	moduleBars = JSON.parse(settingsStore.settings.module_bar);
+} else {
+	moduleBars = settingsStore.settings?.module_bar || [];
+}
+
+const moduleEnabled: { [moduleId: string]: boolean } = {};
+
+for (const moduleBar of moduleBars) {
+	moduleEnabled[moduleBar.id] = moduleBar.enabled;
+}
+// MV-DATACORE [END]
 
 const matchesSearch = computed(() => {
 	if (!props.search || props.search.length < 3) return true;

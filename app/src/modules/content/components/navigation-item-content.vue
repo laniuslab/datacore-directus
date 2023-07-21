@@ -6,8 +6,8 @@
 	<!-- MV-DATACORE -->
 	<v-list-item-content>
 		<v-text-overflow :text="name" :highlight="search" />
-		<div v-if="tags" class="tags">
-			<span v-if="tags.length > 0" class="custom tag-container">
+		<div v-if="tags">
+			<span v-if="tags.length > 0">
 				<v-chip v-for="(tag, i) in tags" :key="i" class="tag" small label>
 					{{ tag }}
 				</v-chip>
@@ -22,8 +22,12 @@ withDefaults(
 	defineProps<{
 		name: string;
 		search?: string;
-		icon?: string;
-		color?: string;
+
+		// MV-DATACORE
+		icon?: string | null;
+		color?: string | null;
+		// MV-DATACORE [END]
+
 		tags?: string[];
 	}>(),
 	{
@@ -35,43 +39,10 @@ withDefaults(
 
 <!-- MV-DATACORE -->
 <style lang="scss" scoped>
-.tags {
-	display: flex;
-	flex-wrap: wrap;
-	align-items: center;
-	justify-content: flex-start;
-	padding: 4px 0px 0px 0px;
-
-	span.tag-container {
-		display: contents;
-	}
-
-	.tag {
-		margin-right: 8px;
-		margin-bottom: 8px;
-		font-size: 12px !important;
-		color: white !important;
-	}
-
-	.custom {
-		.v-chip {
-			--v-chip-background-color: var(--primary);
-			--v-chip-color: var(--foreground-inverted);
-			--v-chip-background-color-hover: var(--danger);
-			--v-chip-close-color: var(--v-chip-background-color);
-			--v-chip-close-color-hover: var(--white);
-
-			transition: all var(--fast) var(--transition);
-
-			&:hover {
-				--v-chip-close-color: var(--white);
-
-				:deep(.chip-content .close-outline .close:hover) {
-					--v-icon-color: var(--danger);
-				}
-			}
-		}
-	}
+.tag {
+	color: white !important;
+	font-size: 9pt !important;
+	background-color: var(--primary) !important;
 }
 </style>
 <!-- MV-DATACORE [END] -->

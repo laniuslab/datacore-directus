@@ -26,7 +26,6 @@
 					:show-hidden="showHidden"
 					:collection="collection"
 					:search="search"
-					@select-collection="$emit('select-collection', $event)"
 				/>
 				<v-menu v-if="hasHiddenCollections" ref="contextMenu" show-arrow placement="bottom-start">
 					<v-list-item clickable @click="showHidden = !showHidden">
@@ -43,65 +42,51 @@
 	</div>
 </template>
 
-<script lang="ts">
-import { useI18n } from 'vue-i18n';
-import { defineComponent, computed, ref, toRefs } from 'vue';
-import { useNavigation } from '../composables/use-navigation';
+<script setup lang="ts">
 import { useCollectionsStore } from '@/stores/collections';
-import { orderBy, isNil } from 'lodash';
+import { isNil, orderBy } from 'lodash';
+import { computed, ref, toRefs } from 'vue';
+import { useI18n } from 'vue-i18n';
+import { useNavigation } from '../composables/use-navigation';
 import NavigationItem from './navigation-item.vue';
 
-export default defineComponent({
-	components: { NavigationItem },
-	props: {
-		currentCollection: {
-			type: String,
-			default: null,
-		},
-	},
-	setup(props) {
-		const { t } = useI18n();
-		const { currentCollection } = toRefs(props);
-		const { activeGroups, showHidden } = useNavigation(currentCollection);
+interface Props {
+	currentCollection: string | null;
+}
 
-		const search = ref('');
+const props = defineProps<Props>();
 
-		const collectionsStore = useCollectionsStore();
+const { t } = useI18n();
+const { currentCollection } = toRefs(props);
+const { activeGroups, showHidden } = useNavigation(currentCollection);
 
-		const rootItems = computed(() => {
-			const shownCollections = showHidden.value ? collectionsStore.allCollections : collectionsStore.visibleCollections;
-			const mappedCollections: { [schemaName: string]: any } = {};
-			for (const collection of shownCollections) {
-				const schemaName = collection?.meta?.schema || 'public';
-				if (!mappedCollections[schemaName]) mappedCollections[schemaName] = [];
-				if (isNil(collection?.meta?.group)) mappedCollections[schemaName].push(collection);
-			}
+const search = ref('');
 
-			for (const schemaName in mappedCollections) {
-				mappedCollections[schemaName] = orderBy(mappedCollections[schemaName], ['meta.sort', 'collection']);
-			}
+const collectionsStore = useCollectionsStore();
 
-			return mappedCollections;
-		});
+const rootItems = computed(() => {
+	const shownCollections = showHidden.value ? collectionsStore.allCollections : collectionsStore.visibleCollections;
+	const mappedCollections: { [schemaName: string]: any } = {};
 
-		const dense = computed(() => collectionsStore.visibleCollections.length > 5);
-		const showSearch = computed(() => collectionsStore.visibleCollections.length > 20);
-		const hasHiddenCollections = computed(
-			() => collectionsStore.allCollections.length > collectionsStore.visibleCollections.length
-		);
+	for (const collection of shownCollections) {
+		const schemaName = collection?.meta?.schema || 'public';
+		if (!mappedCollections[schemaName]) mappedCollections[schemaName] = [];
+		if (isNil(collection?.meta?.group)) mappedCollections[schemaName].push(collection);
+	}
 
-		return {
-			t,
-			activeGroups,
-			showHidden,
-			rootItems,
-			dense,
-			search,
-			showSearch,
-			hasHiddenCollections,
-		};
-	},
+	for (const schemaName in mappedCollections) {
+		mappedCollections[schemaName] = orderBy(mappedCollections[schemaName], ['meta.sort', 'collection']);
+	}
+
+	return mappedCollections;
 });
+
+const dense = computed(() => collectionsStore.visibleCollections.length > 5);
+const showSearch = computed(() => collectionsStore.visibleCollections.length > 20);
+
+const hasHiddenCollections = computed(
+	() => collectionsStore.allCollections.length > collectionsStore.visibleCollections.length
+);
 </script>
 
 <style lang="scss" scoped>
