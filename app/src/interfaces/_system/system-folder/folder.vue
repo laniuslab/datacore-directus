@@ -52,7 +52,7 @@ import FolderListItem from './folder-list-item.vue';
 const props = withDefaults(
 	defineProps<{
 		value: string | null;
-		disabledFolders: string[];
+		disabledFolders?: string[];
 		disabled?: boolean;
 		placeholder?: string;
 	}>(),
