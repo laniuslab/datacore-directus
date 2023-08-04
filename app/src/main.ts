@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
 
 import { getVueComponentName } from '@/utils/get-vue-component-name';
+import { createHead } from '@unhead/vue';
 import { createPinia } from 'pinia';
 import { createApp } from 'vue';
 import App from './app.vue';
@@ -42,6 +43,7 @@ async function init() {
 	app.use(router);
 	app.use(i18n);
 	app.use(createPinia());
+	app.use(createHead());
 
 	app.use(VueViewer); // MV-DATACORE
 
