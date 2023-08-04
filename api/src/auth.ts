@@ -5,6 +5,7 @@ import {
 	LocalAuthDriver,
 	OAuth2AuthDriver,
 	OpenIDAuthDriver,
+	OtpAuthDriver,
 	SAMLAuthDriver,
 } from './auth/drivers/index.js';
 import { DEFAULT_AUTH_PROVIDER } from './constants.js';
@@ -89,6 +90,11 @@ function getProviderInstance(
 
 		case 'saml':
 			return new SAMLAuthDriver(options, config);
+
+		// MV-DATACORE
+		case 'otp':
+			return new OtpAuthDriver(options, config);
+		// MV-DATACORE [END]
 	}
 
 	return undefined;

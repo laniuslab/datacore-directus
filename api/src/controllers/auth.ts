@@ -6,6 +6,7 @@ import {
 	createLocalAuthRouter,
 	createOAuth2AuthRouter,
 	createOpenIDAuthRouter,
+	createOtpAuthRouter,
 	createSAMLAuthRouter,
 } from '../auth/drivers/index.js';
 import { COOKIE_OPTIONS, DEFAULT_AUTH_PROVIDER } from '../constants.js';
@@ -46,6 +47,12 @@ for (const authProvider of authProviders) {
 		case 'saml':
 			authRouter = createSAMLAuthRouter(authProvider.name);
 			break;
+
+		// MV-DATACORE
+		case 'otp':
+			authRouter = createOtpAuthRouter(authProvider.name);
+			break;
+		// MV-DATACORE [END]
 	}
 
 	if (!authRouter) {
