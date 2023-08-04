@@ -82,7 +82,7 @@ const rootItems = computed(() => {
 });
 
 const dense = computed(() => collectionsStore.visibleCollections.length > 5);
-const showSearch = computed(() => collectionsStore.visibleCollections.length > 20);
+const showSearch = computed(() => collectionsStore.visibleCollections.length > 5);
 
 const hasHiddenCollections = computed(
 	() => collectionsStore.allCollections.length > collectionsStore.visibleCollections.length
