@@ -1,6 +1,6 @@
 {
 	"name": "@new-mv-datacore/app",
-	"version": "10.4.11",
+	"version": "10.4.13",
 	"description": "App dashboard for Directus",
 	"homepage": "https://directus.io",
 	"repository": {

@@ -177,7 +177,7 @@ const systemCollections = computed(() => {
 					search.value !== undefined && search.value !== null
 						? collection.collection.startsWith('directus_') === true &&
 						  collection.collection.toLowerCase().includes(search.value?.toLocaleLowerCase() as string)
-						: true
+						: collection.collection.startsWith('directus_') === true
 				)
 				.map((collection) => ({ ...collection, icon: 'settings' })),
 			'collection'
