@@ -9,6 +9,8 @@
 
 		<continue-as v-if="authenticated" />
 
+		<otp-form v-else-if="driver === 'otp'" :provider="provider" />
+
 		<ldap-form v-else-if="driver === 'ldap'" :provider="provider" />
 
 		<login-form v-else-if="driver === DEFAULT_AUTH_DRIVER || driver === 'local'" :provider="provider" />
@@ -38,6 +40,7 @@ import { useAppStore } from '@directus/stores';
 import { storeToRefs } from 'pinia';
 import { computed, ref, unref } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { OtpForm } from '../../__mv/components/login-form/';
 import ContinueAs from './components/continue-as.vue';
 import { LdapForm, LoginForm } from './components/login-form/';
 import SsoLinks from './components/sso-links.vue';
