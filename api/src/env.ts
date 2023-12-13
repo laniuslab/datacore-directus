@@ -3,12 +3,15 @@
  * For all possible keys, see: https://docs.directus.io/self-hosted/config-options/
  */
 
+import { JAVASCRIPT_FILE_EXTS } from '@directus/constants';
 import { parseJSON, toArray } from '@directus/utils';
 import dotenv from 'dotenv';
 import fs from 'fs';
 import { clone, toNumber, toString } from 'lodash-es';
 import { createRequire } from 'node:module';
+import { pathToFileURL } from 'node:url';
 import path from 'path';
+import getModuleDefault from './utils/get-module-default.js';
 import { requireYAML } from './utils/require-yaml.js';
 import { toBoolean } from './utils/to-boolean.js';
 
@@ -23,6 +26,7 @@ const allowedEnvironmentVars = [
 	'PUBLIC_URL',
 	'LOG_LEVEL',
 	'LOG_STYLE',
+	'LOG_HTTP_IGNORE_PATHS',
 	'MAX_PAYLOAD_SIZE',
 	'ROOT_REDIRECT',
 	'SERVE_APP',
@@ -32,6 +36,7 @@ const allowedEnvironmentVars = [
 	'QUERY_LIMIT_MAX',
 	'QUERY_LIMIT_DEFAULT',
 	'ROBOTS_TXT',
+	'TEMP_PATH',
 	// server
 	'SERVER_.+',
 	// database
@@ -160,9 +165,13 @@ const allowedEnvironmentVars = [
 	'AUTH_.+_SP.+',
 	// extensions
 	'PACKAGE_FILE_LOCATION',
+	'EXTENSIONS_LOCATION',
 	'EXTENSIONS_PATH',
+	'EXTENSIONS_MUST_LOAD',
 	'EXTENSIONS_AUTO_RELOAD',
 	'EXTENSIONS_CACHE_TTL',
+	'EXTENSIONS_SANDBOX_MEMORY',
+	'EXTENSIONS_SANDBOX_TIMEOUT',
 	// messenger
 	'MESSENGER_STORE',
 	'MESSENGER_NAMESPACE',
@@ -199,15 +208,16 @@ const allowedEnvironmentVars = [
 	'RELATIONAL_BATCH_SIZE',
 	'EXPORT_BATCH_SIZE',
 	// flows
-	'FLOWS_EXEC_ALLOWED_MODULES',
 	'FLOWS_ENV_ALLOW_LIST',
+	'FLOWS_RUN_SCRIPT_MAX_MEMORY',
+	'FLOWS_RUN_SCRIPT_TIMEOUT',
 	// websockets
 	'WEBSOCKETS_.+',
 ].map((name) => new RegExp(`^${name}$`));
 
 const acceptedEnvTypes = ['string', 'number', 'regex', 'array', 'json'];
 
-const defaults: Record<string, any> = {
+export const defaults: Record<string, any> = {
 	CONFIG_PATH: path.resolve(process.cwd(), '.env'),
 
 	HOST: '0.0.0.0',
@@ -218,6 +228,8 @@ const defaults: Record<string, any> = {
 	QUERY_LIMIT_DEFAULT: 100,
 	MAX_BATCH_MUTATION: Infinity,
 	ROBOTS_TXT: 'User-agent: *\nDisallow: /',
+
+	TEMP_PATH: './node_modules/.directus',
 
 	DB_EXCLUDE_TABLES: 'spatial_ref_sys,sysdiagrams',
 
@@ -271,7 +283,10 @@ const defaults: Record<string, any> = {
 
 	PACKAGE_FILE_LOCATION: '.',
 	EXTENSIONS_PATH: './extensions',
+	EXTENSIONS_MUST_LOAD: false,
 	EXTENSIONS_AUTO_RELOAD: false,
+	EXTENSIONS_SANDBOX_MEMORY: 100,
+	EXTENSIONS_SANDBOX_TIMEOUT: 1000,
 
 	EMAIL_FROM: 'no-reply@example.com',
 	EMAIL_VERIFY_SETUP: true,
@@ -315,8 +330,9 @@ const defaults: Record<string, any> = {
 	WEBSOCKETS_HEARTBEAT_ENABLED: true,
 	WEBSOCKETS_HEARTBEAT_PERIOD: 30,
 
-	FLOWS_EXEC_ALLOWED_MODULES: false,
 	FLOWS_ENV_ALLOW_LIST: false,
+	FLOWS_RUN_SCRIPT_MAX_MEMORY: 32,
+	FLOWS_RUN_SCRIPT_TIMEOUT: 10000,
 
 	PRESSURE_LIMITER_ENABLED: true,
 	PRESSURE_LIMITER_SAMPLE_INTERVAL: 250,
@@ -329,8 +345,10 @@ const defaults: Record<string, any> = {
 	FILES_MIME_TYPE_ALLOW_LIST: '*/*',
 };
 
-// Allows us to force certain environment variable into a type, instead of relying
-// on the auto-parsed type in processValues. ref #3705
+/**
+ * Allows us to force certain environment variable into a type, instead of relying
+ * on the auto-parsed type in processValues.
+ */
 const typeMap: Record<string, string> = {
 	HOST: 'string',
 	PORT: 'string',
@@ -355,12 +373,14 @@ const typeMap: Record<string, string> = {
 	MAX_BATCH_MUTATION: 'number',
 
 	SERVER_SHUTDOWN_TIMEOUT: 'number',
+
+	LOG_HTTP_IGNORE_PATHS: 'array',
 };
 
 let env: Record<string, any> = {
 	...defaults,
 	...process.env,
-	...processConfiguration(),
+	...(await processConfiguration()),
 };
 
 process.env = env;
@@ -370,19 +390,14 @@ env = processValues(env);
 export default env;
 
 /**
- * Small wrapper function that makes it easier to write unit tests against changing environments
- */
-export const getEnv = () => env;
-
-/**
  * When changes have been made during runtime, like in the CLI, we can refresh the env object with
  * the newly created variables
  */
-export function refreshEnv(): void {
+export async function refreshEnv(): Promise<void> {
 	env = {
 		...defaults,
 		...process.env,
-		...processConfiguration(),
+		...(await processConfiguration()),
 	};
 
 	process.env = env;
@@ -390,33 +405,33 @@ export function refreshEnv(): void {
 	env = processValues(env);
 }
 
-function processConfiguration() {
+async function processConfiguration() {
 	const configPath = path.resolve(process.env['CONFIG_PATH'] || defaults['CONFIG_PATH']);
 
 	if (fs.existsSync(configPath) === false) return {};
 
-	const fileExt = path.extname(configPath).toLowerCase();
+	const fileExt = path.extname(configPath).toLowerCase().substring(1);
 
-	if (fileExt === '.js') {
-		const module = require(configPath);
-		const exported = module.default || module;
+	if ((JAVASCRIPT_FILE_EXTS as readonly string[]).includes(fileExt)) {
+		const data = await import(pathToFileURL(configPath).toString());
+		const config = getModuleDefault(data);
 
-		if (typeof exported === 'function') {
-			return exported(process.env);
-		} else if (typeof exported === 'object') {
-			return exported;
+		if (typeof config === 'function') {
+			return config(process.env);
+		} else if (typeof config === 'object') {
+			return config;
 		}
 
 		throw new Error(
-			`Invalid JS configuration file export type. Requires one of "function", "object", received: "${typeof exported}"`
+			`Invalid JS configuration file export type. Requires one of "function", "object", received: "${typeof config}"`,
 		);
 	}
 
-	if (fileExt === '.json') {
+	if (fileExt === 'json') {
 		return require(configPath);
 	}
 
-	if (fileExt === '.yaml' || fileExt === '.yml') {
+	if (fileExt === 'yaml' || fileExt === 'yml') {
 		const data = requireYAML(configPath);
 
 		if (typeof data === 'object') {
@@ -470,7 +485,7 @@ function isEnvSyntaxPrefixPresent(value: string): boolean {
 	return acceptedEnvTypes.some((envType) => value.includes(`${envType}:`));
 }
 
-function processValues(env: Record<string, any>) {
+export function processValues(env: Record<string, any>) {
 	env = clone(env);
 
 	for (let [key, value] of Object.entries(env)) {
@@ -484,7 +499,7 @@ function processValues(env: Record<string, any>) {
 			if (allowedEnvironmentVars.some((pattern) => pattern.test(newKey as string))) {
 				if (newKey in env && !(newKey in defaults && env[newKey] === defaults[newKey])) {
 					throw new Error(
-						`Duplicate environment variable encountered: you can't use "${newKey}" and "${key}" simultaneously.`
+						`Duplicate environment variable encountered: you can't use "${newKey}" and "${key}" simultaneously.`,
 					);
 				}
 

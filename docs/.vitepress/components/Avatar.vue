@@ -1,13 +1,3 @@
-<template>
-	<div class="avatar">
-		<img :src="image" alt="" />
-		<div>
-			<div class="avatar_name">{{ name }}</div>
-			<div>{{ title }}</div>
-		</div>
-	</div>
-</template>
-
 <script setup lang="ts">
 defineProps<{
 	image: string;
@@ -15,6 +5,16 @@ defineProps<{
 	title: string;
 }>();
 </script>
+
+<template>
+	<div class="avatar">
+		<img :src="image" :alt="name" />
+		<div>
+			<div class="avatar_name">{{ name }}</div>
+			<div>{{ title }}</div>
+		</div>
+	</div>
+</template>
 
 <style scoped>
 .avatar {

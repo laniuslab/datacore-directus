@@ -25,9 +25,12 @@ jobs:
   publish-npm:
     name: Publish to NPM
     runs-on: ubuntu-latest
+    needs: check-version
+    permissions:
+      id-token: write
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Prepare
         uses: ./.github/actions/prepare
@@ -37,7 +40,12 @@ jobs:
       - name: Publish packages to NPM
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: pnpm --recursive publish --access=public --no-git-checks
+          NPM_CONFIG_PROVENANCE: true
+        run: |
+          pnpm --recursive publish \
+            --access=public \
+            --no-git-checks \
+            --tag ${{ needs.check-version.outputs.prerelease == 'true' && 'canary'  || 'latest' }}
 
   # build-images:
   #   name: Build Images

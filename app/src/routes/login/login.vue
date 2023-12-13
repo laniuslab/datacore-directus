@@ -1,38 +1,3 @@
-<template>
-	<public-view>
-		<div class="header">
-			<h1 class="type-title">{{ t('sign_in') }}</h1>
-			<div v-if="!authenticated && providerOptions.length > 1" class="provider-select">
-				<v-select v-model="providerSelect" inline :items="providerOptions" label />
-			</div>
-		</div>
-
-		<continue-as v-if="authenticated" />
-
-		<otp-form v-else-if="driver === 'otp'" :provider="provider" />
-
-		<ldap-form v-else-if="driver === 'ldap'" :provider="provider" />
-
-		<login-form v-else-if="driver === DEFAULT_AUTH_DRIVER || driver === 'local'" :provider="provider" />
-
-		<sso-links v-if="!authenticated" :providers="auth.providers" />
-
-		<template #notice>
-			<div v-if="authenticated">
-				<v-icon name="lock_open" left />
-				{{ t('authenticated') }}
-			</div>
-			<div v-else>
-				{{
-					logoutReason && te(`logoutReason.${logoutReason}`)
-						? t(`logoutReason.${logoutReason}`)
-						: t('not_authenticated')
-				}}
-			</div>
-		</template>
-	</public-view>
-</template>
-
 <script setup lang="ts">
 import { DEFAULT_AUTH_DRIVER, DEFAULT_AUTH_PROVIDER } from '@/constants';
 import { useServerStore } from '@/stores/server';
@@ -40,18 +5,18 @@ import { useAppStore } from '@directus/stores';
 import { storeToRefs } from 'pinia';
 import { computed, ref, unref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { OtpForm } from '../../__mv/components/login-form/';
 import ContinueAs from './components/continue-as.vue';
 import { LdapForm, LoginForm } from './components/login-form/';
 import SsoLinks from './components/sso-links.vue';
 
-interface Props {
-	logoutReason?: string | null;
-}
-
-withDefaults(defineProps<Props>(), {
-	logoutReason: null,
-});
+withDefaults(
+	defineProps<{
+		logoutReason?: string | null;
+	}>(),
+	{
+		logoutReason: null,
+	},
+);
 
 const { t, te } = useI18n();
 
@@ -74,6 +39,39 @@ const providerSelect = computed({
 
 const authenticated = computed(() => appStore.authenticated);
 </script>
+
+<template>
+	<public-view>
+		<div class="header">
+			<h1 class="type-title">{{ t('sign_in') }}</h1>
+			<div v-if="!authenticated && providerOptions.length > 1" class="provider-select">
+				<v-select v-model="providerSelect" inline :items="providerOptions" label />
+			</div>
+		</div>
+
+		<continue-as v-if="authenticated" />
+
+		<ldap-form v-else-if="driver === 'ldap'" :provider="provider" />
+
+		<login-form v-else-if="driver === DEFAULT_AUTH_DRIVER || driver === 'local'" :provider="provider" />
+
+		<sso-links v-if="!authenticated" :providers="auth.providers" />
+
+		<template #notice>
+			<div v-if="authenticated">
+				<v-icon name="lock_open" left />
+				{{ t('authenticated') }}
+			</div>
+			<div v-else>
+				{{
+					logoutReason && te(`logoutReason.${logoutReason}`)
+						? t(`logoutReason.${logoutReason}`)
+						: t('not_authenticated')
+				}}
+			</div>
+		</template>
+	</public-view>
+</template>
 
 <style lang="scss" scoped>
 h1 {

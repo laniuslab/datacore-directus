@@ -35,6 +35,7 @@
 	"dependencies": {
 		"@directus/constants": "workspace:*",
 		"@new-mv-datacore/extensions-sdk": "workspace:*",
-		"inquirer": "9.2.4"
+		"@directus/extensions": "workspace:*",
+		"inquirer": "9.2.12"
 	}
 }

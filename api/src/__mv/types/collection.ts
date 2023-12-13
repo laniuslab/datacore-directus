@@ -14,6 +14,7 @@ export type CollectionMeta = {
 	system?: boolean;
 	tags?: string[] | null | string;
 	schema?: string | null;
+	versioning: boolean;
 };
 
 export type Collection = {

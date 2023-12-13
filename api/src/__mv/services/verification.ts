@@ -1,7 +1,7 @@
 import ms from 'ms';
 import { v4 as uuidv4 } from 'uuid';
 import env from '../../env.js';
-import { InvalidOtpError, UnexpectedResponseError } from '../../errors/index.js';
+import { InvalidOtpError, UnexpectedResponseError } from '@directus/errors';
 import { MailService } from '../../services/index.js';
 import { ItemsService } from '../../services/items.js';
 import type { AbstractServiceOptions, MutationOptions, PrimaryKey } from '../../types/index.js';

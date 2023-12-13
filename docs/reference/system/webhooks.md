@@ -56,12 +56,16 @@ List all webhooks that exist in Directus.
 
 ### Request
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `GET /webhooks`
 
 `SEARCH /webhooks`
+
+If using SEARCH you can provide a [query object](/reference/query) as the body of your request.
+
+[Learn more about SEARCH ->](/reference/introduction#search-http-method)
 
 </template>
 <template #graphql>
@@ -78,22 +82,15 @@ type Query {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, readWebhooks } from '@directus/sdk/rest';
+import { createDirectus, rest, readWebhooks } from '@directus/sdk';
 
-const client = createDirectus('https://directus.example.com').with(rest());
+const client = createDirectus('directus_project_url').with(rest());
 
-const result = await client.request(
-	readWebhooks({
-		fields: ['*'],
-	})
-);
+const result = await client.request(readWebhooks(query_object));
 ```
 
 </template>
 </SnippetToggler>
-
-[Learn more about SEARCH ->](/reference/introduction#search-http-method)
 
 #### Query Parameters
 
@@ -106,7 +103,7 @@ data will be an empty array.
 
 ### Example
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `GET /webhooks`
@@ -131,8 +128,7 @@ query {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, readWebhooks } from '@directus/sdk/rest';
+import { createDirectus, rest, readWebhooks } from '@directus/sdk';
 
 const client = createDirectus('https://directus.example.com').with(rest());
 
@@ -152,7 +148,7 @@ List an existing webhook by primary key.
 
 ### Request
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `GET /webhooks/:id`
@@ -172,16 +168,11 @@ type Query {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, readWebhook } from '@directus/sdk/rest';
+import { createDirectus, rest, readWebhook } from '@directus/sdk';
 
-const client = createDirectus('https://directus.example.com').with(rest());
+const client = createDirectus('directus_project_url').with(rest());
 
-const result = await client.request(
-	readWebhook('webhook_id', {
-		fields: ['*'],
-	})
-);
+const result = await client.request(readWebhook(webhook_id, query_object));
 ```
 
 </template>
@@ -197,7 +188,7 @@ Returns the requested [webhook object](#the-webhook-object).
 
 ### Examples
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `GET /webhooks/15`
@@ -221,8 +212,7 @@ query {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, readWebhook } from '@directus/sdk/rest';
+import { createDirectus, rest, readWebhook } from '@directus/sdk';
 
 const client = createDirectus('https://directus.example.com').with(rest());
 
@@ -242,19 +232,12 @@ Create a new webhook.
 
 ### Request
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `POST /webhooks`
 
-```json
-{
-	"name": "name",
-	"actions": ["webhook_action_1", "webhook_action_2"],
-	"collections": ["collection to act on"],
-	"url": "url of webhook"
-}
-```
+Provide a [webhook object](#the-webhook-object) as the body of your request.
 
 </template>
 <template #graphql>
@@ -271,19 +254,11 @@ type Mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, createWebhook } from '@directus/sdk/rest';
+import { createDirectus, rest, createWebhook } from '@directus/sdk';
 
-const client = createDirectus('https://directus.example.com').with(rest());
+const client = createDirectus('directus_project_url').with(rest());
 
-const result = await client.request(
-	createWebhook({
-		name: 'webhook_name',
-		collections: 'collection_name',
-		actions: ['action_1', 'action_2', 'action_3'],
-		url: 'webhook_url',
-	})
-);
+const result = await client.request(createWebhook(webhook_object));
 ```
 
 </template>
@@ -305,7 +280,7 @@ Returns the [webhook object](#the-webhook-object) for the created webhook.
 
 ### Example
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `POST /webhooks`
@@ -339,8 +314,7 @@ mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, createWebhook } from '@directus/sdk/rest';
+import { createDirectus, rest, createWebhook } from '@directus/sdk';
 
 const client = createDirectus('https://directus.example.com').with(rest());
 
@@ -364,27 +338,12 @@ Create multiple new webhooks.
 
 ### Request
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `POST /webhooks`
 
-```json
-[
-	{
-		"name": "name_1",
-		"actions": ["webhook_action_1", "webhook_action_2"],
-		"collections": ["collection to act on"],
-		"url": "url of webhook_1"
-	},
-	{
-		"name": "name_2",
-		"actions": ["webhook_action_1", "webhook_action_2"],
-		"collections": ["collection to act on"],
-		"url": "url of webhook_2"
-	}
-]
-```
+Provide an array of [webhook objects](#the-webhook-object) as the body of your request.
 
 </template>
 <template #graphql>
@@ -401,27 +360,11 @@ type Mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, createWebhooks } from '@directus/sdk/rest';
+import { createDirectus, rest, createWebhooks } from '@directus/sdk';
 
-const client = createDirectus('https://directus.example.com').with(rest());
+const client = createDirectus('directus_project_url').with(rest());
 
-const result = await client.request(
-	createWebhooks([
-		{
-			name: 'name_1',
-			collections: ['collection to act on'],
-			actions: ['webhook_action_1', 'webhook_action_2'],
-			url: 'url of webhook_1',
-		},
-		{
-			name: 'webhook_2_name',
-			actions: ['action_1', 'action_2', 'action_3'],
-			collections: 'collection_2_name',
-			url: 'webhook_2_url',
-		},
-	])
-);
+const result = await client.request(createWebhooks(webhook_object_array));
 ```
 
 </template>
@@ -443,7 +386,7 @@ Returns the [webhook objects](#the-webhook-object) for the created webhooks.
 
 ### Example
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `POST /webhooks`
@@ -488,8 +431,7 @@ mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, createWebhooks } from '@directus/sdk/rest';
+import { createDirectus, rest, createWebhooks } from '@directus/sdk';
 
 const client = createDirectus('https://directus.example.com').with(rest());
 
@@ -522,16 +464,12 @@ Update an existing webhook.
 
 ### Request
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `PATCH /webhooks/:id`
 
-```json
-{
-	"webhook_field": "value"
-}
-```
+Provide a partial [webhook object](#the-webhook-object) as the body of your request.
 
 </template>
 <template #graphql>
@@ -548,16 +486,11 @@ type Mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, updateWebhook } from '@directus/sdk/rest';
+import { createDirectus, rest, updateWebhook } from '@directus/sdk';
 
-const client = createDirectus('https://directus.example.com').with(rest());
+const client = createDirectus('directus_project_url').with(rest());
 
-const result = await client.request(
-	updateWebhook('webhook_id', {
-		field: 'value',
-	})
-);
+const result = await client.request(updateWebhook(webhook_id, partal_webhook_object));
 ```
 
 </template>
@@ -577,7 +510,7 @@ Returns the [webhook object](#the-webhook-object) for the updated webhook.
 
 ### Example
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `PATCH /webhooks/15`
@@ -605,8 +538,7 @@ mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, updateWebhook } from '@directus/sdk/rest';
+import { createDirectus, rest, updateWebhook } from '@directus/sdk';
 
 const client = createDirectus('https://directus.example.com').with(rest());
 
@@ -626,17 +558,15 @@ Update multiple existing webhooks.
 
 ### Request
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `PATCH /webhooks`
 
 ```json
 {
-	"keys": ["webhook_1_key", "webhook_2_key"],
-	"data": {
-		"webhook_object_field": "value_1"
-	}
+	"keys": webhook_id_array,
+	"data": partial_webhook_object
 }
 ```
 
@@ -655,16 +585,11 @@ type Mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, updateWebhooks } from '@directus/sdk/rest';
+import { createDirectus, rest, updateWebhooks } from '@directus/sdk';
 
-const client = createDirectus('https://directus.example.com').with(rest());
+const client = createDirectus('directus_project_url').with(rest());
 
-const result = await client.request(
-	updateWebhooks(['webhook_1_id', 'webhook_2_id'], {
-		webhook_field: 'value',
-	})
-);
+const result = await client.request(updateWebhooks(webhook_id_array, partial_webhook_object));
 ```
 
 </template>
@@ -690,7 +615,7 @@ Returns the [webhook objects](#the-webhook-object) for the updated webhooks.
 
 ### Example
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `PATCH /webhooks`
@@ -721,8 +646,7 @@ mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, updateWebhooks } from '@directus/sdk/rest';
+import { createDirectus, rest, updateWebhooks } from '@directus/sdk';
 
 const client = createDirectus('https://directus.example.com').with(rest());
 
@@ -742,7 +666,7 @@ Delete an existing webhook.
 
 ### Request
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `DELETE /webhooks/:id`
@@ -762,12 +686,11 @@ type Mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, deleteWebhook } from '@directus/sdk/rest';
+import { createDirectus, rest, deleteWebhook } from '@directus/sdk';
 
-const client = createDirectus('https://directus.example.com').with(rest());
+const client = createDirectus('directus_project_url').with(rest());
 
-const result = await client.request(deleteWebhook('webhook_id'));
+const result = await client.request(deleteWebhook(webhook_id));
 ```
 
 </template>
@@ -779,7 +702,7 @@ Empty body.
 
 ### Example
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `DELETE /webhooks/15`
@@ -801,8 +724,7 @@ mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, deleteWebhook } from '@directus/sdk/rest';
+import { createDirectus, rest, deleteWebhook } from '@directus/sdk';
 
 const client = createDirectus('https://directus.example.com').with(rest());
 
@@ -818,14 +740,12 @@ Delete multiple existing webhooks.
 
 ### Request
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `DELETE /webhooks`
 
-```json
-["webhook_1_key", "webhook_2_key", "webhook_3_key"]
-```
+Provide an array of webhook IDs as the body of your request.
 
 </template>
 <template #graphql>
@@ -842,12 +762,11 @@ type Mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, deleteWebhooks } from '@directus/sdk/rest';
+import { createDirectus, rest, deleteWebhooks } from '@directus/sdk';
 
-const client = createDirectus('https://directus.example.com').with(rest());
+const client = createDirectus('directus_project_url').with(rest());
 
-const result = await client.request(deleteWebhooks(['webhook_1_id', 'webhook_2_id']));
+const result = await client.request(deleteWebhooks(webhook_id_array));
 ```
 
 </template>
@@ -863,7 +782,7 @@ Empty body.
 
 ### Example
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `DELETE /webhooks`
@@ -889,8 +808,7 @@ mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, deleteWebhooks } from '@directus/sdk/rest';
+import { createDirectus, rest, deleteWebhooks } from '@directus/sdk';
 
 const client = createDirectus('https://directus.example.com').with(rest());
 

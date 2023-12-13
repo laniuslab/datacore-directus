@@ -1,4 +1,4 @@
-import { defineModule } from '@directus/utils';
+import { defineModule } from '@directus/extensions';
 import ERDViewer from './routes/dashboard.vue';
 import ERDOverview from './routes/overview.vue';
 
@@ -21,7 +21,7 @@ export default defineModule({
 		},
 	],
 	preRegisterCheck(user) {
-		const admin = user.role.admin_access;
+		const admin = user.role?.admin_access;
 
 		if (admin) return true;
 

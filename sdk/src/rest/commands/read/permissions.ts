@@ -1,11 +1,12 @@
 import type { DirectusPermission } from '../../../schema/permission.js';
 import type { ApplyQueryFields, Query } from '../../../types/index.js';
+import { throwIfEmpty } from '../../utils/index.js';
 import type { RestCommand } from '../../types.js';
 
 export type ReadPermissionOutput<
 	Schema extends object,
 	TQuery extends Query<Schema, Item>,
-	Item extends object = DirectusPermission<Schema>
+	Item extends object = DirectusPermission<Schema>,
 > = ApplyQueryFields<Schema, Item, TQuery['fields']>;
 
 /**
@@ -15,7 +16,7 @@ export type ReadPermissionOutput<
  */
 export const readPermissions =
 	<Schema extends object, const TQuery extends Query<Schema, DirectusPermission<Schema>>>(
-		query?: TQuery
+		query?: TQuery,
 	): RestCommand<ReadPermissionOutput<Schema, TQuery>[], Schema> =>
 	() => ({
 		path: `/permissions`,
@@ -28,14 +29,19 @@ export const readPermissions =
  * @param key The primary key of the dashboard
  * @param query The query parameters
  * @returns Returns a Permission object if a valid primary key was provided.
+ * @throws Will throw if key is empty
  */
 export const readPermission =
 	<Schema extends object, const TQuery extends Query<Schema, DirectusPermission<Schema>>>(
 		key: DirectusPermission<Schema>['id'],
-		query?: TQuery
+		query?: TQuery,
 	): RestCommand<ReadPermissionOutput<Schema, TQuery>, Schema> =>
-	() => ({
-		path: `/permissions/${key}`,
-		params: query ?? {},
-		method: 'GET',
-	});
+	() => {
+		throwIfEmpty(String(key), 'Key cannot be empty');
+
+		return {
+			path: `/permissions/${key}`,
+			params: query ?? {},
+			method: 'GET',
+		};
+	};

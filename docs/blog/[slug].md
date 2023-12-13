@@ -1,6 +1,5 @@
 ---
 layout: doc
-# editLink: false
 prev: false
 next: false
 type: 'blog-post'
@@ -8,12 +7,12 @@ type: 'blog-post'
 
 <script setup>
 import { useData } from 'vitepress'
-import Badge from '../.vitepress/components/Badge.vue'
-import PostMeta from '../.vitepress/components/blog/PostMeta.vue'
+import Badge from '@/components/Badge.vue'
+import PostMeta from '@/components/blog/PostMeta.vue'
 const { params } = useData()
 </script>
 
-<Badge>Developer Blog</Badge>
+<Badge><a href="/blog/">Developer Blog</a></Badge>
 
 <h1>{{ params.title }}</h1>
 

@@ -14,7 +14,7 @@ Retrieve the current schema. This endpoint is only available to admin users.
 
 ### Request
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 ```
@@ -36,10 +36,9 @@ GET /schema/snapshot?export=yaml
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, schemaSnapshot } from '@directus/sdk/rest';
+import { createDirectus, rest, schemaSnapshot } from '@directus/sdk';
 
-const client = createDirectus('https://directus.example.com').with(rest());
+const client = createDirectus('directus_project_url').with(rest());
 
 const result = await client.request(schemaSnapshot());
 ```
@@ -58,7 +57,7 @@ query parameter is used.
 
 ### Example
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 ```
@@ -78,8 +77,7 @@ GET /schema/snapshot?export=yaml
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, schemaSnapshot } from '@directus/sdk/rest';
+import { createDirectus, rest, schemaSnapshot } from '@directus/sdk';
 
 const client = createDirectus('https://directus.example.com').with(rest());
 
@@ -106,7 +104,7 @@ unintentional diffs from being generated. You can opt in to bypass these checks 
 
 ### Request
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 ::: details **Toggle Open to See Request**
@@ -170,8 +168,7 @@ relations: []
 ::: details **Toggle Open to See Request**
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, schemaDiff } from '@directus/sdk/rest';
+import { createDirectus, rest, schemaDiff } from '@directus/sdk';
 
 const client = createDirectus('https://directus.example.com').with(rest());
 
@@ -411,7 +408,7 @@ Returns the differences between the current instance's schema and the schema pas
 
 ### Example
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 ::: details **Toggle Open to See Example Request**
@@ -547,8 +544,7 @@ relations: []
 ::: details **Toggle Open to See Example Request**
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, schemaDiff } from '@directus/sdk/rest';
+import { createDirectus, rest, schemaDiff } from '@directus/sdk';
 
 const client = createDirectus('https://directus.example.com').with(rest());
 
@@ -711,7 +707,7 @@ Empty body.
 
 ### Example
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 ::: details **Toggle Open to See Sample Body**
@@ -882,8 +878,7 @@ POST /schema/apply
 ::: details **Toggle Open to See Example Request**
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, schemaApply } from '@directus/sdk/rest';
+import { createDirectus, rest, schemaApply } from '@directus/sdk';
 
 const client = createDirectus('https://directus.example.com').with(rest());
 

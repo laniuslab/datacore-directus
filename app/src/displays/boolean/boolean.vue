@@ -1,25 +1,15 @@
-<template>
-	<div class="boolean" :style="styles">
-		<value-null v-if="value === null" />
-		<template v-else>
-			<v-icon v-if="iconOn !== null && iconOff !== null" :name="value ? iconOn : iconOff"></v-icon>
-			<span v-if="labelOn !== null && labelOff !== null">{{ value ? labelOn : labelOff }}</span>
-		</template>
-	</div>
-</template>
-
 <script setup lang="ts">
 import { computed } from 'vue';
 
 const props = withDefaults(
 	defineProps<{
 		value: boolean;
-		labelOn?: string | null;
-		labelOff?: string | null;
-		iconOn?: string | null;
-		iconOff?: string | null;
-		colorOn?: string;
-		colorOff?: string;
+		labelOn: string | null;
+		labelOff: string | null;
+		iconOn: string | null;
+		iconOff: string | null;
+		colorOn: string;
+		colorOff: string;
 	}>(),
 	{
 		value: false,
@@ -27,9 +17,9 @@ const props = withDefaults(
 		labelOff: null,
 		iconOn: 'check',
 		iconOff: 'close',
-		colorOn: 'var(--primary)',
-		colorOff: 'var(--foreground-subdued)',
-	}
+		colorOn: 'var(--theme--primary)',
+		colorOff: 'var(--theme--foreground-subdued)',
+	},
 );
 
 const styles = computed(() => {
@@ -43,6 +33,16 @@ const styles = computed(() => {
 	return style;
 });
 </script>
+
+<template>
+	<div class="boolean" :style="styles">
+		<value-null v-if="value === null" />
+		<template v-else>
+			<v-icon v-if="iconOn !== null && iconOff !== null" :name="value ? iconOn : iconOff"></v-icon>
+			<span v-if="labelOn !== null && labelOff !== null">{{ value ? labelOn : labelOff }}</span>
+		</template>
+	</div>
+</template>
 
 <style lang="scss" scoped>
 .boolean {

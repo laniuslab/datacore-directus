@@ -1,3 +1,60 @@
+<script setup lang="ts">
+import { useCollectionsStore } from '@/stores/collections';
+import { isNil, orderBy } from 'lodash';
+import { computed, ref, toRefs } from 'vue';
+import { useI18n } from 'vue-i18n';
+import { useNavigation } from '../composables/use-navigation';
+import NavigationItem from './navigation-item.vue';
+
+// MV-DATACORE
+import { IIsActive } from '@/__mv/interfaces';
+
+const isActive = ref<IIsActive>({
+	public: false,
+	datacore: false,
+	configuration: false,
+});
+// MV-DATACORE [END]
+
+const props = defineProps<{
+	currentCollection?: string;
+}>();
+
+const { t } = useI18n();
+const { currentCollection } = toRefs(props);
+const { activeGroups, showHidden } = useNavigation(currentCollection);
+
+const search = ref('');
+
+const collectionsStore = useCollectionsStore();
+
+// MV-DATACORE
+const rootItems = computed(() => {
+	const shownCollections = showHidden.value ? collectionsStore.allCollections : collectionsStore.visibleCollections;
+	const mappedCollections: { [schemaName: string]: any } = {};
+
+	for (const collection of shownCollections) {
+		const schemaName = collection?.meta?.schema || 'public';
+		if (!mappedCollections[schemaName]) mappedCollections[schemaName] = [];
+		if (isNil(collection?.meta?.group)) mappedCollections[schemaName].push(collection);
+	}
+
+	for (const schemaName in mappedCollections) {
+		mappedCollections[schemaName] = orderBy(mappedCollections[schemaName], ['meta.sort', 'collection']);
+	}
+
+	return mappedCollections;
+});
+// MV-DATACORE [END]
+
+const dense = computed(() => collectionsStore.visibleCollections.length > 5);
+const showSearch = computed(() => collectionsStore.visibleCollections.length > 5);
+
+const hasHiddenCollections = computed(
+	() => collectionsStore.allCollections.length > collectionsStore.visibleCollections.length,
+);
+</script>
+
 <template>
 	<div class="content-navigation-wrapper">
 		<div v-if="showSearch" class="search-input">
@@ -18,7 +75,7 @@
 			<v-list-group
 				v-for="(rootItem, schemaName) in rootItems"
 				:key="schemaName"
-				:clickable="true"
+				clickable
 				:open="isActive[schemaName]"
 				@click="() => (isActive[schemaName as keyof typeof myObj] = !isActive[schemaName])"
 			>
@@ -51,59 +108,6 @@
 	</div>
 </template>
 
-<script setup lang="ts">
-import { IIsActive } from '@/__mv/interfaces';
-import { useCollectionsStore } from '@/stores/collections';
-import { isNil, orderBy } from 'lodash';
-import { computed, ref, toRefs } from 'vue';
-import { useI18n } from 'vue-i18n';
-import { useNavigation } from '../composables/use-navigation';
-import NavigationItem from './navigation-item.vue';
-
-const props = defineProps<{
-	currentCollection?: string;
-}>();
-
-const { t } = useI18n();
-const { currentCollection } = toRefs(props);
-const { activeGroups, showHidden } = useNavigation(currentCollection);
-
-const search = ref('');
-
-const isActive = ref<IIsActive>({
-	public: false,
-	datacore: false,
-	configuration: false,
-});
-
-const collectionsStore = useCollectionsStore();
-
-// MV-DATACORE
-const rootItems = computed(() => {
-	const shownCollections = showHidden.value ? collectionsStore.allCollections : collectionsStore.visibleCollections;
-	const mappedCollections: { [schemaName: string]: any } = {};
-
-	for (const collection of shownCollections) {
-		const schemaName = collection?.meta?.schema || 'public';
-		if (!mappedCollections[schemaName]) mappedCollections[schemaName] = [];
-		if (isNil(collection?.meta?.group)) mappedCollections[schemaName].push(collection);
-	}
-
-	for (const schemaName in mappedCollections) {
-		mappedCollections[schemaName] = orderBy(mappedCollections[schemaName], ['meta.sort', 'collection']);
-	}
-
-	return mappedCollections;
-});
-
-const dense = computed(() => collectionsStore.visibleCollections.length > 5);
-const showSearch = computed(() => collectionsStore.visibleCollections.length > 5); // MV-DATACORE
-
-const hasHiddenCollections = computed(
-	() => collectionsStore.allCollections.length > collectionsStore.visibleCollections.length
-);
-</script>
-
 <style lang="scss" scoped>
 .group-name {
 	padding-left: 8px;
@@ -112,9 +116,9 @@ const hasHiddenCollections = computed(
 
 .empty {
 	.v-button {
-		--v-button-color: var(--foreground-subdued);
-		--v-button-background-color: var(--foreground-subdued);
-		--v-button-background-color-hover: var(--primary);
+		--v-button-color: var(--theme--foreground-subdued);
+		--v-button-background-color: var(--theme--foreground-subdued);
+		--v-button-background-color-hover: var(--theme--primary);
 	}
 }
 
@@ -145,7 +149,7 @@ const hasHiddenCollections = computed(
 }
 
 .hidden-collection {
-	--v-list-item-color: var(--foreground-subdued);
+	--v-list-item-color: var(--theme--foreground-subdued);
 }
 
 .search-input {
@@ -156,6 +160,6 @@ const hasHiddenCollections = computed(
 	z-index: 2;
 	padding: 12px;
 	padding-bottom: 0;
-	background-color: var(--background-normal);
+	background-color: var(--theme--background-normal);
 }
 </style>

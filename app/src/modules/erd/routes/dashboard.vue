@@ -1,37 +1,3 @@
-<template>
-	<private-view :title="schema ? `${t('erd_viewer')} - ${schema}` : `${t('erd_viewer')}`">
-		<template #title-outer:prepend>
-			<v-button class="header-icon" rounded disabled icon secondary>
-				<v-icon name="device_hub" />
-			</v-button>
-		</template>
-
-		<template #navigation>
-			<ERDNavigation :collections="collections" />
-		</template>
-
-		<template #actions></template>
-
-		<template #sidebar>
-			<sidebar-detail icon="info" :title="t('information')" close>
-				<div v-md="t('page_help_insights_overview')" class="page-description" />
-			</sidebar-detail>
-		</template>
-		<v-card class="ml-3">
-			<v-select
-				v-model="schema"
-				:items="schemas"
-				:full-width="true"
-				:placeholder="t('interfaces.system-display-template.select_a_schema')"
-				@click="changeSchema"
-			/>
-		</v-card>
-		<div v-if="schema" v-viewer class="ml-3 images">
-			<img v-for="src in [url]" :key="src" :src="src" style="max-height: 700px" />
-		</div>
-	</private-view>
-</template>
-
 <script setup lang="ts">
 import { usePreset } from '@/composables/use-preset';
 import { useCollectionsStore } from '@/stores/collections';
@@ -76,6 +42,40 @@ async function changeSchema() {
 	});
 }
 </script>
+
+<template>
+	<private-view :title="schema ? `${t('erd_viewer')} - ${schema}` : `${t('erd_viewer')}`">
+		<template #title-outer:prepend>
+			<v-button class="header-icon" rounded disabled icon secondary>
+				<v-icon name="device_hub" />
+			</v-button>
+		</template>
+
+		<template #navigation>
+			<ERDNavigation :collections="collections" />
+		</template>
+
+		<template #actions></template>
+
+		<template #sidebar>
+			<sidebar-detail icon="info" :title="t('information')" close>
+				<div v-md="t('page_help_insights_overview')" class="page-description" />
+			</sidebar-detail>
+		</template>
+		<v-card class="ml-3">
+			<v-select
+				v-model="schema"
+				:items="schemas"
+				full-width
+				:placeholder="t('interfaces.system-display-template.select_a_schema')"
+				@click="changeSchema"
+			/>
+		</v-card>
+		<div v-if="schema" v-viewer class="ml-3 images">
+			<img v-for="src in [url]" :key="src" :src="src" style="max-height: 700px" />
+		</div>
+	</private-view>
+</template>
 
 <style scoped lang="scss">
 .ml-3 {

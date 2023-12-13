@@ -1,9 +1,6 @@
 ---
 description: This guide shows you how to build re-usable page components using Directus Many-to-Any (M2A) relationships.
-tags: []
-skill_level:
 directus_version: 9.21.4
-author_override:
 author: Bryant Gillespie
 ---
 
@@ -213,8 +210,7 @@ how to properly fetch nested relational M2A data without over-fetching data that
 **Sample Request**
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, readItems } from '@directus/sdk/rest';
+import { createDirectus, rest, readItems } from '@directus/sdk';
 
 // Initialize the SDK.
 const directus = createDirectus('https://directus.example.com').with(rest());

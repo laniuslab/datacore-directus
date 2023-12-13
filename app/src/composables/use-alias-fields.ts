@@ -33,7 +33,7 @@ type UsableAliasFields = {
  */
 export function useAliasFields(
 	fields: Ref<string[]> | string[],
-	collection: Ref<string | null> | string | null
+	collection: Ref<string | null> | string | null,
 ): UsableAliasFields {
 	const aliasedFields = computed(() => {
 		const aliasedFields: Record<string, AliasFields> = {};
@@ -110,6 +110,14 @@ export function useAliasFields(
 	 */
 	function getFromAliasedItem<K, T extends Record<string, K>>(item: T, key: string): K | undefined {
 		const aliasInfo = Object.values(aliasedFields.value).find((field) => field.key === key);
+
+		// Skip any nested fields prefixed with $ as they dont exist. ($thumbnail as an example)
+		key = key.includes('.')
+			? key
+					.split('.')
+					.filter((k) => !k.startsWith('$'))
+					.join('.')
+			: key;
 
 		if (!aliasInfo || !aliasInfo.aliased) return get(item, key);
 

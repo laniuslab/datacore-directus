@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 	<head>
 		<meta charset="utf-8" />
@@ -21,10 +21,11 @@
 		<meta name="apple-mobile-web-app-capable" content="yes" />
 		<meta name="apple-mobile-web-app-status-bar-style" content="default" />
 		<title>Loading&hellip;</title>
+		<style id="theme"></style>
 		<style id="custom-css"></style>
-		<embed-head />
+		<!-- directus-embed-head -->
 	</head>
-	<body class="auto">
+	<body>
 		<noscript>
 			<strong>We're sorry but Directus doesn't work without JavaScript enabled. Please enable it to continue.</strong>
 		</noscript>
@@ -35,6 +36,6 @@
 		<div id="menu-outlet"></div>
 
 		<script type="module" src="/src/main.ts"></script>
-		<embed-body />
+		<!-- directus-embed-body -->
 	</body>
 </html>

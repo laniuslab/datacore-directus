@@ -19,7 +19,8 @@ expiration time, and are thus the most secure option to use. The tokens are retu
 used to retrieve a new access token via the [refresh](#refresh) endpoint/mutation.
 
 **Static Tokens** can be set for each platform user, and never expire. They are less secure, but quite useful for
-server-to-server communication. They are saved as plain-text within `directus_users.token`.
+server-to-server communication. They are saved as plain-text within `directus_users.token`. Static Tokens are created in
+user settings inside of the Directus Data Studio User Module, or by updating the user's `token` value via API.
 
 Once you have your access token, there are two ways to pass it to the API, via the `access_token` query parameter, or in
 the request's Authorization Header.
@@ -42,7 +43,7 @@ Retrieve a temporary access token and refresh token.
 
 ### Request
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `POST /auth/login`
@@ -51,8 +52,8 @@ Retrieve a temporary access token and refresh token.
 
 ```json
 {
-	"email": "user_email",
-	"password": "user_password"
+	"email": user_email,
+	"password": user_password
 }
 ```
 
@@ -74,17 +75,15 @@ mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { authentication } from '@directus/sdk/authentication';
-import { rest, login } from '@directus/sdk/rest';
+import { createDirectus, authentication, rest, login } from '@directus/sdk';
 
-const client = createDirectus('https://directus.example.com').with(authentication()).with(rest())
+const client = createDirectus('directus_project_url').with(authentication()).with(rest());
 
 // login using the authentication composable
-const result = await client.login('email', 'password');
+const result = await client.login(email, password);
 
 // login http request
-const result = await client.request(login('email', 'password'));
+const result = await client.request(login(email, password));
 ```
 
 </template>
@@ -126,7 +125,7 @@ The token's expiration time can be configured through
 
 ### Example
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `POST /auth/login`
@@ -158,11 +157,9 @@ mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { authentication } from '@directus/sdk/authentication';
-import { rest, login } from '@directus/sdk/rest';
+import { createDirectus, authentication, rest, login } from '@directus/sdk';
 
-const client = createDirectus('https://directus.example.com').with(authentication()).with(rest())
+const client = createDirectus('https://directus.example.com').with(authentication()).with(rest());
 
 // login using the authentication composable
 const result = await client.login('admin@example.com', 'd1r3ctu5');
@@ -180,15 +177,15 @@ Retrieve a new access token using a refresh token.
 
 ### Request
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `POST /auth/refresh`
 
 ```json
 {
-	"refresh_token": "gmPd...8wuB",
-	"mode": "json"
+	"refresh_token": refresh_token_string,
+	"mode": refresh_mode
 }
 ```
 
@@ -210,17 +207,18 @@ mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { authentication } from '@directus/sdk/authentication';
-import { rest, refresh } from '@directus/sdk/rest';
+import { createDirectus, authentication, rest, refresh } from '@directus/sdk';
 
-const client = createDirectus('https://directus.example.com').with(authentication()).with(rest())
+const client = createDirectus('directus_project_url').with(authentication()).with(rest());
 
 // refresh using the authentication composable
 const result = await client.refresh();
 
-// refresh http request
-const result = await client.request(refresh('refresh_token'));
+// refresh http request using a cookie
+const result = await client.request(refresh('cookie'));
+
+// refresh http request using json
+const result = await client.request(refresh('json', refresh_token));
 ```
 
 </template>
@@ -249,7 +247,7 @@ as the mode in the request, the refresh token won't be returned in the JSON.
 
 ### Example
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `POST /auth/refresh`
@@ -279,17 +277,18 @@ mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { authentication } from '@directus/sdk/authentication';
-import { rest, refresh } from '@directus/sdk/rest';
+import { createDirectus, authentication, rest, refresh } from '@directus/sdk';
 
-const client = createDirectus('https://directus.example.com').with(authentication()).with(rest())
+const client = createDirectus('https://directus.example.com').with(authentication()).with(rest());
 
 // refresh using the authentication composable
 const result = await client.refresh();
 
-// refresh http request
-const result = await client.request(refresh('gmPd...8wuB'));
+// refresh http request using a cookie
+const result = await client.request(refresh('cookie'));
+
+// refresh http request using json
+const result = await client.request(refresh('json', 'gmPd...8wuB'));
 ```
 
 </template>
@@ -301,14 +300,14 @@ Invalidate the refresh token thus destroying the user's session.
 
 ### Request
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `POST /auth/logout`
 
 ```json
 {
-	"refresh_token": "refresh_token"
+	"refresh_token": refresh_token
 }
 ```
 
@@ -327,17 +326,15 @@ mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { authentication } from '@directus/sdk/authentication';
-import { rest, logout } from '@directus/sdk/rest';
+import { createDirectus, authentication, rest, logout } from '@directus/sdk';
 
-const client = createDirectus('https://directus.example.com').with(authentication()).with(rest())
+const client = createDirectus('directus_project_url').with(authentication()).with(rest());
 
 // logout using the authentication composable
 const result = await client.logout();
 
 // logout http request
-const result = await client.request(logout('refresh_token'));
+const result = await client.request(logout(refresh_token));
 ```
 
 </template>
@@ -351,7 +348,7 @@ to submit it here.
 
 ### Example
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `POST /auth/logout`
@@ -377,11 +374,9 @@ mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { authentication } from '@directus/sdk/authentication';
-import { rest, logout } from '@directus/sdk/rest';
+import { createDirectus, authentication, rest, logout } from '@directus/sdk';
 
-const client = createDirectus('https://directus.example.com').with(authentication()).with(rest())
+const client = createDirectus('https://directus.example.com').with(authentication()).with(rest());
 
 // logout using the authentication composable
 const result = await client.logout();
@@ -399,14 +394,14 @@ Request a password reset email to be sent to the given user.
 
 ### Request
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `POST /auth/password/request`
 
 ```json
 {
-	"email": "user_email"
+	"email": user_email
 }
 ```
 
@@ -425,12 +420,11 @@ mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, passwordRequest } from '@directus/sdk/rest';
+import { createDirectus, rest, passwordRequest } from '@directus/sdk';
 
-const client = createDirectus('https://directus.example.com').with(rest());
+const client = createDirectus('directus_project_url').with(rest());
 
-const result = await client.request(passwordRequest('user_email'));
+const result = await client.request(passwordRequest(user_email));
 ```
 
 </template>
@@ -448,7 +442,7 @@ Provide a custom reset url which the link in the email will lead to. The reset t
 
 ### Example
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `POST /auth/password/request`
@@ -474,8 +468,7 @@ mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, passwordRequest } from '@directus/sdk/rest';
+import { createDirectus, rest, passwordRequest } from '@directus/sdk';
 
 const client = createDirectus('https://directus.example.com').with(rest());
 
@@ -492,15 +485,15 @@ this endpoint to allow the user to reset their password.
 
 ### Request
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `POST /auth/password/reset`
 
 ```json
 {
-	"token": "password_reset_token",
-	"password": "password"
+	"token": password_reset_token,
+	"password": password
 }
 ```
 
@@ -519,12 +512,11 @@ mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, passwordReset } from '@directus/sdk/rest';
+import { createDirectus, rest, passwordReset } from '@directus/sdk';
 
-const client = createDirectus('https://directus.example.com').with(rest());
+const client = createDirectus('directus_project_url').with(rest());
 
-const result = await client.request(passwordReset('reset_token', 'new_password'));
+const result = await client.request(passwordReset(reset_token, new_password));
 ```
 
 </template>
@@ -540,7 +532,7 @@ New password for the user.
 
 ### Example
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `POST /auth/password/reset`
@@ -567,8 +559,7 @@ mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, passwordReset } from '@directus/sdk/rest';
+import { createDirectus, rest, passwordReset } from '@directus/sdk';
 
 const client = createDirectus('https://directus.example.com').with(rest());
 
@@ -591,41 +582,18 @@ To learn more about setting up auth providers, see
 
 ### Request
 
-<SnippetToggler :choices="['REST', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'SDK']" group="api">
 <template #rest>
 
 `GET /auth`
-
-```json
-{
-	"data": [
-		{
-			"name": "GitHub",
-			"driver": "oauth2",
-			"icon": "github"
-		},
-		{
-			"name": "Google",
-			"driver": "openid",
-			"icon": "google"
-		},
-		{
-			"name": "Okta",
-			"driver": "openid"
-		}
-	],
-	"disableDefault": false
-}
-```
 
 </template>
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, readProviders } from '@directus/sdk/rest';
+import { createDirectus, rest, readProviders } from '@directus/sdk';
 
-const client = createDirectus('https://directus.example.com').with(rest());
+const client = createDirectus('directus_project_url').with(rest());
 
 const result = await client.request(readProviders());
 ```
@@ -635,19 +603,6 @@ const result = await client.request(readProviders());
 
 ### Response
 
-`data` **Array**\
-Array of configured auth providers.
-
-`disableDefault` **boolean**\
-Whether or not the default authentication provider is disabled.
-
-### Example
-
-<SnippetToggler :choices="['REST', 'SDK']" label="API">
-<template #rest>
-
-`GET /auth`
-
 ```json
 {
 	"data": [
@@ -670,12 +625,24 @@ Whether or not the default authentication provider is disabled.
 }
 ```
 
+`data` **Array**\
+Array of configured auth providers.
+
+`disableDefault` **boolean**\
+Whether or not the default authentication provider is disabled.
+
+### Example
+
+<SnippetToggler :choices="['REST', 'SDK']" group="api">
+<template #rest>
+
+`GET /auth`
+
 </template>
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, readProviders } from '@directus/sdk/rest';
+import { createDirectus, rest, readProviders } from '@directus/sdk';
 
 const client = createDirectus('https://directus.example.com').with(rest());
 

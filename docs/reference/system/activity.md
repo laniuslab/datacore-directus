@@ -62,12 +62,16 @@ Returns a list of activity actions.
 
 ### Request
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `GET /activity`
 
 `SEARCH /activity`
+
+If using SEARCH you can provide a [query object](/reference/query) as the body of your request.
+
+[Learn more about SEARCH ->](/reference/introduction#search-http-method)
 
 </template>
 <template #graphql>
@@ -84,18 +88,15 @@ type Query {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, readActivities } from '@directus/sdk/rest';
+import { createDirectus, rest, readActivities } from '@directus/sdk';
 
-const client = createDirectus('https://directus.example.com').with(rest());
+const client = createDirectus('directus_project_url').with(rest());
 
-const result = await client.request(readActivities(query));
+const result = await client.request(readActivities(query_object));
 ```
 
 </template>
 </SnippetToggler>
-
-[Learn more about SEARCH ->](/reference/introduction#search-http-method)
 
 #### Query Parameters
 
@@ -108,7 +109,7 @@ data will be an empty array.
 
 ### Example
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `GET /activity`
@@ -130,8 +131,7 @@ query {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, readActivities } from '@directus/sdk/rest';
+import { createDirectus, rest, readActivities } from '@directus/sdk';
 
 const client = createDirectus('https://directus.example.com').with(rest());
 
@@ -151,7 +151,7 @@ Returns a single activity action by primary key.
 
 ### Request
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `GET /activity/:id`
@@ -171,12 +171,11 @@ type Query {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, readActivity } from '@directus/sdk/rest';
+import { createDirectus, rest, readActivity } from '@directus/sdk';
 
-const client = createDirectus('https://directus.example.com').with(rest());
+const client = createDirectus('directus_project_url').with(rest());
 
-const result = await client.request(readActivity('activity_id', query));
+const result = await client.request(readActivity(activity_id, query_object));
 ```
 
 </template>
@@ -192,7 +191,7 @@ Returns an [activity object](#the-activity-object) if a valid identifier was pro
 
 ### Example
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `GET /activity/15`
@@ -214,8 +213,7 @@ query {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, readActivity } from '@directus/sdk/rest';
+import { createDirectus, rest, readActivity } from '@directus/sdk';
 
 const client = createDirectus('https://directus.example.com').with(rest());
 
@@ -235,16 +233,16 @@ Creates a new comment on a given item.
 
 ### Request
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `POST /activity/comment`
 
 ```json
 {
-	"collection": "collection_name",
-	"item": "item_id",
-	"comment": "comment content"
+	"collection": collection_name,
+	"item": item_id,
+	"comment": comment_content
 }
 ```
 
@@ -263,16 +261,15 @@ type Mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, createComment } from '@directus/sdk/rest';
+import { createDirectus, rest, createComment } from '@directus/sdk';
 
-const client = createDirectus('https://directus.example.com').with(rest());
+const client = createDirectus('directus_project_url').with(rest());
 
 const result = await client.request(
 	createComment({
-		collection: 'collection_name',
-		item: 'item_id',
-		comment: 'value',
+		collection: collection_name,
+		item: item_id,
+		comment: comment_content,
 	})
 );
 ```
@@ -297,7 +294,7 @@ Returns the [activity object](#the-activity-object) of the created comment.
 
 ### Example
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `POST /activity/comment`
@@ -327,8 +324,7 @@ mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, createComment } from '@directus/sdk/rest';
+import { createDirectus, rest, createComment } from '@directus/sdk';
 
 const client = createDirectus('https://directus.example.com').with(rest());
 
@@ -350,14 +346,14 @@ Updates an existing comment by activity action primary key.
 
 ### Response
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `PATCH /activity/comment/:id`
 
 ```json
 {
-	"comment": "value"
+	"comment": comment_content
 }
 ```
 
@@ -376,14 +372,13 @@ type Mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, updateComment } from '@directus/sdk/rest';
+import { createDirectus, rest, updateComment } from '@directus/sdk';
 
-const client = createDirectus('https://directus.example.com').with(rest());
+const client = createDirectus('directus_project_url').with(rest());
 
 const result = await client.request(
-	updateComment('comment_id', {
-		comment: 'value',
+	updateComment(comment_id, {
+		comment: comment_content,
 	})
 );
 ```
@@ -402,7 +397,7 @@ Returns the [activity object](#the-activity-object) of the created comment.
 
 ### Example
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `PATCH /activity/comment/15`
@@ -430,8 +425,7 @@ mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, updateComment } from '@directus/sdk/rest';
+import { createDirectus, rest, updateComment } from '@directus/sdk';
 
 const client = createDirectus('https://directus.example.com').with(rest());
 
@@ -451,7 +445,7 @@ Deletes a comment.
 
 ### Request
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `DELETE /activity/comment/:id`
@@ -471,12 +465,11 @@ type Mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, deleteComment } from '@directus/sdk/rest';
+import { createDirectus, rest, deleteComment } from '@directus/sdk';
 
-const client = createDirectus('https://directus.example.com').with(rest());
+const client = createDirectus('directus_project_url').with(rest());
 
-const result = await client.request(deleteComment('comment_id'));
+const result = await client.request(deleteComment(comment_id));
 ```
 
 </template>
@@ -484,7 +477,7 @@ const result = await client.request(deleteComment('comment_id'));
 
 ### Example
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `DELETE /activity/comment/15`
@@ -504,8 +497,7 @@ mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, deleteComment } from '@directus/sdk/rest';
+import { createDirectus, rest, deleteComment } from '@directus/sdk';
 
 const client = createDirectus('https://directus.example.com').with(rest());
 

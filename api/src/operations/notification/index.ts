@@ -1,5 +1,6 @@
+import { defineOperationApi } from '@directus/extensions';
 import type { Accountability } from '@directus/types';
-import { defineOperationApi, optionToString, toArray } from '@directus/utils';
+import { optionToString, toArray } from '@directus/utils';
 import { NotificationsService } from '../../services/notifications.js';
 import { getAccountabilityForRole } from '../../utils/get-accountability-for-role.js';
 
@@ -17,7 +18,7 @@ export default defineOperationApi<Options>({
 
 	handler: async (
 		{ recipient, subject, message, permissions, collection, item },
-		{ accountability, database, getSchema }
+		{ accountability, database, getSchema },
 	) => {
 		const schema = await getSchema({ database });
 		let customAccountability: Accountability | null;
@@ -39,8 +40,8 @@ export default defineOperationApi<Options>({
 		});
 
 		const messageString = message ? optionToString(message) : null;
-		const collectionString = message ? optionToString(collection) : null;
-		const itemString = message ? optionToString(item) : null;
+		const collectionString = collection ? optionToString(collection) : null;
+		const itemString = item ? optionToString(item) : null;
 
 		const payload = toArray(recipient).map((userId) => {
 			return {

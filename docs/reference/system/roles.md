@@ -58,12 +58,16 @@ List all roles that exist in Directus.
 
 ### Request
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `GET /roles`
 
 `SEARCH /roles`
+
+If using SEARCH you can provide a [query object](/reference/query) as the body of your request.
+
+[Learn more about SEARCH ->](/reference/introduction#search-http-method)
 
 </template>
 <template #graphql>
@@ -80,22 +84,15 @@ type Query {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, readRoles } from '@directus/sdk/rest';
+import { createDirectus, rest, readRoles } from '@directus/sdk';
 
-const client = createDirectus('https://directus.example.com').with(rest());
+const client = createDirectus('directus_project_url').with(rest());
 
-const result = await client.request(
-	readRoles({
-		fields: ['*'],
-	})
-);
+const result = await client.request(readRoles(query_object));
 ```
 
 </template>
 </SnippetToggler>
-
-[Learn more about SEARCH ->](/reference/introduction#search-http-method)
 
 #### Query Parameters
 
@@ -108,7 +105,7 @@ be an empty array.
 
 ### Example
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `GET /roles`
@@ -136,8 +133,7 @@ query {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, readRoles } from '@directus/sdk/rest';
+import { createDirectus, rest, readRoles } from '@directus/sdk';
 
 const client = createDirectus('https://directus.example.com').with(rest());
 
@@ -155,7 +151,7 @@ const result = await client.request(
 
 List an existing role by primary key.
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `GET /roles/:id`
@@ -175,16 +171,11 @@ type Query {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, readRole } from '@directus/sdk/rest';
+import { createDirectus, rest, readRole } from '@directus/sdk';
 
-const client = createDirectus('https://directus.example.com').with(rest());
+const client = createDirectus('directus_project_url').with(rest());
 
-const result = await client.request(
-	readRole('role_id', {
-		fields: ['*'],
-	})
-);
+const result = await client.request(readRole(role_id, query_object));
 ```
 
 </template>
@@ -200,7 +191,7 @@ Returns the requested [role object](#the-role-object).
 
 ### Example
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `GET /roles/b4cb3b64-8580-4ad9-a099-eade6da24302`
@@ -226,8 +217,7 @@ query {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, readRole } from '@directus/sdk/rest';
+import { createDirectus, rest, readRole } from '@directus/sdk';
 
 const client = createDirectus('https://directus.example.com').with(rest());
 
@@ -247,20 +237,12 @@ Create a new role.
 
 ### Request
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `POST /roles`
 
-```json
-{
-	"role_field_1": "value_1",
-	"role_field_2": "value_2",
-	"role_field_3": "value_3",
-	"role_field_4": "value_4",
-	"role_field_5": "value_5"
-}
-```
+Provide a [role object](#the-role-object) as the body of your request.
 
 </template>
 <template #graphql>
@@ -277,20 +259,11 @@ type Mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, createRole } from '@directus/sdk/rest';
+import { createDirectus, rest, createRole } from '@directus/sdk';
 
-const client = createDirectus('https://directus.example.com').with(rest());
+const client = createDirectus('directus_project_url').with(rest());
 
-const result = await client.request(
-	createRole({
-		role_field_1: 'value_1',
-		role_field_2: 'value_2',
-		role_field_3: 'value_3',
-		role_field_4: 'value_4',
-		role_field_5: 'value_5',
-	})
-);
+const result = await client.request(createRole(role_object));
 ```
 
 </template>
@@ -310,7 +283,7 @@ Returns the [role object](#the-role-object) for the created role.
 
 ### Example
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `POST /roles`
@@ -348,8 +321,7 @@ mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, createRole } from '@directus/sdk/rest';
+import { createDirectus, rest, createRole } from '@directus/sdk';
 
 const client = createDirectus('https://directus.example.com').with(rest());
 
@@ -373,29 +345,12 @@ Create multiple new roles.
 
 ### Request
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `POST /roles`
 
-```json
-[
-	{
-		"role_object_1_field_1": "value_1",
-		"role_object_1_field_2": "value_2",
-		"role_object_1_field_3": "value_3",
-		"role_object_1_field_4": "value_4",
-		"role_object_1_field_5": "value_5"
-	},
-	{
-		"role_object_2_field_1": "value_6",
-		"role_object_2_field_2": "value_7",
-		"role_object_2_field_3": "value_8",
-		"role_object_2_field_4": "value_9",
-		"role_object_2_field_5": "value_10"
-	}
-]
-```
+Provide an array of [role objects](#the-role-object) as the body of your request.
 
 </template>
 <template #graphql>
@@ -412,29 +367,11 @@ type Mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, createRoles } from '@directus/sdk/rest';
+import { createDirectus, rest, createRoles } from '@directus/sdk';
 
-const client = createDirectus('https://directus.example.com').with(rest());
+const client = createDirectus('directus_project_url').with(rest());
 
-const result = await client.request(
-	createRoles([
-		{
-			role_object_1_field_1: 'value_1',
-			role_object_1_field_2: 'value_2',
-			role_object_1_field_3: 'value_3',
-			role_object_1_field_4: 'value_4',
-			role_object_1_field_5: 'value_5',
-		},
-		{
-			role_object_2_field_1: 'value_6',
-			role_object_2_field_2: 'value_7',
-			role_object_2_field_3: 'value_8',
-			role_object_2_field_4: 'value_9',
-			role_object_2_field_5: 'value_10',
-		},
-	])
-);
+const result = await client.request(createRoles(role_object_array));
 ```
 
 </template>
@@ -454,7 +391,7 @@ Returns the [role objects](#the-role-object) for the created roles.
 
 ### Example
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `POST /roles`
@@ -504,8 +441,7 @@ mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, createRoles } from '@directus/sdk/rest';
+import { createDirectus, rest, createRoles } from '@directus/sdk';
 
 const client = createDirectus('https://directus.example.com').with(rest());
 
@@ -538,16 +474,12 @@ Update an existing role.
 
 ### Request
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `PATCH /roles/:id`
 
-```json
-{
-	"roles_object_field": "value_1"
-}
-```
+Provide a partial [role object](#the-role-object) as the body of your request.
 
 </template>
 <template #graphql>
@@ -564,16 +496,11 @@ type Mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, updateRole } from '@directus/sdk/rest';
+import { createDirectus, rest, updateRole } from '@directus/sdk';
 
-const client = createDirectus('https://directus.example.com').with(rest());
+const client = createDirectus('directus_project_url').with(rest());
 
-const result = await client.request(
-	updateRole('role_id', {
-		role_field: 'value',
-	})
-);
+const result = await client.request(updateRole(role_id, partial_role_object));
 ```
 
 </template>
@@ -593,7 +520,7 @@ Returns the [role object](#the-role-object) for the updated role.
 
 ### Example
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `PATCH /roles/c86c2761-65d3-43c3-897f-6f74ad6a5bd7`
@@ -625,8 +552,7 @@ mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, updateRole } from '@directus/sdk/rest';
+import { createDirectus, rest, updateRole } from '@directus/sdk';
 
 const client = createDirectus('https://directus.example.com').with(rest());
 
@@ -646,17 +572,15 @@ Update multiple existing roles.
 
 ### Request
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `PATCH /roles`
 
 ```json
 {
-	"keys": ["role_1_key", "role_2_key"],
-	"data": {
-		"role_object_field": "value_1"
-	}
+	"keys": role_id_array,
+	"data": partial_role_object
 }
 ```
 
@@ -675,16 +599,11 @@ type Mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, updateRoles } from '@directus/sdk/rest';
+import { createDirectus, rest, updateRoles } from '@directus/sdk';
 
-const client = createDirectus('https://directus.example.com').with(rest());
+const client = createDirectus('directus_project_url').with(rest());
 
-const result = await client.request(
-	updateRoles(['role_1_id', 'role_2_id'], {
-		field: 'value',
-	})
-);
+const result = await client.request(updateRoles(role_id_array, partial_role_object));
 ```
 
 </template>
@@ -708,7 +627,7 @@ Returns the [role objects](#the-role-object) for the updated roles.
 
 ### Example
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `PATCH /roles`
@@ -746,8 +665,7 @@ mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, updateRoles } from '@directus/sdk/rest';
+import { createDirectus, rest, updateRoles } from '@directus/sdk';
 
 const client = createDirectus('https://directus.example.com').with(rest());
 
@@ -767,7 +685,7 @@ Delete an existing role.
 
 ### Request
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `DELETE /roles/:id`
@@ -787,12 +705,11 @@ type Mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, deleteRole } from '@directus/sdk/rest';
+import { createDirectus, rest, deleteRole } from '@directus/sdk';
 
-const client = createDirectus('https://directus.example.com').with(rest());
+const client = createDirectus('directus_project_url').with(rest());
 
-const result = await client.request(deleteRole('role_id'));
+const result = await client.request(deleteRole(role_id));
 ```
 
 </template>
@@ -804,7 +721,7 @@ Empty body.
 
 ### Example
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `DELETE /roles/c86c2761-65d3-43c3-897f-6f74ad6a5bd7`
@@ -826,8 +743,7 @@ mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, deleteRole } from '@directus/sdk/rest';
+import { createDirectus, rest, deleteRole } from '@directus/sdk';
 
 const client = createDirectus('https://directus.example.com').with(rest());
 
@@ -843,14 +759,12 @@ Delete multiple existing roles.
 
 ### Request
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `DELETE /roles`
 
-```json
-["role_1_key", "role_2_key"]
-```
+Provide an array of role IDs as the body of your request.
 
 </template>
 <template #graphql>
@@ -867,12 +781,11 @@ type Mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, deleteRoles } from '@directus/sdk/rest';
+import { createDirectus, rest, deleteRoles } from '@directus/sdk';
 
 const client = createDirectus('https://directus.example.com').with(rest());
 
-const result = await client.request(deleteRoles(['role_1_id', 'role_2_id']));
+const result = await client.request(deleteRoles(role_id_array));
 ```
 
 </template>
@@ -888,7 +801,7 @@ Empty body.
 
 ### Example
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `DELETE /roles`
@@ -914,8 +827,7 @@ mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, deleteRoles } from '@directus/sdk/rest';
+import { createDirectus, rest, deleteRoles } from '@directus/sdk';
 
 const client = createDirectus('https://directus.example.com').with(rest());
 

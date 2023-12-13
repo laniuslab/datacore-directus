@@ -1,79 +1,3 @@
-<template>
-	<v-list-group
-		v-if="isGroup && matchesSearch"
-		v-context-menu="'contextMenu'"
-		:to="to"
-		scope="content-navigation"
-		:value="collection.collection"
-		query
-		:arrow-placement="false"
-	>
-		<template #activator>
-			<navigation-item-content
-				:search="search"
-				:name="collection.name"
-				:icon="collection.meta?.icon"
-				:color="collection.meta?.color"
-				:tags="collection.meta?.tags"
-			/>
-		</template>
-		<navigation-item
-			v-for="childCollection in childCollections"
-			:key="childCollection.collection"
-			:collection="childCollection"
-			:search="search"
-		/>
-		<!-- <navigation-bookmark v-for="bookmark in childBookmarks" :key="bookmark.id" :bookmark="bookmark" /> -->
-	</v-list-group>
-
-	<v-list-item
-		v-else-if="matchesSearch"
-		v-context-menu="hasContextMenu ? 'contextMenu' : null"
-		:value="collection.collection"
-		:class="{ hidden: collection.meta?.hidden }"
-		style="cursor: pointer"
-		query
-		:to="`/fields-builder/${collection.collection}`"
-	>
-		<navigation-item-content
-			:search="search"
-			:name="collection.name"
-			:icon="collection.meta?.icon || undefined"
-			:color="collection.meta?.color || undefined"
-			:tags="collection.meta?.tags"
-		/>
-	</v-list-item>
-
-	<v-menu v-if="hasContextMenu" ref="contextMenu" show-arrow placement="bottom-start">
-		<v-list>
-			<v-list-item v-if="isAdmin" clickable :to="`/settings/data-model/${collection.collection}`">
-				<v-list-item-icon>
-					<v-icon name="list_alt" />
-				</v-list-item-icon>
-				<v-list-item-content>
-					<v-text-overflow :text="t('edit_collection')" />
-				</v-list-item-content>
-			</v-list-item>
-			<v-list-item clickable :to="`/content/${collection.collection}`">
-				<v-list-item-icon>
-					<v-icon name="box" />
-				</v-list-item-icon>
-				<v-list-item-content>
-					<v-text-overflow :text="t('goto_collection_content')" />
-				</v-list-item-content>
-			</v-list-item>
-			<v-list-item v-if="moduleEnabled['erd-viewer']" clickable :to="`/erd-viewer/${collection.collection}`">
-				<v-list-item-icon>
-					<v-icon name="device_hub" />
-				</v-list-item-icon>
-				<v-list-item-content>
-					<v-text-overflow :text="t('goto_collection_erd')" />
-				</v-list-item-content>
-			</v-list-item>
-		</v-list>
-	</v-menu>
-</template>
-
 <script lang="ts">
 import { MODULE_BAR_DEFAULT } from '@/constants';
 import { useCollectionsStore } from '@/stores/collections';
@@ -178,7 +102,7 @@ export default defineComponent({
 
 		function getChildCollections(collection: Collection) {
 			let collections = collectionsStore.collections.filter(
-				(childCollection: Collection) => childCollection.meta?.group === collection.collection
+				(childCollection: Collection) => childCollection.meta?.group === collection.collection,
 			);
 
 			if (props.showHidden === false) {
@@ -194,6 +118,82 @@ export default defineComponent({
 	},
 });
 </script>
+
+<template>
+	<v-list-group
+		v-if="isGroup && matchesSearch"
+		v-context-menu="'contextMenu'"
+		:to="to"
+		scope="content-navigation"
+		:value="collection.collection"
+		query
+		:arrow-placement="false"
+	>
+		<template #activator>
+			<navigation-item-content
+				:search="search"
+				:name="collection.name"
+				:icon="collection.meta?.icon"
+				:color="collection.meta?.color"
+				:tags="collection.meta?.tags"
+			/>
+		</template>
+		<navigation-item
+			v-for="childCollection in childCollections"
+			:key="childCollection.collection"
+			:collection="childCollection"
+			:search="search"
+		/>
+		<!-- <navigation-bookmark v-for="bookmark in childBookmarks" :key="bookmark.id" :bookmark="bookmark" /> -->
+	</v-list-group>
+
+	<v-list-item
+		v-else-if="matchesSearch"
+		v-context-menu="hasContextMenu ? 'contextMenu' : null"
+		:value="collection.collection"
+		:class="{ hidden: collection.meta?.hidden }"
+		style="cursor: pointer"
+		query
+		:to="`/fields-builder/${collection.collection}`"
+	>
+		<navigation-item-content
+			:search="search"
+			:name="collection.name"
+			:icon="collection.meta?.icon || undefined"
+			:color="collection.meta?.color || undefined"
+			:tags="collection.meta?.tags"
+		/>
+	</v-list-item>
+
+	<v-menu v-if="hasContextMenu" ref="contextMenu" show-arrow placement="bottom-start">
+		<v-list>
+			<v-list-item v-if="isAdmin" clickable :to="`/settings/data-model/${collection.collection}`">
+				<v-list-item-icon>
+					<v-icon name="list_alt" />
+				</v-list-item-icon>
+				<v-list-item-content>
+					<v-text-overflow :text="t('edit_collection')" />
+				</v-list-item-content>
+			</v-list-item>
+			<v-list-item clickable :to="`/content/${collection.collection}`">
+				<v-list-item-icon>
+					<v-icon name="box" />
+				</v-list-item-icon>
+				<v-list-item-content>
+					<v-text-overflow :text="t('goto_collection_content')" />
+				</v-list-item-content>
+			</v-list-item>
+			<v-list-item v-if="moduleEnabled['erd-viewer']" clickable :to="`/erd-viewer/${collection.collection}`">
+				<v-list-item-icon>
+					<v-icon name="device_hub" />
+				</v-list-item-icon>
+				<v-list-item-content>
+					<v-text-overflow :text="t('goto_collection_erd')" />
+				</v-list-item-content>
+			</v-list-item>
+		</v-list>
+	</v-menu>
+</template>
 
 <style scoped>
 .hidden {

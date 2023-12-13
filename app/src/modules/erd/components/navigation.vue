@@ -1,19 +1,3 @@
-<template>
-	<div v-if="showSearch" class="search-input">
-		<v-input v-model="search" type="search" :placeholder="t('search_collection')" />
-	</div>
-	<v-list nav>
-		<v-button v-if="matchesSearch?.length === 0" full-width outlined dashed>Empty</v-button>
-
-		<v-list-item v-for="navItem in matchesSearch" v-else :key="navItem" :to="`/erd-viewer/${navItem.name}`">
-			<v-list-item-icon><v-icon :name="navItem.icon" :color="navItem.color" /></v-list-item-icon>
-			<v-list-item-content>
-				<v-text-overflow :text="navItem.label" />
-			</v-list-item-content>
-		</v-list-item>
-	</v-list>
-</template>
-
 <script setup lang="ts">
 import { useCollectionsStore } from '@/stores/collections';
 import { computed, ref } from 'vue';
@@ -41,10 +25,26 @@ const matchesSearch = computed(() => {
 	if (search.value === '' || search.value === undefined || search.value == null) return props.collections;
 
 	return props.collections?.filter(
-		(collection) => collection.name.includes(search.value) || collection.name.toLowerCase().includes(search.value)
+		(collection) => collection.name.includes(search.value) || collection.name.toLowerCase().includes(search.value),
 	);
 });
 </script>
+
+<template>
+	<div v-if="showSearch" class="search-input">
+		<v-input v-model="search" type="search" :placeholder="t('search_collection')" />
+	</div>
+	<v-list nav>
+		<v-button v-if="matchesSearch?.length === 0" full-width outlined dashed>Empty</v-button>
+
+		<v-list-item v-for="navItem in matchesSearch" v-else :key="navItem" :to="`/erd-viewer/${navItem.name}`">
+			<v-list-item-icon><v-icon :name="navItem.icon" :color="navItem.color" /></v-list-item-icon>
+			<v-list-item-content>
+				<v-text-overflow :text="navItem.label" />
+			</v-list-item-content>
+		</v-list-item>
+	</v-list>
+</template>
 
 <style lang="scss" scoped>
 .search-input {

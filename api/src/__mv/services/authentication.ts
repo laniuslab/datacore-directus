@@ -1,7 +1,7 @@
 import { Action } from '@directus/constants';
 import type { Accountability, SchemaOverview } from '@directus/types';
 import jwt from 'jsonwebtoken';
-import { Knex } from 'knex';
+import { type Knex } from 'knex';
 import { clone, cloneDeep } from 'lodash-es';
 import ms from 'ms';
 import { performance } from 'perf_hooks';
@@ -10,7 +10,7 @@ import { DEFAULT_AUTH_PROVIDER } from '../../constants.js';
 import getDatabase from '../../database/index.js';
 import emitter from '../../emitter.js';
 import env from '../../env.js';
-import { InvalidCredentialsError, UserSuspendedError } from '../../errors/index.js';
+import { InvalidCredentialsError, UserSuspendedError } from '@directus/errors';
 import { createRateLimiter } from '../../rate-limiter.js';
 import { ActivityService, SettingsService } from '../../services/index.js';
 import type { LoginResult, User } from '../../types/auth.js';

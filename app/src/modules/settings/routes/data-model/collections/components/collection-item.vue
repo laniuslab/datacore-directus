@@ -1,5 +1,46 @@
+<script setup lang="ts">
+import { useLocalStorage } from '@/composables/use-local-storage';
+import { Collection } from '@/types/collections';
+import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
+import Draggable from 'vuedraggable';
+import CollectionOptions from './collection-options.vue';
+import { CollectionTree } from '../collections.vue';
+
+const props = defineProps<{
+	collection: Collection;
+	collections: Collection[];
+	visibilityTree: CollectionTree;
+	disableDrag?: boolean;
+}>();
+
+const emit = defineEmits(['setNestedSort', 'editCollection']);
+
+const { t } = useI18n();
+const { data: isCollectionExpanded } = useLocalStorage(`settings-collapsed-${props.collection.collection}`, true);
+
+const toggleCollapse = () => {
+	isCollectionExpanded.value = !isCollectionExpanded.value;
+};
+
+const nestedCollections = computed(() =>
+	props.collections.filter((collection) => collection.meta?.group === props.collection.collection),
+);
+
+function onGroupSortChange(collections: Collection[]) {
+	const updates = collections.map((collection) => ({
+		collection: collection.collection,
+		meta: {
+			group: props.collection.collection,
+		},
+	}));
+
+	emit('setNestedSort', updates);
+}
+</script>
+
 <template>
-	<div class="collection-item">
+	<div v-show="visibilityTree.visible" class="collection-item">
 		<v-list-item
 			block
 			dense
@@ -11,21 +52,28 @@
 			<v-list-item-icon>
 				<v-icon v-if="!disableDrag" class="drag-handle" name="drag_handle" />
 			</v-list-item-icon>
-
-			<!-- MV-DATACORE -->
 			<div class="collection-item-detail">
 				<v-icon
-					:color="collection.meta?.hidden ? 'var(--foreground-subdued)' : collection.color ?? 'var(--primary)'"
+					:color="
+						collection.meta?.hidden ? 'var(--theme--foreground-subdued)' : collection.color ?? 'var(--theme--primary)'
+					"
 					class="collection-icon"
 					:name="collection.meta?.hidden ? 'visibility_off' : collection.icon"
 				/>
-				<span ref="collectionName" class="collection-name">{{ collection.collection }}</span>
+
+				<v-highlight
+					ref="collectionName"
+					:query="visibilityTree.search"
+					:text="collection.collection"
+					class="collection-name"
+				/>
+				<!-- MV-DATACORE -->
 				<div v-if="collection.meta?.tags" class="tags">
 					<span v-if="collection.meta?.tags.length > 0" class="custom tag-container">
 						<v-chip
 							v-for="(tag, i) in collection.meta?.tags"
 							:key="i"
-							style="margin-left: 10px; color: white; font-size: 9pt; background-color: var(--primary)"
+							style="margin-left: 10px; color: white; font-size: 9pt; background-color: var(--theme--primary)"
 							dense
 							small
 						>
@@ -33,9 +81,9 @@
 						</v-chip>
 					</span>
 				</div>
+				<!-- MV-DATACORE [END] -->
 				<span v-if="collection.meta?.note" class="collection-note">{{ collection.meta.note }}</span>
 			</div>
-			<!-- MV-DATACORE [END] -->
 
 			<v-icon
 				v-if="nestedCollections?.length"
@@ -54,7 +102,7 @@
 		<transition-expand class="collection-items">
 			<draggable
 				v-if="isCollectionExpanded"
-				:force-fallback="true"
+				force-fallback
 				:model-value="nestedCollections"
 				:group="{ name: 'collections' }"
 				:swap-threshold="0.3"
@@ -67,6 +115,7 @@
 					<collection-item
 						:collection="element"
 						:collections="collections"
+						:visibility-tree="visibilityTree.findChild(element.collection)!"
 						@edit-collection="$emit('editCollection', $event)"
 						@set-nested-sort="$emit('setNestedSort', $event)"
 					/>
@@ -75,45 +124,6 @@
 		</transition-expand>
 	</div>
 </template>
-
-<script setup lang="ts">
-import { useLocalStorage } from '@/composables/use-local-storage';
-import { Collection } from '@/types/collections';
-import { computed } from 'vue';
-import { useI18n } from 'vue-i18n';
-import Draggable from 'vuedraggable';
-import CollectionOptions from './collection-options.vue';
-
-const props = defineProps<{
-	collection: Collection;
-	collections: Collection[];
-	disableDrag?: boolean;
-}>();
-
-const emit = defineEmits(['setNestedSort', 'editCollection']);
-
-const { t } = useI18n();
-const { data: isCollectionExpanded } = useLocalStorage(`settings-collapsed-${props.collection.collection}`, true);
-
-const toggleCollapse = () => {
-	isCollectionExpanded.value = !isCollectionExpanded.value;
-};
-
-const nestedCollections = computed(() =>
-	props.collections.filter((collection) => collection.meta?.group === props.collection.collection)
-);
-
-function onGroupSortChange(collections: Collection[]) {
-	const updates = collections.map((collection) => ({
-		collection: collection.collection,
-		meta: {
-			group: props.collection.collection,
-		},
-	}));
-
-	emit('setNestedSort', updates);
-}
-</script>
 
 <style scoped>
 .drag-container {
@@ -131,7 +141,7 @@ function onGroupSortChange(collections: Collection[]) {
 	align-items: center;
 	height: 100%;
 	overflow: hidden;
-	font-family: var(--family-monospace);
+	font-family: var(--theme--fonts--monospace--font-family);
 	pointer-events: none;
 }
 
@@ -140,13 +150,13 @@ function onGroupSortChange(collections: Collection[]) {
 }
 
 .hidden .collection-name {
-	color: var(--foreground-subdued);
+	color: var(--theme--foreground-subdued);
 }
 
 .collection-note {
 	margin-left: 16px;
 	overflow: hidden;
-	color: var(--foreground-subdued);
+	color: var(--theme--foreground-subdued);
 	white-space: nowrap;
 	text-overflow: ellipsis;
 	opacity: 0;

@@ -1,9 +1,6 @@
 ---
 description: This guide shows you how build a website with Next 13 and Directus as a Headless CMS.
-tags: []
-skill_level:
 directus_version: 9.21.4
-author_override:
 author: Kevin Lewis
 ---
 
@@ -11,8 +8,8 @@ author: Kevin Lewis
 
 > {{ $frontmatter.description }}
 
-[Next](https://nextjs.org/) is a popular JavaScript framework based on React.js. In this tutorial, you will learn how to
-build a website using Directus as a CMS. You will store, retrieve, and use global metadata such as the site title,
+[Next.js](https://nextjs.org/) is a popular JavaScript framework based on React.js. In this tutorial, you will learn how
+to build a website using Directus as a CMS. You will store, retrieve, and use global metadata such as the site title,
 create new pages dynamically based on Directus items, and build a blog.
 
 ## Before You Start
@@ -59,8 +56,7 @@ To share a single instance of the Directus JavaScript SDK between multiple pages
 file that can be imported later. Create a new directory called `lib` and a new file called `directus.js` inside of it.
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest } from '@directus/sdk/rest';
+import { createDirectus, rest } from '@directus/sdk';
 
 const directus = createDirectus('https://directus.example.com').with(rest());
 
@@ -90,7 +86,7 @@ Inside of the `app` directory, create a new file called `page.tsx`.
 
 ```jsx
 import directus from 'lib/directus';
-import { readItems } from '@directus/sdk/rest';
+import { readItems } from '@directus/sdk';
 
 async function getGlobals() {
 	return directus.request(readItems('global'));
@@ -126,7 +122,7 @@ single file can be used for all of the top-level pages.
 ```jsx
 import directus from 'lib/directus';
 import { notFound } from 'next/navigation';
-import { readItem } from '@directus/sdk/rest';
+import { readItem } from '@directus/sdk';
 
 async function getPage(slug) {
 	try {
@@ -182,7 +178,7 @@ Inside of the `app` directory, create a new subdirectory called `blog` and a new
 
 ```jsx
 import directus from '@/lib/directus';
-import { readItems } from '@directus/sdk/rest';
+import { readItems } from '@directus/sdk';
 
 async function getPosts() {
 	return directus.request(
@@ -241,7 +237,7 @@ Each blog post links to a page that does not yet exist. In the `app/blog` direct
 ```jsx
 import directus from '@/lib/directus';
 import { notFound } from 'next/navigation';
-import { readItem } from '@directus/sdk/rest';
+import { readItem } from '@directus/sdk';
 
 async function getPost(slug) {
 	try {

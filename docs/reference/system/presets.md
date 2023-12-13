@@ -84,12 +84,16 @@ other than the current user's role won't be returned.
 
 ### Request
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `GET /presets`
 
 `SEARCH /presets`
+
+If using SEARCH you can provide a [query object](/reference/query) as the body of your request.
+
+[Learn more about SEARCH ->](/reference/introduction#search-http-method)
 
 </template>
 <template #graphql>
@@ -106,22 +110,15 @@ type Query {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, readPresets } from '@directus/sdk/rest';
+import { createDirectus, rest, readPresets } from '@directus/sdk';
 
-const client = createDirectus('https://directus.example.com').with(rest());
+const client = createDirectus('directus_project_url').with(rest());
 
-const result = await client.request(
-	readPresets({
-		fields: ['*'],
-	})
-);
+const result = await client.request(readPresets(object_field));
 ```
 
 </template>
 </SnippetToggler>
-
-[Learn more about SEARCH ->](/reference/introduction#search-http-method)
 
 #### Query Parameters
 
@@ -134,7 +131,7 @@ will be an empty array.
 
 ### Example
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `GET /presets`
@@ -159,8 +156,7 @@ query {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, readPresets } from '@directus/sdk/rest';
+import { createDirectus, rest, readPresets } from '@directus/sdk';
 
 const client = createDirectus('https://directus.example.com').with(rest());
 
@@ -180,7 +176,7 @@ List an existing preset by primary key.
 
 ### Request
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 GET /presets/:id
@@ -200,16 +196,11 @@ type Query {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, readPreset } from '@directus/sdk/rest';
+import { createDirectus, rest, readPreset } from '@directus/sdk';
 
-const client = createDirectus('https://directus.example.com').with(rest());
+const client = createDirectus('directus_project_url').with(rest());
 
-const result = await client.request(
-	readPreset('preset_id', {
-		fields: ['*'],
-	})
-);
+const result = await client.request(readPreset(preset_id, query_object));
 ```
 
 </template>
@@ -225,7 +216,7 @@ Returns the requested [preset object](#the-preset-object).
 
 ### Example
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `GET /presets/42`
@@ -248,8 +239,7 @@ query {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, readPreset } from '@directus/sdk/rest';
+import { createDirectus, rest, readPreset } from '@directus/sdk';
 
 const client = createDirectus('https://directus.example.com').with(rest());
 
@@ -269,18 +259,12 @@ Create a new preset.
 
 ### Request
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `POST /presets`
 
-```json
-{
-	"preset_field_1": "value_1",
-	"preset_field_2": "value_2",
-	"preset_field_3": "value_3"
-}
-```
+Provide a [preset object](#the-preset-object) as the body of your request.
 
 </template>
 <template #graphql>
@@ -297,17 +281,11 @@ type Mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, createPreset } from '@directus/sdk/rest';
+import { createDirectus, rest, createPreset } from '@directus/sdk';
 
-const client = createDirectus('https://directus.example.com').with(rest());
+const client = createDirectus('directus_project_url').with(rest());
 
-const result = await client.request(
-	createPreset({
-		preset_field_1: 'value_1',
-		preset_field_2: 'value_2',
-	})
-);
+const result = await client.request(createPreset(presets_object));
 ```
 
 </template>
@@ -327,7 +305,7 @@ Returns the [preset object](#the-preset-object) for the created preset.
 
 ### Example
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `POST /presets`
@@ -358,8 +336,7 @@ mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, createPreset } from '@directus/sdk/rest';
+import { createDirectus, rest, createPreset } from '@directus/sdk';
 
 const client = createDirectus('https://directus.example.com').with(rest());
 
@@ -380,25 +357,12 @@ Create multiple new presets.
 
 ### Request
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `POST /presets`
 
-```json
-[
-	{
-		"preset_1_field_1": "value_1",
-		"preset_1_field_2": "value_2",
-		"preset_1_field_3": "value_3"
-	},
-	{
-		"preset_2_field_1": "value_1",
-		"preset_2_field_2": "value_2",
-		"preset_2_field_3": "value_3"
-	}
-]
-```
+Provide an array of [presets objects](#the-presets-object) as the body of your request.
 
 </template>
 <template #graphql>
@@ -415,23 +379,11 @@ type Mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, createPresets } from '@directus/sdk/rest';
+import { createDirectus, rest, createPresets } from '@directus/sdk';
 
-const client = createDirectus('https://directus.example.com').with(rest());
+const client = createDirectus('directus_project_url').with(rest());
 
-const result = await client.request(
-	createPresets([
-		{
-			preset_1_field_1: 'value_1',
-			preset_1_field_2: 'value_2',
-		},
-		{
-			preset_2_field_1: 'value_3',
-			preset_2_field_2: 'value_4',
-		},
-	])
-);
+const result = await client.request(createPresets(presets_object_array));
 ```
 
 </template>
@@ -451,7 +403,7 @@ Returns the [preset object](#the-preset-object) for the created preset.
 
 ### Example
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `POST /presets`
@@ -500,8 +452,7 @@ mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, createPresets } from '@directus/sdk/rest';
+import { createDirectus, rest, createPresets } from '@directus/sdk';
 
 const client = createDirectus('https://directus.example.com').with(rest());
 
@@ -528,16 +479,12 @@ Update an existing preset.
 
 ### Request
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `PATCH /presets/:id`
 
-```json
-{
-	"preset_object_field": "value_1"
-}
-```
+Provide a partial [preset object](#the-preset-object) as the body of your request.
 
 </template>
 <template #graphql>
@@ -554,16 +501,11 @@ type Mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, updatePresets } from '@directus/sdk/rest';
+import { createDirectus, rest, updatePresets } from '@directus/sdk';
 
-const client = createDirectus('https://directus.example.com').with(rest());
+const client = createDirectus('directus_project_url').with(rest());
 
-const result = await client.request(
-	updatePreset('preset_id', {
-		field: 'value',
-	})
-);
+const result = await client.request(updatePreset(preset_id, partial_preset_object));
 ```
 
 </template>
@@ -583,7 +525,7 @@ Returns the [preset object](#the-preset-object) for the updated preset.
 
 ### Example
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `PATCH /presets/34`
@@ -612,8 +554,7 @@ mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, updatePreset } from '@directus/sdk/rest';
+import { createDirectus, rest, updatePreset } from '@directus/sdk';
 
 const client = createDirectus('https://directus.example.com').with(rest());
 
@@ -633,17 +574,15 @@ Update multiple existing presets.
 
 ### Request
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `PATCH /presets`
 
 ```json
 {
-	"keys": ["preset_1_key", "preset_2_key"],
-	"data": {
-		"preset_object_field": "value_1"
-	}
+	"keys": preset_id_array,
+	"data": partial_preset_object
 }
 ```
 
@@ -662,16 +601,11 @@ type Mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, updatePresets } from '@directus/sdk/rest';
+import { createDirectus, rest, updatePresets } from '@directus/sdk';
 
-const client = createDirectus('https://directus.example.com').with(rest());
+const client = createDirectus('directus_project_url').with(rest());
 
-const result = await client.request(
-	updatePresets(['preset_1_id', 'preset_2_id'], {
-		field: 'value',
-	})
-);
+const result = await client.request(updatePresets(preset_id_array, partial_preset_object));
 ```
 
 </template>
@@ -695,7 +629,7 @@ Returns the [preset objects](#the-preset-object) for the updated presets.
 
 ### Example
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `PATCH /presets`
@@ -727,8 +661,7 @@ mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, updatePresets } from '@directus/sdk/rest';
+import { createDirectus, rest, updatePresets } from '@directus/sdk';
 
 const client = createDirectus('https://directus.example.com').with(rest());
 
@@ -748,7 +681,7 @@ Delete an existing preset.
 
 ### Request
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `DELETE /presets/:id`
@@ -768,12 +701,11 @@ type Mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, deletePreset } from '@directus/sdk/rest';
+import { createDirectus, rest, deletePreset } from '@directus/sdk';
 
-const client = createDirectus('https://directus.example.com').with(rest());
+const client = createDirectus('directus_project_url').with(rest());
 
-const result = await client.request(deletePreset('preset_id'));
+const result = await client.request(deletePreset(preset_id));
 ```
 
 </template>
@@ -785,7 +717,7 @@ Empty body.
 
 ### Example
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `DELETE /presets/34`
@@ -807,8 +739,7 @@ mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, deletePreset } from '@directus/sdk/rest';
+import { createDirectus, rest, deletePreset } from '@directus/sdk';
 
 const client = createDirectus('https://directus.example.com').with(rest());
 
@@ -824,14 +755,12 @@ Delete multiple existing presets.
 
 ### Request
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `DELETE /presets`
 
-```json
-["preset_1_key", "preset_2_key", "preset_3_key"]
-```
+Provide an array of preset IDs as the body of your request.
 
 </template>
 <template #graphql>
@@ -848,12 +777,11 @@ type Mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, deletePresets } from '@directus/sdk/rest';
+import { createDirectus, rest, deletePresets } from '@directus/sdk';
 
-const client = createDirectus('https://directus.example.com').with(rest());
+const client = createDirectus('directus_project_url').with(rest());
 
-const result = await client.request(deletePreset(['preset_1_id', 'preset_2_id']));
+const result = await client.request(deletePreset(preset_id_array));
 ```
 
 </template>
@@ -869,7 +797,7 @@ Empty body.
 
 ### Example
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `DELETE /presets`
@@ -895,12 +823,11 @@ mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, deletePresets } from '@directus/sdk/rest';
+import { createDirectus, rest, deletePresets } from '@directus/sdk';
 
 const client = createDirectus('https://directus.example.com').with(rest());
 
-const result = await client.request(deletePreset(['24', '48']));
+const result = await client.request(deletePresets(['24', '48']));
 ```
 
 </template>

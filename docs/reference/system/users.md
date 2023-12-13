@@ -45,8 +45,20 @@ Avatar file. Many-to-one to [files](/reference/files).
 Language the Admin App is rendered in. See [our Crowdin page](https://locales.directus.io) for all available languages and
 translations.
 
-`theme` **string**\
+`appearance` **string**\
 One of `auto`, `light`, `dark`.
+
+`theme_light` **string**\
+Theme to use in `light` mode.
+
+`theme_dark` **string**\
+Theme to use in `dark` mode.
+
+`theme_light_overrides` **json**\
+Customization for `light` theme in use.
+
+`theme_dark_overrides` **json**\
+Customization for `dark` theme in use.
 
 `tfa_secret` **string**\
 When TFA is enabled, this holds the secret key for it.
@@ -91,7 +103,7 @@ When this is enabled, the user will receive emails for notifications.
 	"tags": null,
 	"avatar": null,
 	"language": "en-US",
-	"theme": "auto",
+	"appearance": "auto",
 	"tfa_secret": null,
 	"status": "active",
 	"role": "653925a9-970e-487a-bfc0-ab6c96affcdc",
@@ -107,12 +119,16 @@ List all users that exist in Directus.
 
 ### Request
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `GET /users`
 
 `SEARCH /users`
+
+If using SEARCH you can provide a [query object](/reference/query) as the body of your request.
+
+[Learn more about SEARCH ->](/reference/introduction#search-http-method)
 
 </template>
 <template #graphql>
@@ -129,22 +145,15 @@ type Query {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, readUsers } from '@directus/sdk/rest';
+import { createDirectus, rest, readUsers } from '@directus/sdk';
 
-const client = createDirectus('https://directus.example.com').with(rest());
+const client = createDirectus('directus_project_url').with(rest());
 
-const result = await client.request(
-	readUsers({
-		fields: ['*'],
-	})
-);
+const result = await client.request(readUsers(query_object));
 ```
 
 </template>
 </SnippetToggler>
-
-[Learn more about SEARCH ->](/reference/introduction#search-http-method)
 
 #### Query Parameters
 
@@ -157,7 +166,7 @@ be an empty array.
 
 ### Example
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `GET /users`
@@ -181,8 +190,7 @@ query {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, readUsers } from '@directus/sdk/rest';
+import { createDirectus, rest, readUsers } from '@directus/sdk';
 
 const client = createDirectus('https://directus.example.com').with(rest());
 
@@ -202,7 +210,7 @@ List an existing user by primary key.
 
 ### Request
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `GET /users/:id`
@@ -222,16 +230,11 @@ type Query {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, readUser } from '@directus/sdk/rest';
+import { createDirectus, rest, readUser } from '@directus/sdk';
 
-const client = createDirectus('https://directus.example.com').with(rest());
+const client = createDirectus('directus_project_url').with(rest());
 
-const result = await client.request(
-	readUser('user_id', {
-		fields: ['*'],
-	})
-);
+const result = await client.request(readUser(user_id, query_object));
 ```
 
 </template>
@@ -247,7 +250,7 @@ Returns the requested [user object](#the-user-object).
 
 ### Example
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `GET /users/72a1ce24-4748-47de-a05f-ce9af3033727`
@@ -271,8 +274,7 @@ query {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, readUser } from '@directus/sdk/rest';
+import { createDirectus, rest, readUser } from '@directus/sdk';
 
 const client = createDirectus('https://directus.example.com').with(rest());
 
@@ -292,7 +294,7 @@ Retrieve the currently authenticated user.
 
 ### Request
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `GET /users/me`
@@ -312,16 +314,11 @@ type Query {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, readMe } from '@directus/sdk/rest';
+import { createDirectus, rest, readMe } from '@directus/sdk';
 
-const client = createDirectus('https://directus.example.com').with(rest());
+const client = createDirectus('directus_project_url').with(rest());
 
-const result = await client.request(
-	readMe({
-		fields: ['*'],
-	})
-);
+const result = await client.request(readMe(query_object));
 ```
 
 </template>
@@ -337,7 +334,7 @@ Returns the [user object](#the-user-object) for the currently authenticated user
 
 ### Example
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `GET /users/me`
@@ -357,8 +354,7 @@ query {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, readMe } from '@directus/sdk/rest';
+import { createDirectus, rest, readMe } from '@directus/sdk';
 
 const client = createDirectus('https://directus.example.com').with(rest());
 
@@ -378,16 +374,12 @@ Update the authenticated user.
 
 ### Request
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `PATCH /users/me`
 
-```json
-{
-	"user_object_field": "value"
-}
-```
+Provide a partial [user object](#the-user-object) as the body of your request.
 
 </template>
 <template #graphql>
@@ -404,16 +396,11 @@ type Mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, updateMe } from '@directus/sdk/rest';
+import { createDirectus, rest, updateMe } from '@directus/sdk';
 
-const client = createDirectus('https://directus.example.com').with(rest());
+const client = createDirectus('directus_project_url').with(rest());
 
-const result = await client.request(
-	updateMe({
-		user_field: 'value',
-	})
-);
+const result = await client.request(updateMe(partial_user_object));
 ```
 
 </template>
@@ -429,7 +416,7 @@ Returns the updated [user object](#the-user-object) for the authenticated user.
 
 ### Example
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `PATCH /users/me`
@@ -457,8 +444,7 @@ mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, updateMe } from '@directus/sdk/rest';
+import { createDirectus, rest, updateMe } from '@directus/sdk';
 
 const client = createDirectus('https://directus.example.com').with(rest());
 
@@ -478,18 +464,12 @@ Create a new user
 
 ### Request
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `POST /users`
 
-```json
-{
-	"email": "user_email",
-	"password": "user_password",
-	"user_object_field": "value"
-}
-```
+Provide a [user object](#the-user-object) as the body of your request.
 
 </template>
 <template #graphql>
@@ -506,17 +486,11 @@ type Mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, createUser } from '@directus/sdk/rest';
+import { createDirectus, rest, createUser } from '@directus/sdk';
 
-const client = createDirectus('https://directus.example.com').with(rest());
+const client = createDirectus('directus_project_url').with(rest());
 
-const result = await client.request(
-	createUser({
-		email: 'user_email',
-		password: 'user_password',
-	})
-);
+const result = await client.request(createUser(user_object));
 ```
 
 </template>
@@ -538,7 +512,7 @@ Returns the [user object](#the-user-object) for the created user.
 
 ### Example
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `POST /users`
@@ -583,8 +557,7 @@ could be modified by the user call.
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, createUser } from '@directus/sdk/rest';
+import { createDirectus, rest, createUser } from '@directus/sdk';
 
 const client = createDirectus('https://directus.example.com').with(rest());
 
@@ -605,25 +578,12 @@ Create multiple new users
 
 ### Request
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `POST /users`
 
-```json
-[
-	{
-		"email": "user_email",
-		"password": "user_password",
-		"user_object_field": "value"
-	},
-	{
-		"email": "user_email",
-		"password": "user_password",
-		"user_object_field": "value"
-	}
-]
-```
+Provide an array of [user objects](#the-user-object) as the body of your request.
 
 </template>
 <template #graphql>
@@ -640,23 +600,11 @@ type Mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, createUsers } from '@directus/sdk/rest';
+import { createDirectus, rest, createUsers } from '@directus/sdk';
 
-const client = createDirectus('https://directus.example.com').with(rest());
+const client = createDirectus('directus_project_url').with(rest());
 
-const result = await client.request(
-	createUsers([
-		{
-			email: 'user_email',
-			password: 'user_password',
-		},
-		{
-			email: 'user_email',
-			password: 'user_password',
-		},
-	])
-);
+const result = await client.request(createUsers(user_object_array));
 ```
 
 </template>
@@ -678,7 +626,7 @@ Returns the [user objects](#the-user-object) for the created users.
 
 ### Example
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `POST /users`
@@ -737,8 +685,7 @@ could be modified by the user call.
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, createUsers } from '@directus/sdk/rest';
+import { createDirectus, rest, createUsers } from '@directus/sdk';
 
 const client = createDirectus('https://directus.example.com').with(rest());
 
@@ -765,16 +712,12 @@ Update an existing user.
 
 ### Request
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
-`PATCH /users/72a1ce24-4748-47de-a05f-ce9af3033727`
+`PATCH /users/:id`
 
-```json
-{
-	"user_object_field": "value"
-}
-```
+Provide a partial [user object](#the-user-object) as the body of your request.
 
 </template>
 <template #graphql>
@@ -791,16 +734,11 @@ type Mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, updateUser } from '@directus/sdk/rest';
+import { createDirectus, rest, updateUser } from '@directus/sdk';
 
-const client = createDirectus('https://directus.example.com').with(rest());
+const client = createDirectus('directus_project_url').with(rest());
 
-const result = await client.request(
-	updateUser('user_id', {
-		user_fiels: 'value',
-	})
-);
+const result = await client.request(updateUser(user_id, partial_user_object));
 ```
 
 </template>
@@ -820,7 +758,7 @@ Returns the [user object](#the-user-object) for the updated user.
 
 ### Example
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `PATCH /users/72a1ce24-4748-47de-a05f-ce9af3033727`
@@ -849,8 +787,7 @@ mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, updateUser } from '@directus/sdk/rest';
+import { createDirectus, rest, updateUser } from '@directus/sdk';
 
 const client = createDirectus('https://directus.example.com').with(rest());
 
@@ -870,17 +807,15 @@ Update multiple existing users.
 
 ### Request
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `PATCH /users`
 
 ```json
 {
-	"keys": ["user_1_key", "user_2_key"],
-	"data": {
-		"user_object_field": "value"
-	}
+	"keys": user_id_array,
+	"data": partial_user_object
 }
 ```
 
@@ -899,16 +834,11 @@ type Mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, updateUsers } from '@directus/sdk/rest';
+import { createDirectus, rest, updateUsers } from '@directus/sdk';
 
-const client = createDirectus('https://directus.example.com').with(rest());
+const client = createDirectus('directus_project_url').with(rest());
 
-const result = await client.request(
-	updateUsers(['user_1_id', 'user_2_id'], {
-		user_field: 'value',
-	})
-);
+const result = await client.request(updateUsers(user_id_array, partial_user_object));
 ```
 
 </template>
@@ -932,7 +862,7 @@ Returns the [user objects](#the-user-object) for the updated users.
 
 ### Example
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `PATCH /users`
@@ -967,8 +897,7 @@ mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, updateUsers } from '@directus/sdk/rest';
+import { createDirectus, rest, updateUsers } from '@directus/sdk';
 
 const client = createDirectus('https://directus.example.com').with(rest());
 
@@ -988,7 +917,7 @@ Delete an existing user.
 
 ### Request
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `DELETE /users/:id`
@@ -1008,12 +937,11 @@ type Mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, deleteUser } from '@directus/sdk/rest';
+import { createDirectus, rest, deleteUser } from '@directus/sdk';
 
-const client = createDirectus('https://directus.example.com').with(rest());
+const client = createDirectus('directus_project_url').with(rest());
 
-const result = await client.request(deleteUser('user_id'));
+const result = await client.request(deleteUser(user_id));
 ```
 
 </template>
@@ -1025,7 +953,7 @@ Empty body.
 
 ### Example
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `DELETE /users/72a1ce24-4748-47de-a05f-ce9af3033727`
@@ -1047,8 +975,7 @@ mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, deleteUser } from '@directus/sdk/rest';
+import { createDirectus, rest, deleteUser } from '@directus/sdk';
 
 const client = createDirectus('https://directus.example.com').with(rest());
 
@@ -1064,14 +991,12 @@ Delete multiple existing users.
 
 ### Request
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `DELETE /users`
 
-```json
-["user_1_key", "user_2_key"]
-```
+Provide an array of user IDs as the body of your request.
 
 </template>
 <template #graphql>
@@ -1088,12 +1013,11 @@ type Mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, deleteUsers } from '@directus/sdk/rest';
+import { createDirectus, rest, deleteUsers } from '@directus/sdk';
 
-const client = createDirectus('https://directus.example.com').with(rest());
+const client = createDirectus('directus_project_url').with(rest());
 
-const result = await client.request(deleteUsers(['user_1_id', 'user_2_id']));
+const result = await client.request(deleteUsers(user_id_array));
 ```
 
 </template>
@@ -1109,7 +1033,7 @@ Empty body.
 
 ### Example
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `DELETE /users`
@@ -1120,6 +1044,8 @@ Empty body.
 
 </template>
 <template #graphql>
+
+`POST /graphql/system`
 
 ```graphql
 mutation {
@@ -1133,8 +1059,7 @@ mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, deleteUsers } from '@directus/sdk/rest';
+import { createDirectus, rest, deleteUsers } from '@directus/sdk';
 
 const client = createDirectus('https://directus.example.com').with(rest());
 
@@ -1152,15 +1077,15 @@ Invite a new user by email.
 
 ### Request
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `POST /users/invite`
 
 ```json
 {
-	"email": "invited_user_email",
-	"role": "invited_user_role"
+	"email": invited_user_email,
+	"role": invited_user_role
 }
 ```
 
@@ -1179,12 +1104,11 @@ type Mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, inviteUser } from '@directus/sdk/rest';
+import { createDirectus, rest, inviteUser } from '@directus/sdk';
 
-const client = createDirectus('https://directus.example.com').with(rest());
+const client = createDirectus('directus_project_url').with(rest());
 
-const result = await client.request(inviteUser('invited_user_email', 'invited_user_role'));
+const result = await client.request(inviteUser(invited_user_email, invited_user_role));
 ```
 
 </template>
@@ -1209,7 +1133,7 @@ Empty body.
 
 ### Example
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `POST /users/invite`
@@ -1236,8 +1160,7 @@ mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, inviteUser } from '@directus/sdk/rest';
+import { createDirectus, rest, inviteUser } from '@directus/sdk';
 
 const client = createDirectus('https://directus.example.com').with(rest());
 
@@ -1255,15 +1178,15 @@ This link includes a token, which is then used to activate the invited user.
 
 ### Request
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `POST /users/invisponse/accept`
 
 ```json
 {
-	"token": "invite_token",
-	"password": "user_password"
+	"token": invite_token,
+	"password": user_password
 }
 ```
 
@@ -1282,12 +1205,11 @@ type Mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, inviteUser } from '@directus/sdk/rest';
+import { createDirectus, rest, acceptUserInvite } from '@directus/sdk';
 
-const client = createDirectus('https://directus.example.com').with(rest());
+const client = createDirectus('directus_project_url').with(rest());
 
-const result = await client.request(inviteUser('another@example.com', 'c86c2761-65d3-43c3-897f-6f74ad6a5bd7'));
+const result = await client.request(acceptUserInvite(invite_token, user_password));
 ```
 
 </template>
@@ -1307,7 +1229,7 @@ Empty body.
 
 ### Example
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `POST /users/invite/accept`
@@ -1332,12 +1254,11 @@ mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, acceptUserInvite } from '@directus/sdk/rest';
+import { createDirectus, rest, acceptUserInvite } from '@directus/sdk';
 
-const client = createDirectus('https://directus.example.com').with(rest());
+const client = createDirectus('directus_project_url').with(rest());
 
-const result = await client.request(acceptUserInvite('invite_token', 'user_password'));
+const result = await client.request(acceptUserInvite('eyJh...KmUk', 'd1r3ctu5'));
 ```
 
 </template>
@@ -1349,14 +1270,14 @@ Generates a secret and returns the URL to be used in an authenticator app.
 
 ### Request
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `POST /users/me/tfa/generate`
 
 ```json
 {
-	"password": "user_password"
+	"password": user_password
 }
 ```
 
@@ -1375,12 +1296,11 @@ type Mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, acceptUserInvite } from '@directus/sdk/rest';
+import { createDirectus, rest, generateTwoFactorSecret } from '@directus/sdk';
 
-const client = createDirectus('https://directus.example.com').with(rest());
+const client = createDirectus('directus_project_url').with(rest());
 
-const result = await client.request(acceptUserInvite('eyJh...KmUk', 'd1r3ctu5'));
+const result = await client.request(generateTwoFactorSecret(user_password));
 ```
 
 </template>
@@ -1401,7 +1321,7 @@ OTP secret to be saved in the authenticator app.
 
 ### Example
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `POST /users/me/tfa/generate`
@@ -1430,12 +1350,11 @@ mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, generateTwoFactorSecret } from '@directus/sdk/rest';
+import { createDirectus, rest, generateTwoFactorSecret } from '@directus/sdk';
 
 const client = createDirectus('https://directus.example.com').with(rest());
 
-const result = await client.request(generateTwoFactorSecret('user_password'));
+const result = await client.request(generateTwoFactorSecret('d1r3ctu5'));
 ```
 
 </template>
@@ -1447,15 +1366,15 @@ Adds a TFA secret to the user account.
 
 ### Request
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `POST /users/me/tfa/enable`
 
 ```json
 {
-	"otp": "One Time Password",
-	"secret": "Two-Factor_Authorization_secret"
+	"otp": one_time_password,
+	"secret": two_factor_authorization_secret
 }
 ```
 
@@ -1474,12 +1393,11 @@ type Mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, generateTwoFactorSecret } from '@directus/sdk/rest';
+import { createDirectus, rest, enableTwoFactor } from '@directus/sdk';
 
-const client = createDirectus('https://directus.example.com').with(rest());
+const client = createDirectus('directus_project_url').with(rest());
 
-const result = await client.request(generateTwoFactorSecret('d1r3ctu5'));
+const result = await client.request(enableTwoFactor(secret, otp));
 ```
 
 </template>
@@ -1499,7 +1417,7 @@ Empty response.
 
 ### Example
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `POST /users/me/tfa/enable`
@@ -1526,12 +1444,11 @@ mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, enableTwoFactor } from '@directus/sdk/rest';
+import { createDirectus, rest, enableTwoFactor } from '@directus/sdk';
 
 const client = createDirectus('https://directus.example.com').with(rest());
 
-const result = await client.request(enableTwoFactor('secret', 'otp'));
+const result = await client.request(enableTwoFactor('123456', '3CtiutsNBmY3szHE'));
 ```
 
 </template>
@@ -1543,14 +1460,14 @@ Disables two-factor authentication by removing the OTP secret from the user.
 
 ### Request
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `POST /users/me/tfa/disable`
 
 ```json
 {
-	"otp": "One-time password"
+	"otp": one_time_password
 }
 ```
 
@@ -1569,12 +1486,11 @@ type Mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, enableTwoFactor } from '@directus/sdk/rest';
+import { createDirectus, rest, disableTwoFactor } from '@directus/sdk';
 
-const client = createDirectus('https://directus.example.com').with(rest());
+const client = createDirectus('directus_project_url').with(rest());
 
-const result = await client.request(enableTwoFactor('3CtiutsNBmY3szHE', '123456'));
+const result = await client.request(disableTwoFactor(otp));
 ```
 
 </template>
@@ -1591,7 +1507,7 @@ Empty response.
 
 ### Example
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `POST /users/me/tfa/disable`
@@ -1617,10 +1533,9 @@ mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, disableTwoFactor } from '@directus/sdk/rest';
+import { createDirectus, rest, disableTwoFactor } from '@directus/sdk';
 
-const client = createDirectus('https://directus.example.com').with(rest());
+const client = createDirectus('directus_project_url').with(rest());
 
 const result = await client.request(disableTwoFactor('591763'));
 ```

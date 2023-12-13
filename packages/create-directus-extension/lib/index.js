@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 'use strict';
 
-import { BUNDLE_EXTENSION_TYPES, EXTENSION_LANGUAGES, EXTENSION_TYPES } from '@directus/constants';
 import { create } from '@new-mv-datacore/extensions-sdk/cli';
 import inquirer from 'inquirer';
+import { EXTENSION_LANGUAGES, EXTENSION_TYPES, BUNDLE_EXTENSION_TYPES } from '@directus/extensions';
 
 run();
 

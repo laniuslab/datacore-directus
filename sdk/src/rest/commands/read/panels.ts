@@ -1,11 +1,12 @@
 import type { DirectusPanel } from '../../../schema/panel.js';
 import type { ApplyQueryFields, Query } from '../../../types/index.js';
+import { throwIfEmpty } from '../../utils/index.js';
 import type { RestCommand } from '../../types.js';
 
 export type ReadPanelOutput<
 	Schema extends object,
 	TQuery extends Query<Schema, Item>,
-	Item extends object = DirectusPanel<Schema>
+	Item extends object = DirectusPanel<Schema>,
 > = ApplyQueryFields<Schema, Item, TQuery['fields']>;
 
 /**
@@ -15,7 +16,7 @@ export type ReadPanelOutput<
  */
 export const readPanels =
 	<Schema extends object, const TQuery extends Query<Schema, DirectusPanel<Schema>>>(
-		query?: TQuery
+		query?: TQuery,
 	): RestCommand<ReadPanelOutput<Schema, TQuery>[], Schema> =>
 	() => ({
 		path: `/panels`,
@@ -28,14 +29,19 @@ export const readPanels =
  * @param key The primary key of the dashboard
  * @param query The query parameters
  * @returns Returns the requested panel object.
+ * @throws Will throw if key is empty
  */
 export const readPanel =
 	<Schema extends object, const TQuery extends Query<Schema, DirectusPanel<Schema>>>(
 		key: DirectusPanel<Schema>['id'],
-		query?: TQuery
+		query?: TQuery,
 	): RestCommand<ReadPanelOutput<Schema, TQuery>, Schema> =>
-	() => ({
-		path: `/panels/${key}`,
-		params: query ?? {},
-		method: 'GET',
-	});
+	() => {
+		throwIfEmpty(String(key), 'Key cannot be empty');
+
+		return {
+			path: `/panels/${key}`,
+			params: query ?? {},
+			method: 'GET',
+		};
+	};

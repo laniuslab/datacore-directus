@@ -1,4 +1,4 @@
-import { defineModule } from '@directus/utils';
+import { defineModule } from '@directus/extensions';
 import Index from './routes/dashboard.vue';
 
 export default defineModule({
@@ -19,7 +19,7 @@ export default defineModule({
 		},
 	],
 	preRegisterCheck(user) {
-		const admin = user.role.admin_access;
+		const admin = user.role?.admin_access;
 
 		if (admin) return true;
 

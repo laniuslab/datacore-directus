@@ -32,6 +32,9 @@ Snapshot of the changes made in this revision.
 `parent` **many-to-one**\
 Parent revision that triggered this revision. Many-to-one to revisions (recursive).
 
+`version` **many-to-one**\
+Associated version of this revision. Many-to-one to [versions](/reference/system/versions).
+
 ```json
 {
 	"id": 368,
@@ -44,7 +47,8 @@ Parent revision that triggered this revision. Many-to-one to revisions (recursiv
 	"delta": {
 		"title": "Hello from the Docs!"
 	},
-	"parent": null
+	"parent": null,
+	"version": null
 }
 ```
 
@@ -61,12 +65,16 @@ to a collection that the current user doesn't have access to are stripped out.
 
 ### Request
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `GET /revisions`
 
 `SEARCH /revisions`
+
+If using SEARCH you can provide a [query object](/reference/query) as the body of your request.
+
+[Learn more about SEARCH ->](/reference/introduction#search-http-method)
 
 </template>
 <template #graphql>
@@ -83,22 +91,15 @@ type Query {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, readRevisions } from '@directus/sdk/rest';
+import { createDirectus, rest, readRevisions } from '@directus/sdk';
 
-const client = createDirectus('https://directus.example.com').with(rest());
+const client = createDirectus('directus_project_url').with(rest());
 
-const result = await client.request(
-	readRevisions({
-		fields: ['*'],
-	})
-);
+const result = await client.request(readRevisions(query_object));
 ```
 
 </template>
 </SnippetToggler>
-
-[Learn more about SEARCH ->](/reference/introduction#search-http-method)
 
 #### Query Parameters
 
@@ -111,7 +112,7 @@ data will be an empty array.
 
 ### Examples
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `GET /revisions`
@@ -137,8 +138,7 @@ query {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, readRevisions } from '@directus/sdk/rest';
+import { createDirectus, rest, readRevisions } from '@directus/sdk';
 
 const client = createDirectus('https://directus.example.com').with(rest());
 
@@ -158,7 +158,7 @@ List an existing revision by primary key.
 
 ### Request
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `GET /revisions/:id`
@@ -178,16 +178,11 @@ type Query {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, readRevision } from '@directus/sdk/rest';
+import { createDirectus, rest, readRevision } from '@directus/sdk';
 
-const client = createDirectus('https://directus.example.com').with(rest());
+const client = createDirectus('directus_project_url').with(rest());
 
-const result = await client.request(
-	readRevision('revision_id', {
-		fields: ['*'],
-	})
-);
+const result = await client.request(readRevision(revision_id, query_object));
 ```
 
 </template>
@@ -203,7 +198,7 @@ Returns the requested [revision object](#the-revision-object).
 
 ### Example
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `GET /revisions/322`
@@ -227,8 +222,7 @@ query {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, readRevision } from '@directus/sdk/rest';
+import { createDirectus, rest, readRevision } from '@directus/sdk';
 
 const client = createDirectus('https://directus.example.com').with(rest());
 

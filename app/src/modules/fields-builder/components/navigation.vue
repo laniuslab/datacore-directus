@@ -1,47 +1,3 @@
-<template>
-	<div class="content-navigation-wrapper">
-		<div v-if="showSearch" class="search-input">
-			<v-input v-model="search" type="search" :placeholder="t('search_collection')" />
-		</div>
-
-		<v-list
-			v-model="activeGroups"
-			v-context-menu="'contextMenu'"
-			class="content-navigation"
-			tabindex="-1"
-			nav
-			:mandatory="false"
-			:dense="dense"
-		>
-			<v-list-group v-for="(rootItem, schemaName) in rootItems" :key="schemaName" no-action>
-				<template #activator>
-					<v-list-item-content>
-						<span>{{ schemaName.toString().toUpperCase() }}</span>
-					</v-list-item-content>
-				</template>
-
-				<navigation-item
-					v-for="collection in rootItem"
-					:key="collection.collection"
-					:show-hidden="showHidden"
-					:collection="collection"
-					:search="search"
-				/>
-				<v-menu v-if="hasHiddenCollections" ref="contextMenu" show-arrow placement="bottom-start">
-					<v-list-item clickable @click="showHidden = !showHidden">
-						<v-list-item-icon>
-							<v-icon :name="showHidden ? 'visibility_off' : 'visibility'" />
-						</v-list-item-icon>
-						<v-list-item-content>
-							<v-text-overflow :text="showHidden ? t('hide_hidden_collections') : t('show_hidden_collections')" />
-						</v-list-item-content>
-					</v-list-item>
-				</v-menu>
-			</v-list-group>
-		</v-list>
-	</div>
-</template>
-
 <script setup lang="ts">
 import { useCollectionsStore } from '@/stores/collections';
 import { isNil, orderBy } from 'lodash';
@@ -85,9 +41,53 @@ const dense = computed(() => collectionsStore.visibleCollections.length > 5);
 const showSearch = computed(() => collectionsStore.visibleCollections.length > 5);
 
 const hasHiddenCollections = computed(
-	() => collectionsStore.allCollections.length > collectionsStore.visibleCollections.length
+	() => collectionsStore.allCollections.length > collectionsStore.visibleCollections.length,
 );
 </script>
+
+<template>
+	<div class="content-navigation-wrapper">
+		<div v-if="showSearch" class="search-input">
+			<v-input v-model="search" type="search" :placeholder="t('search_collection')" />
+		</div>
+
+		<v-list
+			v-model="activeGroups"
+			v-context-menu="'contextMenu'"
+			class="content-navigation"
+			tabindex="-1"
+			nav
+			:mandatory="false"
+			:dense="dense"
+		>
+			<v-list-group v-for="(rootItem, schemaName) in rootItems" :key="schemaName" no-action>
+				<template #activator>
+					<v-list-item-content>
+						<span>{{ schemaName.toString().toUpperCase() }}</span>
+					</v-list-item-content>
+				</template>
+
+				<navigation-item
+					v-for="collection in rootItem"
+					:key="collection.collection"
+					:show-hidden="showHidden"
+					:collection="collection"
+					:search="search"
+				/>
+				<v-menu v-if="hasHiddenCollections" ref="contextMenu" show-arrow placement="bottom-start">
+					<v-list-item clickable @click="showHidden = !showHidden">
+						<v-list-item-icon>
+							<v-icon :name="showHidden ? 'visibility_off' : 'visibility'" />
+						</v-list-item-icon>
+						<v-list-item-content>
+							<v-text-overflow :text="showHidden ? t('hide_hidden_collections') : t('show_hidden_collections')" />
+						</v-list-item-content>
+					</v-list-item>
+				</v-menu>
+			</v-list-group>
+		</v-list>
+	</div>
+</template>
 
 <style lang="scss" scoped>
 .group-name {

@@ -1,8 +1,20 @@
+<script setup lang="ts">
+defineProps<{
+	title: string;
+	tag?: string;
+	url: string;
+	img: string;
+	author?: string;
+	date?: string;
+	desc?: string;
+}>();
+</script>
+
 <template>
 	<div class="article">
 		<a :href="url">
 			<div class="image">
-				<img :src="img" alt="" loading="lazy" />
+				<img :src="img" :alt="title" loading="lazy" />
 			</div>
 			<div class="content">
 				<h3 class="heading">{{ title }}</h3>
@@ -16,18 +28,6 @@
 		</a>
 	</div>
 </template>
-
-<script setup lang="ts">
-defineProps<{
-	title: string;
-	tag?: string;
-	url: string;
-	img: string;
-	author?: string;
-	date?: string;
-	desc?: string;
-}>();
-</script>
 
 <style scoped>
 .article {

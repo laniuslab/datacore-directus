@@ -35,8 +35,26 @@ Foreground image for the Admin App's public pages. Many-to-one to [files](/refer
 `public_background` **many-to-one**\
 Background image for the Admin App's public pages. Many-to-one to [files](/reference/files).
 
+`public_favicon` **many-to-one**\
+Favicon for the Data Studio. Many-to-one to [files](/reference/files).
+
 `public_note` **string**\
 Note shown on the Admin App's public pages. Supports Markdown.
+
+`default_appearance` **string**\
+One of `auto`, `light`, `dark`.
+
+`default_theme_light` **string**\
+Default theme to use in `light` mode.
+
+`default_theme_dark` **string**\
+Default theme to use in `dark` mode.
+
+`theme_light_overrides` **json**\
+Default customization for `light` theme in use.
+
+`theme_dark_overrides` **json**\
+Default customization for `dark` theme in use.
 
 `auth_login_attempts` **integer**\
 How often a user is allowed to try to login. After which times the user will be suspended.
@@ -113,7 +131,7 @@ Custom aspect ratios in the [image editor](/user-guide/file-library/files#edit-a
 
 ### Request
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `GET /settings`
@@ -133,10 +151,9 @@ type Query {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, readSettings } from '@directus/sdk/rest';
+import { createDirectus, rest, readSettings } from '@directus/sdk';
 
-const client = createDirectus('https://directus.example.com').with(rest());
+const client = createDirectus('directus_project_url').with(rest());
 
 const result = await client.request(readSettings());
 ```
@@ -154,7 +171,7 @@ Returns the [settings object](#the-settings-object).
 
 ### Example
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `GET /settings`
@@ -176,8 +193,7 @@ query {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, readSettings } from '@directus/sdk/rest';
+import { createDirectus, rest, readSettings } from '@directus/sdk';
 
 const client = createDirectus('https://directus.example.com').with(rest());
 
@@ -191,16 +207,12 @@ const result = await client.request(readSettings());
 
 ### Request
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `PATCH /settings`
 
-```json
-{
-	"settings_object_field": "value_1"
-}
-```
+Provide a partial [settings object](#the-settings-object) as the body of your request.
 
 </template>
 <template #graphql>
@@ -217,16 +229,11 @@ type Mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, updateSettings } from '@directus/sdk/rest';
+import { createDirectus, rest, updateSettings } from '@directus/sdk';
 
-const client = createDirectus('https://directus.example.com').with(rest());
+const client = createDirectus('directus_project_url').with(rest());
 
-const result = await client.request(
-	updateSettings({
-		settings_field: 'value',
-	})
-);
+const result = await client.request(updateSettings(settings_object));
 ```
 
 </template>
@@ -246,7 +253,7 @@ Returns the [settings object](#the-setting-object).
 
 ### Example
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `PATCH /settings`
@@ -275,8 +282,7 @@ mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, updateSettings } from '@directus/sdk/rest';
+import { createDirectus, rest, updateSettings } from '@directus/sdk';
 
 const client = createDirectus('https://directus.example.com').with(rest());
 

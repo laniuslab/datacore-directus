@@ -1,3 +1,9 @@
+import type {
+	ApiExtensionType,
+	AppExtensionType,
+	ExtensionOptionsBundleEntry,
+	ExtensionManifest as TExtensionManifest,
+} from '@directus/extensions';
 import {
 	API_SHARED_DEPS,
 	APP_EXTENSION_TYPES,
@@ -7,13 +13,7 @@ import {
 	ExtensionManifest,
 	ExtensionOptionsBundleEntries,
 	HYBRID_EXTENSION_TYPES,
-} from '@directus/constants';
-import type {
-	ApiExtensionType,
-	AppExtensionType,
-	ExtensionOptionsBundleEntry,
-	ExtensionManifest as TExtensionManifest,
-} from '@directus/types';
+} from '@directus/extensions';
 import { isIn, isTypeIn } from '@directus/utils';
 import commonjsDefault from '@rollup/plugin-commonjs';
 import jsonDefault from '@rollup/plugin-json';
@@ -21,7 +21,7 @@ import { nodeResolve } from '@rollup/plugin-node-resolve';
 import replaceDefault from '@rollup/plugin-replace';
 import terserDefault from '@rollup/plugin-terser';
 import virtualDefault from '@rollup/plugin-virtual';
-import vueDefault from '@vitejs/plugin-vue';
+import vue from '@vitejs/plugin-vue';
 import chalk from 'chalk';
 import fse from 'fs-extra';
 import ora from 'ora';
@@ -40,7 +40,6 @@ import { validateSplitEntrypointOption } from './helpers/validate-cli-options.js
 
 // Workaround for https://github.com/rollup/plugins/issues/1329
 const virtual = virtualDefault as unknown as typeof virtualDefault.default;
-const vue = vueDefault as unknown as typeof vueDefault.default;
 const esbuild = esbuildDefault as unknown as typeof esbuildDefault.default;
 const styles = stylesDefault as unknown as typeof stylesDefault.default;
 const commonjs = commonjsDefault as unknown as typeof commonjsDefault.default;
@@ -128,9 +127,9 @@ export default async function build(options: BuildOptions): Promise<void> {
 		if (!isIn(type, EXTENSION_TYPES)) {
 			log(
 				`Extension type ${chalk.bold(type)} is not supported. Available extension types: ${EXTENSION_TYPES.map((t) =>
-					chalk.bold.magenta(t)
+					chalk.bold.magenta(t),
 				).join(', ')}.`,
-				'error'
+				'error',
 			);
 
 			process.exit(1);
@@ -144,7 +143,7 @@ export default async function build(options: BuildOptions): Promise<void> {
 		if (!output) {
 			log(
 				`Extension output file has to be specified using the ${chalk.blue('[-o, --output <file>]')} option.`,
-				'error'
+				'error',
 			);
 
 			process.exit(1);
@@ -157,9 +156,9 @@ export default async function build(options: BuildOptions): Promise<void> {
 			if (entries.success === false) {
 				log(
 					`Input option needs to be of the format ${chalk.blue(
-						`[-i '[{"type":"<extension-type>","name":"<extension-name>","source":<entrypoint>}]']`
+						`[-i '[{"type":"<extension-type>","name":"<extension-name>","source":<entrypoint>}]']`,
 					)}.`,
-					'error'
+					'error',
 				);
 
 				process.exit(1);
@@ -168,9 +167,9 @@ export default async function build(options: BuildOptions): Promise<void> {
 			if (!validateSplitEntrypointOption(splitOutput)) {
 				log(
 					`Output option needs to be of the format ${chalk.blue(
-						`[-o '{"app":"<app-entrypoint>","api":"<api-entrypoint>"}']`
+						`[-o '{"app":"<app-entrypoint>","api":"<api-entrypoint>"}']`,
 					)}.`,
-					'error'
+					'error',
 				);
 
 				process.exit(1);
@@ -192,9 +191,9 @@ export default async function build(options: BuildOptions): Promise<void> {
 			if (!validateSplitEntrypointOption(splitInput)) {
 				log(
 					`Input option needs to be of the format ${chalk.blue(
-						`[-i '{"app":"<app-entrypoint>","api":"<api-entrypoint>"}']`
+						`[-i '{"app":"<app-entrypoint>","api":"<api-entrypoint>"}']`,
 					)}.`,
-					'error'
+					'error',
 				);
 
 				process.exit(1);
@@ -203,9 +202,9 @@ export default async function build(options: BuildOptions): Promise<void> {
 			if (!validateSplitEntrypointOption(splitOutput)) {
 				log(
 					`Output option needs to be of the format ${chalk.blue(
-						`[-o '{"app":"<app-entrypoint>","api":"<api-entrypoint>"}']`
+						`[-o '{"app":"<app-entrypoint>","api":"<api-entrypoint>"}']`,
 					)}.`,
-					'error'
+					'error',
 				);
 
 				process.exit(1);
@@ -431,7 +430,7 @@ async function buildExtension(config: RollupConfig | RollupConfig[]) {
 			}
 
 			return null;
-		})
+		}),
 	);
 
 	const resultErrors = result.filter((r) => r !== null);

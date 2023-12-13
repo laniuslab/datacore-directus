@@ -6,7 +6,7 @@ import { getAuthProvider } from '../../../auth.js';
 import { AuthDriver } from '../../../auth/auth.js';
 import { COOKIE_OPTIONS } from '../../../constants.js';
 import env from '../../../env.js';
-import { InvalidCredentialsError, InvalidPayloadError } from '../../../errors/index.js';
+import { InvalidCredentialsError, InvalidPayloadError } from '@directus/errors';
 import { respond } from '../../../middleware/respond.js';
 import type { User } from '../../../types/index.js';
 import asyncHandler from '../../../utils/async-handler.js';

@@ -1,11 +1,12 @@
 import type { DirectusOperation } from '../../../schema/operation.js';
 import type { ApplyQueryFields, Query } from '../../../types/index.js';
+import { throwIfEmpty } from '../../utils/index.js';
 import type { RestCommand } from '../../types.js';
 
 export type ReadOperationOutput<
 	Schema extends object,
 	TQuery extends Query<Schema, Item>,
-	Item extends object = DirectusOperation<Schema>
+	Item extends object = DirectusOperation<Schema>,
 > = ApplyQueryFields<Schema, Item, TQuery['fields']>;
 
 /**
@@ -15,7 +16,7 @@ export type ReadOperationOutput<
  */
 export const readOperations =
 	<Schema extends object, const TQuery extends Query<Schema, DirectusOperation<Schema>>>(
-		query?: TQuery
+		query?: TQuery,
 	): RestCommand<ReadOperationOutput<Schema, TQuery>[], Schema> =>
 	() => ({
 		path: `/operations`,
@@ -28,14 +29,19 @@ export const readOperations =
  * @param key The primary key of the dashboard
  * @param query The query parameters
  * @returns Returns a Operation object if a valid primary key was provided.
+ * @throws Will throw if key is empty
  */
 export const readOperation =
 	<Schema extends object, const TQuery extends Query<Schema, DirectusOperation<Schema>>>(
 		key: DirectusOperation<Schema>['id'],
-		query?: TQuery
+		query?: TQuery,
 	): RestCommand<ReadOperationOutput<Schema, TQuery>, Schema> =>
-	() => ({
-		path: `/operations/${key}`,
-		params: query ?? {},
-		method: 'GET',
-	});
+	() => {
+		throwIfEmpty(String(key), 'Key cannot be empty');
+
+		return {
+			path: `/operations/${key}`,
+			params: query ?? {},
+			method: 'GET',
+		};
+	};

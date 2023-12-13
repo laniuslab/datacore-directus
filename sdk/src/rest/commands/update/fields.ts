@@ -1,11 +1,12 @@
 import type { DirectusField } from '../../../schema/field.js';
 import type { ApplyQueryFields, NestedPartial, Query } from '../../../types/index.js';
+import { throwIfEmpty } from '../../utils/index.js';
 import type { RestCommand } from '../../types.js';
 
 export type UpdateFieldOutput<
 	Schema extends object,
 	TQuery extends Query<Schema, Item>,
-	Item extends object = DirectusField<Schema>
+	Item extends object = DirectusField<Schema>,
 > = ApplyQueryFields<Schema, Item, TQuery['fields']>;
 
 /**
@@ -15,17 +16,24 @@ export type UpdateFieldOutput<
  * @param item
  * @param query
  * @returns
+ * @throws Will throw if collection is empty
+ * @throws Will throw if field is empty
  */
 export const updateField =
 	<Schema extends object, const TQuery extends Query<Schema, DirectusField<Schema>>>(
 		collection: DirectusField<Schema>['collection'],
 		field: DirectusField<Schema>['field'],
 		item: NestedPartial<DirectusField<Schema>>,
-		query?: TQuery
+		query?: TQuery,
 	): RestCommand<UpdateFieldOutput<Schema, TQuery>, Schema> =>
-	() => ({
-		path: `/fields/${collection}/${field}`,
-		params: query ?? {},
-		body: JSON.stringify(item),
-		method: 'PATCH',
-	});
+	() => {
+		throwIfEmpty(collection, 'Keys cannot be empty');
+		throwIfEmpty(field, 'Field cannot be empty');
+
+		return {
+			path: `/fields/${collection}/${field}`,
+			params: query ?? {},
+			body: JSON.stringify(item),
+			method: 'PATCH',
+		};
+	};

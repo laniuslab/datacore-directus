@@ -71,6 +71,9 @@ What sort order of the collection relative to other collections of the same leve
 What is the default behavior of this collection or "folder" collection when it has nested collections. One of `open`, `closed`,
 `locked`.
 
+`versioning` **boolean**\
+Whether or not Content Versioning is enabled for this collection.
+
 #### Schema
 
 "Raw" database information. Based on the database vendor used, different information might be returned. The following
@@ -148,12 +151,16 @@ List the available collections.
 
 ### Request
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `GET /collections`
 
 `SEARCH /collections`
+
+If using SEARCH you can provide a [query object](/reference/query) as the body of your request.
+
+[Learn more about SEARCH ->](/reference/introduction#search-http-method)
 
 </template>
 <template #graphql>
@@ -170,18 +177,15 @@ type Query {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, readCollections } from '@directus/sdk/rest';
+import { createDirectus, rest, readCollections } from '@directus/sdk';
 
-const client = createDirectus('https://directus.example.com').with(rest());
+const client = createDirectus('directus_project_url').with(rest());
 
 const result = await client.request(readCollections());
 ```
 
 </template>
 </SnippetToggler>
-
-[Learn more about SEARCH ->](/reference/introduction#search-http-method)
 
 #### Query Parameters
 
@@ -193,7 +197,7 @@ An array of [collection objects](#the-collection-object).
 
 ### Example
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `GET /collections`
@@ -217,8 +221,7 @@ query {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, readCollections } from '@directus/sdk/rest';
+import { createDirectus, rest, readCollections } from '@directus/sdk';
 
 const client = createDirectus('https://directus.example.com').with(rest());
 
@@ -234,7 +237,7 @@ Retrieve a single collection by table name.
 
 ### Request
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `GET /collections/:collection`
@@ -254,12 +257,11 @@ type Query {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, readCollection } from '@directus/sdk/rest';
+import { createDirectus, rest, readCollection } from '@directus/sdk';
 
-const client = createDirectus('https://directus.example.com').with(rest());
+const client = createDirectus('directus_project_url').with(rest());
 
-const result = await client.request(readCollection('collection_name'));
+const result = await client.request(readCollection(collection_name));
 ```
 
 </template>
@@ -275,7 +277,7 @@ A [collection object](#the-collection-object).
 
 ### Example
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `GET /collections/articles`
@@ -297,8 +299,7 @@ query {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, readCollection } from '@directus/sdk/rest';
+import { createDirectus, rest, readCollection } from '@directus/sdk';
 
 const client = createDirectus('https://directus.example.com').with(rest());
 
@@ -314,19 +315,13 @@ Create a new Collection. This will create a new table in the database as well.
 
 ### Request
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `POST /collections`
 
-```json
-{
-	"collection": "collection_name",
-	"field": {
-		"sub_field": "value"
-	}
-}
-```
+Provide a [collection object](#the-collection-object) as the body of your request with a `collection` name property
+being a required field.
 
 </template>
 <template #graphql>
@@ -343,17 +338,26 @@ type Mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, createCollection } from '@directus/sdk/rest';
+import { createDirectus, rest, createCollection } from '@directus/sdk';
 
-const client = createDirectus('https://directus.example.com').with(rest());
+const client = createDirectus('directus_project_url').with(rest());
 
 const result = await client.request(
 	createCollection({
 		collection: 'collection_name',
-		field: {
-			sub_field: 'value',
-		},
+		fields: [
+			{
+				field: 'title',
+				type: 'string',
+				meta: {
+					icon: 'title'
+				},
+				schema: {
+					is_primary_key: true,
+					is_nullable: false
+				}
+			}
+		],
 	})
 );
 ```
@@ -367,19 +371,12 @@ This endpoint doesn't currently support any query parameters.
 
 #### Request Body
 
-The `collection` property is required, all other properties of the [collection object](#the-collection-object) are
-optional.
+The `collection` and `schema` properties are required. To create a [collection folder](/app/data-model#sorting-grouping)
+that doesn't have an underlying table, you can set `schema` to `null`.
 
 You are able to provide an array of `fields` to be created during the creation of the collection. See the
 [fields object](/reference/system/fields#the-fields-object) for more information on what properties are available in a
 field.
-
-::: tip
-
-Make sure to pass an empty object for schema (`schema: {}`) when creating collections. Alternatively, you can omit it
-entirely or use `schema: null` to create ["folder" collections](/app/data-model#sorting-grouping).
-
-:::
 
 ### Returns
 
@@ -387,7 +384,7 @@ The [collection object](#the-collection-object) for the collection created in th
 
 ### Example
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `POST /collections`
@@ -418,8 +415,7 @@ mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, createCollection } from '@directus/sdk/rest';
+import { createDirectus, rest, createCollection } from '@directus/sdk';
 
 const client = createDirectus('https://directus.example.com').with(rest());
 
@@ -442,18 +438,12 @@ Update the metadata for an existing collection.
 
 ### Request
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `PATCH /collections/:collection`
 
-```json
-{
-	"meta": {
-		"field": "value"
-	}
-}
-```
+Provide a partial [collection object](#the-collection-object) as the body of your request.
 
 </template>
 <template #graphql>
@@ -470,18 +460,11 @@ type Mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, updateCollection } from '@directus/sdk/rest';
+import { createDirectus, rest, updateCollection } from '@directus/sdk';
 
-const client = createDirectus('https://directus.example.com').with(rest());
+const client = createDirectus('directus_project_url').with(rest());
 
-const result = await client.request(
-	updateCollection('collection_name', {
-		meta: {
-			field: 'value',
-		},
-	})
-);
+const result = await client.request(updateCollection(collection_name, partial_collection_object));
 ```
 
 </template>
@@ -502,7 +485,7 @@ The [collection object](#the-collection-object) for the updated collection in th
 
 ### Example
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `PATCH /collections/testimonials`
@@ -532,8 +515,7 @@ mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, updateCollection } from '@directus/sdk/rest';
+import { createDirectus, rest, updateCollection } from '@directus/sdk';
 
 const client = createDirectus('https://directus.example.com').with(rest());
 
@@ -561,7 +543,7 @@ Be aware, this will delete the table from the database, including all items in i
 
 ### Request
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `DELETE /collections/:collection`
@@ -581,12 +563,11 @@ type Mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, deleteCollection } from '@directus/sdk/rest';
+import { createDirectus, rest, deleteCollection } from '@directus/sdk';
 
-const client = createDirectus('https://directus.example.com').with(rest());
+const client = createDirectus('directus_project_url').with(rest());
 
-const result = await client.request(deleteCollection('collection_name'));
+const result = await client.request(deleteCollection(collection_name));
 ```
 
 </template>
@@ -594,7 +575,7 @@ const result = await client.request(deleteCollection('collection_name'));
 
 ### Example
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `DELETE /collections/articles`
@@ -616,8 +597,7 @@ mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, deleteCollection } from '@directus/sdk/rest';
+import { createDirectus, rest, deleteCollection } from '@directus/sdk';
 
 const client = createDirectus('https://directus.example.com').with(rest());
 

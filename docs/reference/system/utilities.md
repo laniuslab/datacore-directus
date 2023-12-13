@@ -14,14 +14,14 @@ Generate a hash for a given string.
 
 ### Request
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `POST /utils/hash/generate`
 
 ```json
 {
-	"string": "hash"
+	"string": string_to_hash
 }
 ```
 
@@ -40,12 +40,11 @@ type Mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, generateHash } from '@directus/sdk/rest';
+import { createDirectus, rest, generateHash } from '@directus/sdk';
 
-const client = createDirectus('https://directus.example.com').with(rest());
+const client = createDirectus('directus_project_url').with(rest());
 
-const result = await client.request(generateHash('string'));
+const result = await client.request(generateHash(string_to_hash));
 ```
 
 </template>
@@ -62,7 +61,7 @@ Hashed string.
 
 ### Example
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `POST /utils/hash/generate`
@@ -86,8 +85,7 @@ mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, generateHash } from '@directus/sdk/rest';
+import { createDirectus, rest, generateHash } from '@directus/sdk';
 
 const client = createDirectus('https://directus.example.com').with(rest());
 
@@ -103,15 +101,15 @@ Verify a string with a hash.
 
 ### Request
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `POST /utils/hash/verify`
 
 ```json
 {
-	"string": "test_string",
-	"hash": "hash"
+	"string": string_to_verify,
+	"hash": hash
 }
 ```
 
@@ -130,12 +128,11 @@ type Mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, verifyHash } from '@directus/sdk/rest';
+import { createDirectus, rest, verifyHash } from '@directus/sdk';
 
-const client = createDirectus('https://directus.example.com').with(rest());
+const client = createDirectus('directus_project_url').with(rest());
 
-const result = await client.request(verifyHash('string_to_verify', 'hash'));
+const result = await client.request(verifyHash(string_to_verify, hash));
 ```
 
 </template>
@@ -155,7 +152,7 @@ Boolean.
 
 ### Example
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `POST /utils/hash/verify`
@@ -182,8 +179,7 @@ mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, verifyHash } from '@directus/sdk/rest';
+import { createDirectus, rest, verifyHash } from '@directus/sdk';
 
 const client = createDirectus('https://directus.example.com').with(rest());
 
@@ -204,15 +200,15 @@ If a collection has a sort field, this util can be used to move items in that ma
 
 ### Request
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `POST /utils/sort/articles`
 
 ```json
 {
-	"item": "id_item_to_move",
-	"to": "id_item_moving_to"
+	"item": id_item_to_move,
+	"to": id_item_moving_to
 }
 ```
 
@@ -231,12 +227,11 @@ type Mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, utilitySort } from '@directus/sdk/rest';
+import { createDirectus, rest, utilitySort } from '@directus/sdk';
 
-const client = createDirectus('https://directus.example.com').with(rest());
+const client = createDirectus('directus_project_url').with(rest());
 
-const result = await client.request(utilitySort('collection_name', 'id_item_to_move', 'id_item_moving_to'));
+const result = await client.request(utilitySort(collection_name, id_item_to_move, id_item_moving_to));
 ```
 
 </template>
@@ -256,7 +251,7 @@ Empty body.
 
 ### Example
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `POST /utils/sort/articles`
@@ -283,8 +278,7 @@ mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, utilitySort } from '@directus/sdk/rest';
+import { createDirectus, rest, utilitySort } from '@directus/sdk';
 
 const client = createDirectus('https://directus.example.com').with(rest());
 
@@ -300,7 +294,7 @@ Import multiple records from a JSON or CSV file into a collection.
 
 ### Request
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `POST /utils/import/:collection`
@@ -316,10 +310,9 @@ Body must be formatted as a `multipart/form-data` with a `file` property.
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, utilsImport } from '@directus/sdk/rest';
+import { createDirectus, rest, utilsImport } from '@directus/sdk';
 
-const client = createDirectus('https://directus.example.com').with(rest());
+const client = createDirectus('directus_project_url').with(rest());
 
 const formData = new FormData();
 formData.append('file', raw_file);
@@ -348,7 +341,7 @@ Export a larger data set to a file in the File Library
 
 ### Request
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `POST /utils/export/:collection`
@@ -377,10 +370,9 @@ Export a larger data set to a file in the File Library
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, utilsExport } from '@directus/sdk/rest';
+import { createDirectus, rest, utilsExport } from '@directus/sdk';
 
-const client = createDirectus('https://directus.example.com').with(rest());
+const client = createDirectus('directus_project_url').with(rest());
 
 const result = await client.request(
 	utilsExport(
@@ -426,7 +418,7 @@ Empty body
 
 ### Example
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `POST /utils/export/articles`
@@ -455,8 +447,7 @@ Empty body
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, utilsExport } from '@directus/sdk/rest';
+import { createDirectus, rest, utilsExport } from '@directus/sdk';
 
 const client = createDirectus('https://directus.example.com').with(rest());
 
@@ -487,7 +478,7 @@ const result = await client.request(
 
 Resets both the data and schema cache of Directus. This endpoint is only available to admin users.
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `POST /utils/cache/clear`
@@ -507,8 +498,7 @@ mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, clearCache } from '@directus/sdk/rest';
+import { createDirectus, rest, clearCache } from '@directus/sdk';
 
 const client = createDirectus('https://directus.example.com').with(rest());
 

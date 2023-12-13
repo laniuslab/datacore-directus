@@ -1,11 +1,12 @@
 import type { DirectusFolder } from '../../../schema/folder.js';
 import type { ApplyQueryFields, Query } from '../../../types/index.js';
+import { throwIfEmpty } from '../../utils/index.js';
 import type { RestCommand } from '../../types.js';
 
 export type ReadFolderOutput<
 	Schema extends object,
 	TQuery extends Query<Schema, Item>,
-	Item extends object = DirectusFolder<Schema>
+	Item extends object = DirectusFolder<Schema>,
 > = ApplyQueryFields<Schema, Item, TQuery['fields']>;
 
 /**
@@ -15,7 +16,7 @@ export type ReadFolderOutput<
  */
 export const readFolders =
 	<Schema extends object, const TQuery extends Query<Schema, DirectusFolder<Schema>>>(
-		query?: TQuery
+		query?: TQuery,
 	): RestCommand<ReadFolderOutput<Schema, TQuery>[], Schema> =>
 	() => ({
 		path: `/folders`,
@@ -28,14 +29,19 @@ export const readFolders =
  * @param key The primary key of the dashboard
  * @param query The query parameters
  * @returns Returns a folder object if a valid primary key was provided.
+ * @throws Will throw if key is empty
  */
 export const readFolder =
 	<Schema extends object, const TQuery extends Query<Schema, DirectusFolder<Schema>>>(
 		key: DirectusFolder<Schema>['id'],
-		query?: TQuery
+		query?: TQuery,
 	): RestCommand<ReadFolderOutput<Schema, TQuery>, Schema> =>
-	() => ({
-		path: `/folders/${key}`,
-		params: query ?? {},
-		method: 'GET',
-	});
+	() => {
+		throwIfEmpty(String(key), 'Key cannot be empty');
+
+		return {
+			path: `/folders/${key}`,
+			params: query ?? {},
+			method: 'GET',
+		};
+	};

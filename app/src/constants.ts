@@ -39,6 +39,7 @@ export const DIRECTUS_LOGO = `
 export const COLLECTIONS_DENY_LIST = [
 	'directus_activity',
 	'directus_collections',
+	'directus_extensions',
 	'directus_fields',
 	'directus_migrations',
 	'directus_relations',
@@ -68,16 +69,18 @@ export const MODULE_BAR_DEFAULT = [
 		id: 'insights',
 		enabled: true,
 	},
+	// MV-DATACORE
 	{
 		type: 'module',
 		id: 'erd-viewer',
-		enabled: false,
+		enabled: true,
 	},
 	{
 		type: 'module',
 		id: 'fields-builder',
-		enabled: false,
+		enabled: true,
 	},
+	// MV-DATACORE [END]
 	{
 		type: 'link',
 		id: 'docs',

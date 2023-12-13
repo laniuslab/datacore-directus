@@ -17,8 +17,8 @@ Directus. For the sake of documentation, we'll use a fictional articles collecti
 
 ::: tip Relational Data
 
-Please see [Relational Data](/reference/introduction#relational-data) and [Field Parameters](/reference/query#fields) to
-learn more.
+By default, the item object doesn't contain nested relational data. To retrieve nested data, see
+[Relational Data](/reference/introduction#relational-data) and [Field Parameters](/reference/query#fields).
 
 :::
 
@@ -39,12 +39,16 @@ List all items that exist in Directus.
 
 ### Request
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `GET /items/:collection`
 
 `SEARCH /items/:collection`
+
+If using SEARCH you can provide a [query object](/reference/query) as the body of your request.
+
+[Learn more about SEARCH ->](/reference/introduction#search-http-method)
 
 </template>
 <template #graphql>
@@ -61,22 +65,15 @@ type Query {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, readItems } from '@directus/sdk/rest';
+import { createDirectus, rest, readItems } from '@directus/sdk';
 
-const client = createDirectus('https://directus.example.com').with(rest());
+const client = createDirectus('directus_project_url').with(rest());
 
-const result = await client.request(
-	readItems('collection_name', {
-		query,
-	})
-);
+const result = await client.request(readItems('collection_name', query_object));
 ```
 
 </template>
 </SnippetToggler>
-
-[Learn more about SEARCH ->](/reference/introduction#search-http-method)
 
 #### Query Parameters
 
@@ -95,10 +92,12 @@ be an empty array.
 
 ### Example
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `GET /items/articles`
+
+`SEARCH /items/articles`
 
 </template>
 <template #graphql>
@@ -121,8 +120,7 @@ query {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, readItems } from '@directus/sdk/rest';
+import { createDirectus, rest, readItems } from '@directus/sdk';
 
 const client = createDirectus('https://directus.example.com').with(rest());
 
@@ -142,7 +140,7 @@ Get an item that exists in Directus.
 
 ### Request
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `GET /items/:collection/:id`
@@ -156,18 +154,20 @@ Get an item that exists in Directus.
 type Query {
 	<collection>_by_id(id: ID!): <collection>
 }
+type Query {
+	<collection>_by_version(id: ID!, version String!): <collection_version>
+}
 ```
 
 </template>
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, readItem } from '@directus/sdk/rest';
+import { createDirectus, rest, readItem } from '@directus/sdk';
 
-const client = createDirectus('https://directus.example.com').with(rest());
+const client = createDirectus('directus_project_url').with(rest());
 
-const result = await client.request(readItem('collection_name', 'item_id'));
+const result = await client.request(readItem(collection_name, item_id, query_object));
 ```
 
 </template>
@@ -177,13 +177,16 @@ const result = await client.request(readItem('collection_name', 'item_id'));
 
 Supports all [global query parameters](/reference/query).
 
+Additionally, supports a `version` parameter to retrieve an item's state from a specific
+[Content Version](/reference/system/versions). The value corresponds to the `key` of the Content Version.
+
 ### Response
 
 Returns an [item object](#the-item-object) if a valid primary key was provided.
 
 ### Example
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `GET /items/articles/15`
@@ -194,8 +197,12 @@ Returns an [item object](#the-item-object) if a valid primary key was provided.
 `POST /graphql`
 
 ```graphql
-type Query {
-	<collection>_by_id(id: ID!): <collection>
+query {
+	articles_by_id(id: 15) {
+		id
+		title
+		body
+	}
 }
 ```
 
@@ -203,12 +210,50 @@ type Query {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, readItem } from '@directus/sdk/rest';
+import { createDirectus, rest, readItem } from '@directus/sdk';
 
 const client = createDirectus('https://directus.example.com').with(rest());
 
-const result = await client.request(readItem('articles', '1'));
+const result = await client.request(readItem('articles', '15'));
+```
+
+</template>
+</SnippetToggler>
+
+For a specific Content Version:
+
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
+<template #rest>
+
+```http
+GET /items/articles/15
+	?version=draft
+```
+
+</template>
+<template #graphql>
+
+`POST /graphql`
+
+```graphql
+query {
+	articles_by_version(id: 15, version: "draft") {
+		id
+		title
+		body
+	}
+}
+```
+
+</template>
+<template #sdk>
+
+```js
+import { createDirectus, rest, readItem } from '@directus/sdk';
+
+const client = createDirectus('https://directus.example.com').with(rest());
+
+const result = await client.request(readItem('articles', '1', { version: 'draft' }));
 ```
 
 </template>
@@ -216,11 +261,11 @@ const result = await client.request(readItem('articles', '1'));
 
 ## Get Singleton
 
-List the singleton item in Directus.
+List a singleton item in Directus.
 
 ### Request
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `GET /items/:collection`
@@ -232,7 +277,7 @@ List the singleton item in Directus.
 
 ```graphql
 type Query {
-	<collection>: [<collection>]
+	<collection>_by_version(version: String): <collection>
 }
 ```
 
@@ -240,12 +285,11 @@ type Query {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, readSingleton } from '@directus/sdk/rest';
+import { createDirectus, rest, readSingleton } from '@directus/sdk';
 
-const client = createDirectus('https://directus.example.com').with(rest());
+const client = createDirectus('directus_project_url').with(rest());
 
-const result = await client.request(readSingleton('collection_name'));
+const result = await client.request(readSingleton(collection_name));
 ```
 
 </template>
@@ -262,6 +306,9 @@ response consists of a plain [item object](#the-item-object) (the singleton) ins
 
 Supports all [global query parameters](/reference/query).
 
+Additionally, supports a `version` parameter to retrieve a singleton's state from a specific
+[Content Version](/reference/system/versions). The value corresponds to the `key` of the Content Version.
+
 #### Request Body
 
 `collection_name` the name of the collection is required.
@@ -272,7 +319,7 @@ Returns an [item object](#the-item-object) if a valid collection name was provid
 
 ### Example
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `GET /items/about`
@@ -295,12 +342,49 @@ query {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, readSingleton } from '@directus/sdk/rest';
+import { createDirectus, rest, readSingleton } from '@directus/sdk';
 
 const client = createDirectus('https://directus.example.com').with(rest());
 
 const result = await client.request(readSingleton('about'));
+```
+
+</template>
+</SnippetToggler>
+
+For a specific Content Version:
+
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
+<template #rest>
+
+```http
+GET /items/about
+	?version=draft
+```
+
+</template>
+<template #graphql>
+
+`POST /graphql`
+
+```graphql
+query {
+	about_by_version(version: "draft") {
+		id
+		content
+	}
+}
+```
+
+</template>
+<template #sdk>
+
+```js
+import { createDirectus, rest, readSingleton } from '@directus/sdk';
+
+const client = createDirectus('https://directus.example.com').with(rest());
+
+const result = await client.request(readSingleton('about', { version: 'draft' }));
 ```
 
 </template>
@@ -312,17 +396,12 @@ Create a new item in the given collection.
 
 ### Request
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `POST /items/:collection`
 
-```json
-{
-	"field": "value",
-	"field_2": "value_2"
-}
-```
+Provide an [item object](#the-item-object) as the body of your request.
 
 </template>
 <template #graphql>
@@ -339,17 +418,11 @@ type Mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, createItem } from '@directus/sdk/rest';
+import { createDirectus, rest, createItem } from '@directus/sdk';
 
-const client = createDirectus('https://directus.example.com').with(rest());
+const client = createDirectus('directus_project_url').with(rest());
 
-const result = await client.request(
-	createItem('collection_name', {
-		field: 'value_1',
-		field_2: 'value_2',
-	})
-);
+const result = await client.request(createItem(collection_name, item_object));
 ```
 
 </template>
@@ -361,7 +434,7 @@ Supports all [global query parameters](/reference/query).
 
 #### Request Body
 
-An array of partial [item objects](#the-item-object).
+A partial [item objects](#the-item-object).
 
 ::: tip Relational Data
 
@@ -376,7 +449,7 @@ Returns the [item objects](#the-item-object) of the item that were created.
 
 ### Example
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `POST /items/articles`
@@ -406,8 +479,7 @@ mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, createItem } from '@directus/sdk/rest';
+import { createDirectus, rest, createItem } from '@directus/sdk';
 
 const client = createDirectus('https://directus.example.com').with(rest());
 
@@ -428,23 +500,12 @@ Create new items in the given collection.
 
 ### Request
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `POST /items/:collection`
 
-```json
-[
-	{
-		"field_1": "value_1",
-		"field_2": "value_2"
-	},
-	{
-		"field_1": "value_3",
-		"field_2": "value_4"
-	}
-]
-```
+Provide an array of [item object](#the-item-object) as the body of your request.
 
 </template>
 <template #graphql>
@@ -461,23 +522,11 @@ type Mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, createItems } from '@directus/sdk/rest';
+import { createDirectus, rest, createItems } from '@directus/sdk';
 
-const client = createDirectus('https://directus.example.com').with(rest());
+const client = createDirectus('directus_project_url').with(rest());
 
-const result = await client.request(
-	createItems('collection_name', [
-		{
-			field_1: 'value_1',
-			field_2: 'value_2',
-		},
-		{
-			field_1: 'value_3',
-			field_2: 'value_4',
-		},
-	])
-);
+const result = await client.request(createItems(collection_name, item_object_array));
 ```
 
 </template>
@@ -497,7 +546,7 @@ Returns the [item objects](#the-item-object) of the item that were created.
 
 ### Example
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `POST /items/articles`
@@ -538,8 +587,7 @@ mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, createItems } from '@directus/sdk/rest';
+import { createDirectus, rest, createItems } from '@directus/sdk';
 
 const client = createDirectus('https://directus.example.com').with(rest());
 
@@ -566,16 +614,12 @@ Update an existing item.
 
 ### Request
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `PATCH /items/:collection/:id`
 
-```json
-{
-	"field": "value"
-}
-```
+Provide a partial [item object](#the-item-object) as the body of your request.
 
 </template>
 <template #graphql>
@@ -592,16 +636,11 @@ type Mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, updateItem } from '@directus/sdk/rest';
+import { createDirectus, rest, updateItem } from '@directus/sdk';
 
-const client = createDirectus('https://directus.example.com').with(rest());
+const client = createDirectus('directus_project_url').with(rest());
 
-const result = await client.request(
-	updateItem('collection_name', 'item_id', {
-		field: 'value',
-	})
-);
+const result = await client.request(updateItem(collection_name, item_id, partial_item_object));
 ```
 
 </template>
@@ -621,7 +660,7 @@ Returns the [item object](#the-item-object) of the item that was updated.
 
 ### Example
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `PATCH /items/articles/15`
@@ -650,8 +689,7 @@ mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, updateItem } from '@directus/sdk/rest';
+import { createDirectus, rest, updateItem } from '@directus/sdk';
 
 const client = createDirectus('https://directus.example.com').with(rest());
 
@@ -671,16 +709,12 @@ Update a singleton item.
 
 ### Request
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `PATCH /items/:collection`
 
-```json
-{
-	"item_field": "value"
-}
-```
+Provide a partial [item object](#the-item-object) as the body of your request.
 
 </template>
 <template #graphql>
@@ -697,16 +731,11 @@ type Mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, updateSingleton } from '@directus/sdk/rest';
+import { createDirectus, rest, updateSingleton } from '@directus/sdk';
 
-const client = createDirectus('https://directus.example.com').with(rest());
+const client = createDirectus('directus_project_url').with(rest());
 
-const result = await client.request(
-	updateSingleton('collection_name', {
-		item_field: 'value',
-	})
-);
+const result = await client.request(updateSingleton(collection_name, partial_item_object));
 ```
 
 </template>
@@ -734,7 +763,7 @@ Returns an [item object](#the-item-object) if a valid primary key was provided.
 
 ### Example
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `PATCH /items/about`
@@ -762,8 +791,7 @@ mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, updateSingleton } from '@directus/sdk/rest';
+import { createDirectus, rest, updateSingleton } from '@directus/sdk';
 
 const client = createDirectus('https://directus.example.com').with(rest());
 
@@ -783,19 +811,12 @@ Update multiple items at the same time.
 
 ### Request
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `PATCH /items/:collection`
 
-```json
-{
-	"keys": ["id_1", "id_2"],
-	"data": {
-		"field": "value"
-	}
-}
-```
+Provide a partial [item object](#the-item-object) as the body of your request.
 
 </template>
 <template #graphql>
@@ -812,16 +833,11 @@ type Mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, updateItems } from '@directus/sdk/rest';
+import { createDirectus, rest, updateItems } from '@directus/sdk';
 
-const client = createDirectus('https://directus.example.com').with(rest());
+const client = createDirectus('directus_project_url').with(rest());
 
-const result = await client.request(
-	updateItems('collection_name', ['id_1', 'id_2'], {
-		field: 'value',
-	})
-);
+const result = await client.request(updateItems(collection_name, item_id_array, partial_item_object));
 ```
 
 </template>
@@ -841,7 +857,7 @@ Returns the [item objects](#the-item-object) for the updated items.
 
 ### Example
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `PATCH /items/articles`
@@ -873,8 +889,7 @@ mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, updateItems } from '@directus/sdk/rest';
+import { createDirectus, rest, updateItems } from '@directus/sdk';
 
 const client = createDirectus('https://directus.example.com').with(rest());
 
@@ -894,7 +909,7 @@ Delete an existing item.
 
 ### Request
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `DELETE /items/:collection/:id`
@@ -914,12 +929,11 @@ type Mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, deleteItem } from '@directus/sdk/rest';
+import { createDirectus, rest, deleteItem } from '@directus/sdk';
 
-const client = createDirectus('https://directus.example.com').with(rest());
+const client = createDirectus('directus_project_url').with(rest());
 
-const result = await client.request(deleteItem('collection_name', 'id'));
+const result = await client.request(deleteItem(collection_name, item_id));
 ```
 
 </template>
@@ -931,7 +945,7 @@ Empty body.
 
 ### Example
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `DELETE /items/articles/15`
@@ -953,8 +967,7 @@ mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, deleteItem } from '@directus/sdk/rest';
+import { createDirectus, rest, deleteItem } from '@directus/sdk';
 
 const client = createDirectus('https://directus.example.com').with(rest());
 
@@ -968,35 +981,12 @@ const result = await client.request(deleteItem('articles', '5'));
 
 Delete multiple existing items.
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `DELETE /items/:collection`
 
-```json
-// Array
-["key_1", "key_2", "key_3"]
-```
-
-```json
-// Object
-{
-	"field": ["key_1", "key_2", "key_3"]
-}
-```
-
-```json
-// Object containing query
-{
-	"query": {
-		"query_type": {
-			"field_1": {
-				"filter_condition": "value_1"
-			}
-		}
-	}
-}
-```
+Provide an array of item primary keys or an object containing either `keys` or `query` as your request body.
 
 </template>
 <template #graphql>
@@ -1013,24 +1003,15 @@ type Mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, deleteItems } from '@directus/sdk/rest';
+import { createDirectus, rest, deleteItems } from '@directus/sdk';
 
 const client = createDirectus('https://directus.example.com').with(rest());
 
-const result = await client.request(deleteItems('collection_name', ['id_1', 'id_2']));
+const result = await client.request(deleteItems(collection_name, item_id_array));
 
 //or
 
-const result2 = await client.request(
-	deleteItems('collection_name', {
-		query_type: {
-			field_1: {
-				filter_condition: 'value_1',
-			},
-		},
-	})
-);
+const result = await client.request(deleteItems(collection_name, query_object));
 ```
 
 </template>
@@ -1050,7 +1031,7 @@ Empty body.
 
 ### Example
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `DELETE /items/articles`
@@ -1097,8 +1078,7 @@ mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, deleteItems } from '@directus/sdk/rest';
+import { createDirectus, rest, deleteItems } from '@directus/sdk';
 
 const client = createDirectus('https://directus.example.com').with(rest());
 
@@ -1106,7 +1086,7 @@ const result = await client.request(deleteItems('articles', ['6', '7']));
 
 //or
 
-const result2 = await client.request(
+const result = await client.request(
 	deleteItems('articles', {
 		filter: {
 			status: {

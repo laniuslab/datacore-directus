@@ -1,11 +1,12 @@
 import type { DirectusPanel } from '../../../schema/panel.js';
 import type { ApplyQueryFields, Query } from '../../../types/index.js';
+import { throwIfEmpty } from '../../utils/index.js';
 import type { RestCommand } from '../../types.js';
 
 export type UpdatePanelOutput<
 	Schema extends object,
 	TQuery extends Query<Schema, Item>,
-	Item extends object = DirectusPanel<Schema>
+	Item extends object = DirectusPanel<Schema>,
 > = ApplyQueryFields<Schema, Item, TQuery['fields']>;
 
 /**
@@ -14,19 +15,24 @@ export type UpdatePanelOutput<
  * @param item
  * @param query
  * @returns Returns the panel objects for the updated panels.
+ * @throws Will throw if keys is empty
  */
 export const updatePanels =
 	<Schema extends object, const TQuery extends Query<Schema, DirectusPanel<Schema>>>(
 		keys: DirectusPanel<Schema>['id'][],
 		item: Partial<DirectusPanel<Schema>>,
-		query?: TQuery
+		query?: TQuery,
 	): RestCommand<UpdatePanelOutput<Schema, TQuery>[], Schema> =>
-	() => ({
-		path: `/panels`,
-		params: query ?? {},
-		body: JSON.stringify({ keys, data: item }),
-		method: 'PATCH',
-	});
+	() => {
+		throwIfEmpty(keys, 'Keys cannot be empty');
+
+		return {
+			path: `/panels`,
+			params: query ?? {},
+			body: JSON.stringify({ keys, data: item }),
+			method: 'PATCH',
+		};
+	};
 
 /**
  * Update an existing panel.
@@ -34,16 +40,21 @@ export const updatePanels =
  * @param item
  * @param query
  * @returns Returns the panel object for the updated panel.
+ * @throws Will throw if key is empty
  */
 export const updatePanel =
 	<Schema extends object, const TQuery extends Query<Schema, DirectusPanel<Schema>>>(
 		key: DirectusPanel<Schema>['id'],
 		item: Partial<DirectusPanel<Schema>>,
-		query?: TQuery
+		query?: TQuery,
 	): RestCommand<UpdatePanelOutput<Schema, TQuery>, Schema> =>
-	() => ({
-		path: `/panels/${key}`,
-		params: query ?? {},
-		body: JSON.stringify(item),
-		method: 'PATCH',
-	});
+	() => {
+		throwIfEmpty(key, 'Key cannot be empty');
+
+		return {
+			path: `/panels/${key}`,
+			params: query ?? {},
+			body: JSON.stringify(item),
+			method: 'PATCH',
+		};
+	};

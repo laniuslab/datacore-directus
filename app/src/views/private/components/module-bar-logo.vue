@@ -1,28 +1,9 @@
-<template>
-	<component
-		:is="url ? 'a' : 'div'"
-		v-tooltip.right="urlTooltip"
-		:href="url"
-		:target="url ? '_blank' : undefined"
-		:rel="url ? 'noopener noreferrer' : undefined"
-		class="module-bar-logo"
-		:class="{ loading: showLoader }"
-	>
-		<!-- MV-DATACORE -->
-		<template v-if="customLogoPath">
-			<img class="custom-logo" :src="customLogoPath" alt="Project Logo" />
-		</template>
-		<img v-else class="custom-logo" :src="initialLogoPath" alt="Project Logo" />
-		<!-- MV-DATACORE [END] -->
-	</component>
-</template>
-
 <script setup lang="ts">
 import { useRequestsStore } from '@/stores/requests';
 import { useSettingsStore } from '@/stores/settings';
-import { getRootPath } from '@/utils/get-root-path';
 import { computed, ref, toRefs, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { getRootPath } from '@/utils/get-root-path';
 
 const { t } = useI18n();
 
@@ -49,7 +30,7 @@ watch(
 	() => queueHasItems.value,
 	(hasItems) => {
 		if (hasItems) showLoader.value = true;
-	}
+	},
 );
 
 const url = computed(() => settingsStore.settings?.project_url);
@@ -58,6 +39,25 @@ const urlTooltip = computed(() => {
 	return settingsStore.settings?.project_url ? t('view_project') : false;
 });
 </script>
+
+<template>
+	<component
+		:is="url ? 'a' : 'div'"
+		v-tooltip.right="urlTooltip"
+		:href="url"
+		:target="url ? '_blank' : undefined"
+		:rel="url ? 'noopener noreferrer' : undefined"
+		class="module-bar-logo"
+		:class="{ loading: showLoader }"
+	>
+		<!-- MV-DATACORE -->
+		<template v-if="customLogoPath">
+			<img class="custom-logo" :src="customLogoPath" alt="Project Logo" />
+		</template>
+		<img v-else class="custom-logo" :src="initialLogoPath" alt="Project Logo" />
+		<!-- MV-DATACORE [END] -->
+	</component>
+</template>
 
 <style lang="scss" scoped>
 .module-bar-logo {
@@ -72,13 +72,56 @@ const urlTooltip = computed(() => {
 	width: 60px;
 	height: 60px;
 	padding: 12px;
-	background-color: var(--brand);
+	background-color: var(--project-color);
+
+	.v-progress-linear {
+		position: absolute;
+		right: 10px;
+		bottom: 5px;
+		left: 10px;
+		width: 40px;
+	}
 
 	.custom-logo {
 		display: block;
 		width: 40px;
 		height: 40px;
 		object-fit: contain;
+	}
+
+	.logo {
+		position: absolute;
+		top: 18px;
+		left: 10px;
+		width: 40px;
+		height: 32px;
+		margin: 0 auto;
+		background-image: url('../../../assets/sprite.svg');
+		background-position: 0% 0%;
+		background-size: 600px 32px;
+	}
+
+	.running {
+		animation: 560ms run steps(14) infinite;
+	}
+}
+
+.fade-enter-active {
+	transition: opacity var(--slow) var(--transition);
+}
+
+.fade-leave-active {
+	transition: opacity var(--medium) var(--transition);
+}
+
+.fade-enter-from,
+.fade-leave-to {
+	opacity: 0;
+}
+
+@keyframes run {
+	100% {
+		background-position: 100%;
 	}
 }
 </style>

@@ -1,17 +1,3 @@
-<template>
-	<private-view :title="t('insights')">
-		<template #navigation>
-			<insights-navigation />
-		</template>
-
-		<div v-if="!currentDashboard" class="not-found">
-			<v-info :title="t('page_not_found')" icon="not_interested">
-				{{ t('page_not_found_body') }}
-			</v-info>
-		</div>
-	</private-view>
-</template>
-
 <script>
 import { defineComponent } from 'vue';
 import InsightsNavigation from '../components/navigation.vue';
@@ -26,6 +12,20 @@ export default defineComponent({
 	},
 });
 </script>
+
+<template>
+	<private-view :title="t('insights')">
+		<template #navigation>
+			<insights-navigation />
+		</template>
+
+		<div v-if="!currentDashboard" class="not-found">
+			<v-info :title="t('page_not_found')" icon="not_interested">
+				{{ t('page_not_found_body') }}
+			</v-info>
+		</div>
+	</private-view>
+</template>
 
 <style scoped>
 .not-found {

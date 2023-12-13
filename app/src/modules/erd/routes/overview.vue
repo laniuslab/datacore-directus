@@ -1,28 +1,3 @@
-<template>
-	<private-view :title="t('erd_viewer') + ' - ' + collectionName">
-		<template #title-outer:prepend>
-			<v-button class="header-icon" rounded disabled icon secondary>
-				<v-icon name="insights" />
-			</v-button>
-		</template>
-
-		<template #navigation>
-			<ERDNavigation :collections="relatedCollections" />
-		</template>
-
-		<template #actions></template>
-
-		<template #sidebar>
-			<sidebar-detail icon="info" :title="t('information')" close>
-				<div v-md="t('page_help_insights_overview')" class="page-description" />
-			</sidebar-detail>
-		</template>
-		<div v-viewer class="images">
-			<img v-for="src in [url]" :key="src" :src="src" style="max-height: 700px" />
-		</div>
-	</private-view>
-</template>
-
 <script lang="ts">
 import api from '@/api';
 import { useCollectionsStore } from '@/stores/collections';
@@ -121,6 +96,31 @@ export default defineComponent({
 	},
 });
 </script>
+
+<template>
+	<private-view :title="t('erd_viewer') + ' - ' + collectionName">
+		<template #title-outer:prepend>
+			<v-button class="header-icon" rounded disabled icon secondary>
+				<v-icon name="insights" />
+			</v-button>
+		</template>
+
+		<template #navigation>
+			<ERDNavigation :collections="relatedCollections" />
+		</template>
+
+		<template #actions></template>
+
+		<template #sidebar>
+			<sidebar-detail icon="info" :title="t('information')" close>
+				<div v-md="t('page_help_insights_overview')" class="page-description" />
+			</sidebar-detail>
+		</template>
+		<div v-viewer class="images">
+			<img v-for="src in [url]" :key="src" :src="src" style="max-height: 700px" />
+		</div>
+	</private-view>
+</template>
 
 <style scoped>
 .v-table {

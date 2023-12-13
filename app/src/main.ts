@@ -1,8 +1,8 @@
 /* eslint-disable no-console */
 
 import { getVueComponentName } from '@/utils/get-vue-component-name';
-import { createHead } from '@unhead/vue';
 import { createPinia } from 'pinia';
+import { createHead } from '@unhead/vue';
 import { createApp } from 'vue';
 import App from './app.vue';
 import { registerComponents } from './components/register';
@@ -16,8 +16,8 @@ import { registerViews } from './views/register';
 
 // MV-DATACORE
 import 'viewerjs/dist/viewer.css';
-// MV-DATACORE [END]
 import VueViewer from 'v-viewer';
+// MV-DATACORE [END]
 
 init();
 
@@ -27,7 +27,7 @@ async function init() {
 	console.log(DIRECTUS_LOGO);
 
 	console.info(
-		`Hey! Interested in helping build this open-source data management platform?\nIf so, join our growing team of contributors at: https://directus.chat`
+		`Hey! Interested in helping build this open-source data management platform?\nIf so, join our growing team of contributors at: https://directus.chat`,
 	);
 
 	if (import.meta.env.DEV) {
@@ -40,12 +40,10 @@ async function init() {
 
 	const app = createApp(App);
 
-	app.use(router);
 	app.use(i18n);
+	app.use(VueViewer.setDefaults); // MV-DATACORE
 	app.use(createPinia());
 	app.use(createHead());
-
-	app.use(VueViewer); // MV-DATACORE
 
 	app.config.errorHandler = (err, vm, info) => {
 		const source = getVueComponentName(vm);
@@ -59,8 +57,10 @@ async function init() {
 	registerViews(app);
 
 	await loadExtensions();
-
 	registerExtensions(app);
+
+	// Add router after loading of extensions to ensure all routes are registered
+	app.use(router);
 
 	app.mount('#app');
 

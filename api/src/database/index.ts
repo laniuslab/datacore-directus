@@ -1,5 +1,5 @@
-import { createInspector } from '@directus/schema';
 import type { SchemaInspector } from '@directus/schema';
+import { createInspector } from '@directus/schema';
 import fse from 'fs-extra';
 import type { Knex } from 'knex';
 import knex from 'knex';
@@ -10,6 +10,7 @@ import path from 'path';
 import { performance } from 'perf_hooks';
 import { promisify } from 'util';
 import env from '../env.js';
+import { getExtensionsPath } from '../extensions/lib/get-extensions-path.js';
 import logger from '../logger.js';
 import type { DatabaseClient } from '../types/index.js';
 import { getConfigFromEnv } from '../utils/get-config-from-env.js';
@@ -58,6 +59,14 @@ export default function getDatabase(): Knex {
 				requiredEnvVars.push('DB_HOST', 'DB_PORT', 'DB_DATABASE', 'DB_USER');
 			} else {
 				requiredEnvVars.push('DB_CONNECTION_STRING');
+			}
+
+			break;
+		case 'mysql':
+			if (!env['DB_SOCKET_PATH']) {
+				requiredEnvVars.push('DB_HOST', 'DB_PORT', 'DB_DATABASE', 'DB_USER', 'DB_PASSWORD');
+			} else {
+				requiredEnvVars.push('DB_DATABASE', 'DB_USER', 'DB_PASSWORD', 'DB_SOCKET_PATH');
 			}
 
 			break;
@@ -250,13 +259,13 @@ export async function validateMigrations(): Promise<boolean> {
 	try {
 		let migrationFiles = await fse.readdir(path.join(__dirname, 'migrations'));
 
-		const customMigrationsPath = path.resolve(env['EXTENSIONS_PATH'], 'migrations');
+		const customMigrationsPath = path.resolve(getExtensionsPath(), 'migrations');
 
 		let customMigrationFiles =
 			((await fse.pathExists(customMigrationsPath)) && (await fse.readdir(customMigrationsPath))) || [];
 
 		migrationFiles = migrationFiles.filter(
-			(file: string) => file.startsWith('run') === false && file.endsWith('.d.ts') === false
+			(file: string) => file.startsWith('run') === false && file.endsWith('.d.ts') === false,
 		);
 
 		customMigrationFiles = customMigrationFiles.filter((file: string) => file.endsWith('.js'));
@@ -266,7 +275,7 @@ export async function validateMigrations(): Promise<boolean> {
 		const requiredVersions = migrationFiles.map((filePath) => filePath.split('-')[0]);
 
 		const completedVersions = (await database.select('version').from('directus_migrations')).map(
-			({ version }) => version
+			({ version }) => version,
 		);
 
 		return requiredVersions.every((version) => completedVersions.includes(version));
@@ -332,7 +341,7 @@ async function validateDatabaseCharset(database?: Knex): Promise<void> {
 
 		if (inconsistencies) {
 			logger.warn(
-				`Some tables and columns do not match your database's default collation (${collation}):\n${inconsistencies}`
+				`Some tables and columns do not match your database's default collation (${collation}):\n${inconsistencies}`,
 			);
 		}
 	}

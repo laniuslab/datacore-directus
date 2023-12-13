@@ -1,11 +1,12 @@
 import type { DirectusWebhook } from '../../../schema/webhook.js';
 import type { ApplyQueryFields, Query } from '../../../types/index.js';
+import { throwIfEmpty } from '../../utils/index.js';
 import type { RestCommand } from '../../types.js';
 
 export type ReadWebhookOutput<
 	Schema extends object,
 	TQuery extends Query<Schema, Item>,
-	Item extends object = DirectusWebhook<Schema>
+	Item extends object = DirectusWebhook<Schema>,
 > = ApplyQueryFields<Schema, Item, TQuery['fields']>;
 
 /**
@@ -15,7 +16,7 @@ export type ReadWebhookOutput<
  */
 export const readWebhooks =
 	<Schema extends object, const TQuery extends Query<Schema, DirectusWebhook<Schema>>>(
-		query?: TQuery
+		query?: TQuery,
 	): RestCommand<ReadWebhookOutput<Schema, TQuery>[], Schema> =>
 	() => ({
 		path: `/webhooks`,
@@ -28,14 +29,19 @@ export const readWebhooks =
  * @param key The primary key of the dashboard
  * @param query The query parameters
  * @returns Returns a Webhook object if a valid primary key was provided.
+ * @throws Will throw if key is empty
  */
 export const readWebhook =
 	<Schema extends object, const TQuery extends Query<Schema, DirectusWebhook<Schema>>>(
 		key: DirectusWebhook<Schema>['id'],
-		query?: TQuery
+		query?: TQuery,
 	): RestCommand<ReadWebhookOutput<Schema, TQuery>, Schema> =>
-	() => ({
-		path: `/webhooks/${key}`,
-		params: query ?? {},
-		method: 'GET',
-	});
+	() => {
+		throwIfEmpty(String(key), 'Key cannot be empty');
+
+		return {
+			path: `/webhooks/${key}`,
+			params: query ?? {},
+			method: 'GET',
+		};
+	};

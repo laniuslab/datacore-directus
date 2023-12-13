@@ -1,9 +1,3 @@
-<template>
-	<component :is="as" class="badge">
-		<slot />
-	</component>
-</template>
-
 <script setup lang="ts">
 withDefaults(
 	defineProps<{
@@ -11,9 +5,15 @@ withDefaults(
 	}>(),
 	{
 		as: 'p',
-	}
+	},
 );
 </script>
+
+<template>
+	<component :is="as" class="badge">
+		<slot />
+	</component>
+</template>
 
 <style scoped>
 .badge {
@@ -21,5 +21,8 @@ withDefaults(
 	font-size: 14px;
 	font-weight: 700;
 	text-transform: uppercase;
+}
+.badge :deep(*) {
+	color: inherit !important;
 }
 </style>

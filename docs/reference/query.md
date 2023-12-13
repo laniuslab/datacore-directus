@@ -59,36 +59,70 @@ sections.item:videos.source
 
 In GraphQL, this can be achieved using Union Types.
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 ```
-?fields=title,body,featured_image.*
-
-// or
-
-?fields[]=title
-&fields[]=body
-&fields[]=featured_image.*
+GET /items/articles
+	?fields[]=title
+	&fields[]=sections.item:headings.title
+	&fields[]=sections.item:headings.level
+	&fields[]=sections.item:paragraphs.body
+	&fields[]=sections.item:videos.source
 ```
 
 </template>
 <template #graphql>
 
-` // Natively supported in GraphQL`
+```graphql
+# Using native GraphQL Union types
+
+query {
+	articles {
+		sections {
+			item {
+				... on headings {
+					title
+					level
+				}
+
+				... on paragraphs {
+					body
+				}
+
+				... on videos {
+					source
+				}
+			}
+		}
+	}
+}
+```
 
 </template>
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, readItems } from '@directus/sdk/rest';
+import { createDirectus, rest, readItems } from '@directus/sdk';
 
 const client = createDirectus('https://directus.example.com').with(rest());
 
 const result = await client.request(
 	readItems('articles', {
-		fields: ['title', 'date_created', { authors: ['name'] }],
+		fields: [
+			'title',
+			{
+				sections: [
+					{
+						item: {
+							headings: ['title', 'level'],
+							paragraphs: ['body'],
+							videos: ['source'],
+						}
+					}
+				]
+			}
+		],
 	})
 );
 ```
@@ -153,7 +187,7 @@ filter the related items themselves, take a look at [the `deep` parameter](#deep
 
 :::
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 ```
@@ -179,8 +213,7 @@ query {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, readItems } from '@directus/sdk/rest';
+import { createDirectus, rest, readItems } from '@directus/sdk';
 
 const client = createDirectus('https://directus.example.com').with(rest());
 
@@ -234,7 +267,7 @@ root item's fields, related item fields are not included.
 Find all items that mention Directus\
 `Directus`
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `?search=Directus`
@@ -254,8 +287,7 @@ query {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, readItems } from '@directus/sdk/rest';
+import { createDirectus, rest, readItems } from '@directus/sdk';
 
 const client = createDirectus('https://directus.example.com').with(rest());
 
@@ -281,12 +313,12 @@ Sort by creation date descending\
 `-date_created`
 
 Sort by a "sort" field, followed by publish date descending\
-`sort, -publish_date`
+`sort,-publish_date`
 
 Sort by a "sort" field, followed by a nested author's name\
-`sort, -author.name`
+`sort,-author.name`
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 ```
@@ -314,14 +346,13 @@ query {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, readItems } from '@directus/sdk/rest';
+import { createDirectus, rest, readItems } from '@directus/sdk';
 
 const client = createDirectus('https://directus.example.com').with(rest());
 
 const result = await client.request(
 	readItems('articles', {
-		sort: '-date_created', //Sort by creation date descending
+		sort: ['sort', '-date_created'], //Sort by sort field and creation date descending
 	})
 );
 ```
@@ -338,17 +369,20 @@ Set the maximum number of items that will be returned. The default limit is set 
 Get the first 200 items\
 `200`
 
-Get all items\
+Get the maximum allowed number of items\
 `-1`
 
-::: warning All Items
+::: warning Maximum Items
 
-Depending on the size of your collection, fetching unlimited data may result in degraded performance or timeouts, use
-with caution.
+Depending on the size of your collection, fetching the maximum amount of items may result in degraded performance or
+timeouts, use with caution.
+
+The maximum amount of items that can be requested on the API can be configured using the
+[`QUERY_LIMIT_MAX` variable](/self-hosted/config-options.html#general).
 
 :::
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `?limit=200`
@@ -368,8 +402,7 @@ query {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, readItems } from '@directus/sdk/rest';
+import { createDirectus, rest, readItems } from '@directus/sdk';
 
 const client = createDirectus('https://directus.example.com').with(rest());
 
@@ -392,7 +425,7 @@ Skip the first `n` items in the response. Can be used for pagination.
 Get items 101—200\
 `100`
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `?offset=100`
@@ -412,8 +445,7 @@ query {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, readItems } from '@directus/sdk/rest';
+import { createDirectus, rest, readItems } from '@directus/sdk';
 
 const client = createDirectus('https://directus.example.com').with(rest());
 
@@ -440,7 +472,7 @@ Get items 1-100\
 Get items 101-200\
 `2`
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `?page=2`
@@ -460,8 +492,7 @@ query {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, readItems } from '@directus/sdk/rest';
+import { createDirectus, rest, readItems } from '@directus/sdk';
 
 const client = createDirectus('https://directus.example.com').with(rest());
 
@@ -493,6 +524,42 @@ The following aggregation functions are available in Directus:
 | `max`           | Return the highest value in the field                         |
 | `countAll`      | Equivalent to `?aggregate[count]=*` (GraphQL only)            |
 
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
+<template #rest>
+
+```
+?aggregate[count]=*
+```
+
+</template>
+<template #graphql>
+
+```graphql
+query {
+	articles_aggregated {
+		countAll
+	}
+}
+```
+
+</template>
+<template #sdk>
+
+```js
+import { createDirectus, rest, aggregate } from '@directus/sdk';
+
+const client = createDirectus('https://directus.example.com').with(rest());
+
+const result = await client.request(
+	aggregate('articles', {
+		aggregate: { count: '*' },
+	})
+);
+```
+
+</template>
+</SnippetToggler>
+
 ### Grouping
 
 By default, the above aggregation functions run on the whole dataset. To allow for more flexible reporting, you can
@@ -502,11 +569,11 @@ value. This allows for things like _"Average rating per month"_ or _"Total sales
 The `groupBy` query allows for grouping on multiple fields simultaneously. Combined with the [Functions](#functions),
 this allows for aggregate reporting per year-month-date.
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 ```
-?aggregate[avg]=cost
+?aggregate[count]=views,comments
 &groupBy[]=author
 &groupBy[]=year(publish_date)
 ```
@@ -518,8 +585,9 @@ this allows for aggregate reporting per year-month-date.
 query {
 	articles_aggregated(groupBy: ["author", "year(publish_date)"]) {
 		group
-		sum {
-			revenue
+		count {
+			views
+			comments
 		}
 	}
 }
@@ -529,15 +597,16 @@ query {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, aggregate } from '@directus/sdk/rest';
+import { createDirectus, rest, aggregate } from '@directus/sdk';
 
 const client = createDirectus('https://directus.example.com').with(rest());
 
 const result = await client.request(
 	aggregate('articles', {
-		aggregate: { count: '*' },
-		groupBy: 'authors',
+		aggregate: {
+			count: ['views', 'comments']
+		},
+		groupBy: ['authors', 'year(publish_date)'],
 	})
 );
 ```
@@ -575,7 +644,7 @@ Only get 3 related articles, with only the top rated comment nested
 }
 ```
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 ```
@@ -608,8 +677,7 @@ query {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, readItems } from '@directus/sdk/rest';
+import { createDirectus, rest, readItems } from '@directus/sdk';
 
 const client = createDirectus('https://directus.example.com').with(staticToken()).with(rest());
 
@@ -640,7 +708,7 @@ Alias for nested fields, f.e. `field.nested`, will not work.
 
 :::
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 ```
@@ -672,8 +740,7 @@ query {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, readItems } from '@directus/sdk/rest';
+import { createDirectus, rest, readItems } from '@directus/sdk';
 
 const client = createDirectus('https://directus.example.com').with(staticToken()).with(rest());
 
@@ -705,7 +772,7 @@ Save the current API response to a file.
 
 Saves the API response to a file. Accepts one of `csv`, `json`, `xml`, `yaml`.
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 ```
@@ -767,7 +834,7 @@ function name as the nested field (see the example that follows).
 
 :::
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 ```
@@ -794,8 +861,7 @@ query {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, readItems } from '@directus/sdk/rest';
+import { createDirectus, rest, readItems } from '@directus/sdk';
 
 const client = createDirectus('https://directus.example.com').with(rest());
 
@@ -814,6 +880,14 @@ const result = await client.request(
 Metadata allows you to retrieve some additional information about the items in the collection you're fetching. `*` can
 be used as a wildcard to retrieve all metadata.
 
+::: warning DEPRECATED
+
+The `metadata` parameter will be removed in the future in favor of [Aggregation](#aggregation-grouping). To receive the
+previous `total_count` and `filter_count` values, please use the `aggregation[count]` parameter instead - either with or
+without an additional `filter` parameter respectively.
+
+:::
+
 ### Total Count
 
 Returns the total item count of the collection you're querying.
@@ -831,7 +905,7 @@ For more details, see: [Aggregation & Grouping](#aggregation-grouping)
 
 :::
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 ```

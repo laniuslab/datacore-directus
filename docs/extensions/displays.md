@@ -3,10 +3,10 @@ description: A guide on how to build custom Display Extensions in Directus.
 readTime: 4 min read
 ---
 
-# Custom Displays <small></small>
+# Custom Displays
 
 > Displays are small inline components that allow you to create new ways of viewing field values throughout the App.
-> [Learn more about Displays](/user-guide/overview/glossary#displays).
+> They are developed using Vue.js. [Learn more about Displays](/user-guide/overview/glossary#displays).
 
 ## Extension Entrypoint
 
@@ -136,3 +136,13 @@ export default {
 If you prefer to use the Vue Options API, you can inject the `api` and `stores` properties directly.
 
 :::
+
+## Guides
+
+Learn how to build displays with our official guides:
+
+<GuidesListExtensions type="Displays" />
+
+<script setup>
+import GuidesListExtensions from '../.vitepress/components/guides/GuidesListExtensions.vue'
+</script>

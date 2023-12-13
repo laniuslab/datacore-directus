@@ -1,12 +1,7 @@
-<template>
-	<div class="system-raw-editor" :class="{ disabled, 'multi-line': isMultiLine }">
-		<div ref="codemirrorEl"></div>
-	</div>
-</template>
-
 <script setup lang="ts">
 import { useWindowSize } from '@/composables/use-window-size';
-import { parseJSON } from '@directus/utils';
+import { getStringifiedValue } from '@/utils/get-stringified-value';
+import { isValidJSON, parseJSON } from '@directus/utils';
 import CodeMirror from 'codemirror';
 import 'codemirror/addon/mode/simple';
 import { computed, onMounted, ref, unref, watch } from 'vue';
@@ -29,7 +24,7 @@ const props = withDefaults(
 		type: undefined,
 		placeholder: undefined,
 		language: 'mustache',
-	}
+	},
 );
 
 const emit = defineEmits(['input']);
@@ -55,7 +50,7 @@ onMounted(async () => {
 
 		codemirror = CodeMirror(codemirrorEl.value, {
 			mode: props.language,
-			value: unref(isObjectLike) ? JSON.stringify(props.value, null, 4) : String(props.value ?? ''),
+			value: getStringifiedValue(props.value, unref(isObjectLike)),
 			tabSize: 0,
 			autoRefresh: true,
 			indentUnit: 4,
@@ -99,14 +94,10 @@ onMounted(async () => {
 
 			if (origin === 'setValue') return;
 
-			if (unref(isObjectLike)) {
-				try {
-					emit('input', content !== '' ? parseJSON(content) : null);
-				} catch {
-					// Skip emitting invalid JSON
-				}
+			if (content === '') {
+				emit('input', null);
 			} else {
-				emit('input', content !== '' ? content : null);
+				emit('input', unref(isObjectLike) && isValidJSON(content) ? parseJSON(content) : content);
 			}
 		});
 	}
@@ -128,7 +119,7 @@ watch(
 		codemirror?.setOption('readOnly', readOnly.value);
 		codemirror?.setOption('cursorBlinkRate', disabled ? -1 : 530);
 	},
-	{ immediate: true }
+	{ immediate: true },
 );
 
 watch(
@@ -137,36 +128,42 @@ watch(
 		const currentValue = codemirror?.getValue();
 
 		if (currentValue !== newValue) {
-			codemirror?.setValue(unref(isObjectLike) ? JSON.stringify(newValue, null, 4) : String(newValue ?? ''));
+			codemirror?.setValue(getStringifiedValue(newValue, unref(isObjectLike)));
 		}
-	}
+	},
 );
 </script>
+
+<template>
+	<div class="system-raw-editor" :class="{ disabled, 'multi-line': isMultiLine }">
+		<div ref="codemirrorEl"></div>
+	</div>
+</template>
 
 <style lang="scss" scoped>
 .system-raw-editor {
 	position: relative;
-	height: var(--input-height);
-	min-height: var(--input-height);
-	border-radius: var(--border-radius);
+	height: var(--theme--form--field--input--height);
+	min-height: var(--theme--form--field--input--height);
+	border-radius: var(--theme--border-radius);
 
 	:deep(.CodeMirror) {
 		width: 100%;
 		line-height: 18px;
-		padding: var(--input-padding);
+		padding: var(--theme--form--field--input--padding);
 
 		.cm-tag {
-			color: var(--foreground-subdued);
+			color: var(--theme--form--field--input--foreground-subdued);
 		}
 
 		.cm-variable-2 {
-			color: var(--secondary);
+			color: var(--theme--secondary);
 		}
 	}
 
 	:deep(.CodeMirror),
 	:deep(.CodeMirror-scroll) {
-		max-height: var(--input-height);
+		max-height: var(--theme--form--field--input--height);
 	}
 
 	&.multi-line {

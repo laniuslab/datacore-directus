@@ -1,95 +1,3 @@
-<template>
-	<private-view
-		:title="
-			currentCollectionName ? `${t('fields-query-builder')} - ${currentCollectionName}` : `${t('fields-query-builder')}`
-		"
-	>
-		<template #title-outer:prepend>
-			<v-button class="header-icon" rounded disabled icon secondary>
-				<v-icon name="insights" />
-			</v-button>
-		</template>
-
-		<template #navigation>
-			<QueryNavigation :current-collection="currentCollectionName" />
-		</template>
-
-		<template #actions></template>
-
-		<template #sidebar>
-			<sidebar-detail icon="info" :title="t('information')" close>
-				<div v-md="t('page_help_insights_overview')" class="page-description" />
-			</sidebar-detail>
-		</template>
-
-		<div class="padding-box">
-			<div class="flex-container">
-				<div class="col-5">
-					<div class="mb-10"><span class="title type-label">Field Selector</span></div>
-					<v-card class="field-list">
-						<v-field-list :collection="currentCollectionName" :disabled-fields="fieldNames" @add="addField" />
-					</v-card>
-				</div>
-				<div class="col-5" style="max-width: 100vh !important; overflow-x: auto">
-					<div class="mb-10"><span class="title type-label">Field List</span></div>
-					<v-checkbox v-model="useWildCard" @change="updateUrlValue()">Use Wildcard</v-checkbox>
-					<v-table :items="filteredFields" :headers="headers" class="mt-6" :show-resize="true">
-						<template #[`item.fieldName`]="{ item }">{{ getFieldDisplayName(item.name) }}</template>
-						<template #[`item.useWildcard`]="{ item }">
-							<v-checkbox v-model="wildCards[item.name]" :disabled="!item.hasChildren"></v-checkbox>
-						</template>
-						<template #[`item.action`]="{ item }">
-							<v-icon
-								v-tooltip="t('delete_field')"
-								class="delete-field"
-								name="delete"
-								clickable
-								@click="removeField(item.name)"
-							/>
-						</template>
-					</v-table>
-					<div class="footer">
-						<div class="pagination">
-							<v-pagination
-								v-if="totalPages > 1"
-								:length="totalPages"
-								:total-visible="3"
-								show-first-last
-								:model-value="page"
-								@update:model-value="toPage"
-							/>
-						</div>
-					</div>
-				</div>
-			</div>
-
-			<div class="flex-container mt-15">
-				<v-input
-					v-model="url"
-					v-tooltip="'Press enter to process'"
-					small
-					placeholder="Input your url"
-					@keypress.enter="editUrl"
-				/>
-			</div>
-
-			<div class="flex-container space-x-4 mt-15">
-				<div class="col-5" style="max-width: 100vh">
-					<div class="mb-10 flex-container justify-between">
-						<span class="title type-label">Result</span>
-						<v-button x-small primary @click="tryIt">Try</v-button>
-					</div>
-					<interface-input-code class="mt-6" :value="json" language="json" :line-wrapping="true" />
-				</div>
-				<div class="col-5" style="max-width: 100vh">
-					<div class="mb-10"><span class="title type-label">Response</span></div>
-					<interface-input-code class="mt-9" :value="response" language="json" :line-wrapping="true" />
-				</div>
-			</div>
-		</div>
-	</private-view>
-</template>
-
 <script lang="ts">
 import api from '@/api';
 import VCard from '@/components/v-card.vue';
@@ -169,7 +77,7 @@ export default defineComponent({
 					return fieldName;
 				}),
 				null,
-				2
+				2,
 			);
 		});
 
@@ -355,7 +263,7 @@ export default defineComponent({
 			return relations.find(
 				(relation: Relation) =>
 					(relation.collection === field.collection && relation.field === field.field) ||
-					(relation.related_collection === field.collection && relation.meta?.one_field === field.field)
+					(relation.related_collection === field.collection && relation.meta?.one_field === field.field),
 			);
 		}
 
@@ -438,7 +346,7 @@ export default defineComponent({
 
 								addField(
 									generatedFieldName.length ? generatedFieldName.join('.') : (lastField as string),
-									currentUseWildcard
+									currentUseWildcard,
 								);
 							}
 						}
@@ -468,6 +376,98 @@ export default defineComponent({
 	},
 });
 </script>
+
+<template>
+	<private-view
+		:title="
+			currentCollectionName ? `${t('fields-query-builder')} - ${currentCollectionName}` : `${t('fields-query-builder')}`
+		"
+	>
+		<template #title-outer:prepend>
+			<v-button class="header-icon" rounded disabled icon secondary>
+				<v-icon name="insights" />
+			</v-button>
+		</template>
+
+		<template #navigation>
+			<QueryNavigation :current-collection="currentCollectionName" />
+		</template>
+
+		<template #actions></template>
+
+		<template #sidebar>
+			<sidebar-detail icon="info" :title="t('information')" close>
+				<div v-md="t('page_help_insights_overview')" class="page-description" />
+			</sidebar-detail>
+		</template>
+
+		<div class="padding-box">
+			<div class="flex-container">
+				<div class="col-5">
+					<div class="mb-10"><span class="title type-label">Field Selector</span></div>
+					<v-card class="field-list">
+						<v-field-list :collection="currentCollectionName" :disabled-fields="fieldNames" @add="addField" />
+					</v-card>
+				</div>
+				<div class="col-5" style="max-width: 100vh !important; overflow-x: auto">
+					<div class="mb-10"><span class="title type-label">Field List</span></div>
+					<v-checkbox v-model="useWildCard" @change="updateUrlValue()">Use Wildcard</v-checkbox>
+					<v-table :items="filteredFields" :headers="headers" class="mt-6" show-resize>
+						<template #[`item.fieldName`]="{ item }">{{ getFieldDisplayName(item.name) }}</template>
+						<template #[`item.useWildcard`]="{ item }">
+							<v-checkbox v-model="wildCards[item.name]" :disabled="!item.hasChildren"></v-checkbox>
+						</template>
+						<template #[`item.action`]="{ item }">
+							<v-icon
+								v-tooltip="t('delete_field')"
+								class="delete-field"
+								name="delete"
+								clickable
+								@click="removeField(item.name)"
+							/>
+						</template>
+					</v-table>
+					<div class="footer">
+						<div class="pagination">
+							<v-pagination
+								v-if="totalPages > 1"
+								:length="totalPages"
+								:total-visible="3"
+								show-first-last
+								:model-value="page"
+								@update:model-value="toPage"
+							/>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="flex-container mt-15">
+				<v-input
+					v-model="url"
+					v-tooltip="'Press enter to process'"
+					small
+					placeholder="Input your url"
+					@keypress.enter="editUrl"
+				/>
+			</div>
+
+			<div class="flex-container space-x-4 mt-15">
+				<div class="col-5" style="max-width: 100vh">
+					<div class="mb-10 flex-container justify-between">
+						<span class="title type-label">Result</span>
+						<v-button x-small primary @click="tryIt">Try</v-button>
+					</div>
+					<interface-input-code class="mt-6" :value="json" language="json" line-wrapping />
+				</div>
+				<div class="col-5" style="max-width: 100vh">
+					<div class="mb-10"><span class="title type-label">Response</span></div>
+					<interface-input-code class="mt-9" :value="response" language="json" line-wrapping />
+				</div>
+			</div>
+		</div>
+	</private-view>
+</template>
 
 <style lang="scss" scoped>
 .padding-box {

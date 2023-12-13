@@ -4,6 +4,10 @@ readTime: 10 min read
 pageClass: page-reference
 ---
 
+<script setup lang="ts">
+import { data as packages } from '@/data/packages.data.js';
+</script>
+
 # Accessing Files
 
 > Every file managed by the platform is uploaded to the configured storage adapter, and its associated metadata is
@@ -80,7 +84,7 @@ exist, it is dynamically generated and immediately returned.
 
 ### Preset Transformations
 
-- **`key`** — This **key** of the [Storage Asset Preset](/user-guide/cloud/project-settings#files-thumbnails), a
+- **`key`** — This **key** of the [Storage Asset Preset](/user-guide/settings/project-settings#files-storage), a
   shortcut for the below parameters
 
 ### Custom Transformations
@@ -137,26 +141,102 @@ Below are four possible qualities (200x200 cover) to visually compare the balanc
 
 ### Preset
 
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
+<template #rest>
+
 ```
-example.com/assets/<file-id>?key=<key>
+GET /assets/<file-id>?key=<key>
 ```
+
+</template>
+<template #graphql>
+
+Not supported by GraphQL
+
+</template>
+<template #sdk>
+
+```js
+import { createDirectus, rest, readAssetRaw } from '@directus/sdk';
+
+const client = createDirectus('directus_project_url').with(rest());
+
+const result = await client.request(readAssetRaw('<file-id>', { key: '<key>' }));
+```
+
+</template>
+</SnippetToggler>
 
 ### Custom
 
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
+<template #rest>
+
 ```
-example.com/assets/<file-id>?fit=<fit>&width=<width>&height=<height>&quality=<quality>
-example.com/assets/1ac73658-8b62-4dea-b6da-529fbc9d01a4?fit=cover&width=200&height=200&quality=80
+GET /assets/<file-id>?fit=<fit>&width=<width>&height=<height>&quality=<quality>
 ```
+
+</template>
+<template #graphql>
+
+Not supported by GraphQL
+
+</template>
+<template #sdk>
+
+```js
+import { createDirectus, rest, readAssetRaw } from '@directus/sdk';
+
+const client = createDirectus('directus_project_url').with(rest());
+
+const result = await client.request(readAssetRaw('1ac73658-8b62-4dea-b6da-529fbc9d01a4', {
+	fit: '<fit>',
+	width: <width>,
+	height: <height>,
+	quality: <quality>,
+}));
+```
+
+</template>
+</SnippetToggler>
 
 ### Advanced
 
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
+<template #rest>
+
 ```
-?transforms=[
+GET /assets/<file-id>?transforms=[
 	["blur", 45],
 	["tint", "rgb(255, 0, 0)"],
 	["expand", { "right": 200, "bottom": 150 }]
 ]
 ```
+
+</template>
+<template #graphql>
+
+Not supported by GraphQL
+
+</template>
+<template #sdk>
+
+```js
+import { createDirectus, rest, readAssetRaw } from '@directus/sdk';
+
+const client = createDirectus('directus_project_url').with(rest());
+
+const result = await client.request(readAssetRaw('1ac73658-8b62-4dea-b6da-529fbc9d01a4', {
+	transforms: [
+		["blur", 45],
+		["tint", "rgb(255, 0, 0)"],
+		["expand", { "right": 200, "bottom": 150 }]
+	]
+}));
+```
+
+</template>
+</SnippetToggler>
 
 ## The File Object
 
@@ -194,13 +274,16 @@ Who updated the file last. Many-to-one to [users](/reference/system/users).
 Size of the file in bytes.
 
 `width` **number**\
-If the file is a(n) image/video, it's the width in px.
+If the file is a(n) image/video, it's the width in px.\
+This property is only auto-extracted for images.
 
 `height` **number**\
-If the file is a(n) image/video, it's the height in px.
+If the file is a(n) image/video, it's the height in px.\
+This property is only auto-extracted for images.
 
 `duration` **number**\
-If the file contains audio/video, it's the duration in milliseconds.
+If the file contains audio/video, it's the duration in milliseconds.\
+This property is not auto-extracted.
 
 `description` **string**\
 Description of the file.
@@ -257,10 +340,16 @@ List all files that exist in Directus.
 
 ### Request
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
-`GET /files` `SEARCH /files`
+`GET /files`
+
+`SEARCH /files`
+
+If using SEARCH you can provide a [query object](/reference/query) as the body of your request.
+
+[Learn more about SEARCH ->](/reference/introduction#search-http-method)
 
 </template>
 <template #graphql>
@@ -277,28 +366,15 @@ type Query {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, readFiles } from '@directus/sdk/rest';
+import { createDirectus, rest, readFiles } from '@directus/sdk';
 
-const client = createDirectus('https://directus.example.com').with(rest());
+const client = createDirectus('directus_project_url').with(rest());
 
-const result = await client.request(
-	readFiles({
-		query: {
-			query_type: {
-				field: {
-					query_operator: 'value',
-				},
-			},
-		},
-	})
-);
+const result = await client.request(readFiles(query_object));
 ```
 
 </template>
 </SnippetToggler>
-
-[Learn more about SEARCH ->](/reference/introduction#search-http-method)
 
 #### Query Parameters
 
@@ -311,10 +387,12 @@ be an empty array.
 
 ### Example
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
-`GET /files` `SEARCH /files`
+`GET /files`
+
+`SEARCH /files`
 
 </template>
 <template #graphql>
@@ -332,8 +410,7 @@ query {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, readFiles } from '@directus/sdk/rest';
+import { createDirectus, rest, readFiles } from '@directus/sdk';
 
 const client = createDirectus('https://directus.example.com').with(rest());
 
@@ -359,7 +436,7 @@ Retrieve a single file by primary key.
 
 ### Request
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `GET /files/:id`
@@ -379,12 +456,11 @@ type Query {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, readFiles } from '@directus/sdk/rest';
+import { createDirectus, rest, readFiles } from '@directus/sdk';
 
-const client = createDirectus('https://directus.example.com').with(rest());
+const client = createDirectus('directus_project_url').with(rest());
 
-const result = await client.request(readFile('file_id', query));
+const result = await client.request(readFile(file_id, query_object));
 ```
 
 </template>
@@ -400,7 +476,7 @@ Returns a [file object](#the-file-object) if a valid primary key was provided.
 
 ### Example
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `GET /files/0fca80c4-d61c-4404-9fd7-6ba86b64154d`
@@ -423,8 +499,7 @@ query {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, readFiles } from '@directus/sdk/rest';
+import { createDirectus, rest, readFiles } from '@directus/sdk';
 
 const client = createDirectus('https://directus.example.com').with(rest());
 
@@ -444,7 +519,7 @@ Upload a new file.
 
 ### Request
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `POST /files`
@@ -460,8 +535,7 @@ Not supported by GraphQL
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, uploadFiles } from '@directus/sdk/rest';
+import { createDirectus, rest, uploadFiles } from '@directus/sdk';
 
 const client = createDirectus('https://directus.example.com').with(rest());
 
@@ -496,23 +570,117 @@ Supports all [global query parameters](/reference/query).
 Returns the [file object](#the-file-object) for the uploaded file, or an array of [file objects](#the-file-object) if
 multiple files were uploaded at once.
 
+### Example
+
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
+<template #rest>
+
+`POST /files`
+
+```http
+
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="title"
+
+example
+--boundary
+Content-Disposition: form-data; name="file"; filename="example.txt"
+
+< ./example.txt
+
+--boundary
+```
+
+</template>
+<template #graphql>
+
+Not supported by GraphQL
+
+</template>
+<template #sdk>
+
+#### Web
+
+::: code-group
+
+```js-vue [index.js]
+import { createDirectus, rest, uploadFiles } from 'https://unpkg.com/@directus/sdk@{{ packages['@directus/sdk'].version.major }}';
+
+const client = createDirectus('https://directus.example.com').with(rest());
+
+const form = document.getElementById('upload-file');
+
+if (form) {
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+
+    const formData = new FormData(event.target);
+
+    const result = await client.request(uploadFiles(formData));
+
+    form.reset();
+  });
+}
+```
+
+```html [index.html]
+<!doctype html>
+<html>
+  <head></head>
+  <body>
+    <form id="upload-file">
+      <input type="text" name="title" placeholder="Title..." />
+      <input type="file" name="file" />
+      <button type="submit">Upload</button>
+    </form>
+    <script src="/index.js" type="module"></script>
+  </body>
+</html>
+```
+
+:::
+
+#### Node.js
+
+```js
+import { createDirectus, rest, uploadFiles } from '@directus/sdk';
+import { readFileSync } from 'node:fs';
+
+const client = createDirectus('https://directus.example.com').with(rest());
+
+const title = 'Example';
+const file = new Blob([readFileSync('example.txt')], { type: 'text/plain' });
+const fileName = 'example.txt';
+
+const formData = new FormData();
+formData.append('title', title);
+formData.append('file', file, fileName);
+
+const result = await client.request(uploadFiles(formData));
+```
+
+[Learn more about `FormData` ->](https://developer.mozilla.org/en-US/docs/Web/API/FormData)
+
+</template>
+</SnippetToggler>
+
 ## Import a File
 
 Import a file from the web
 
 ### Request
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `POST /files/import`
 
 ```json
 {
-	"url": "file_url",
-	"data": {
-		"file_field": "value_1"
-	}
+	"url": file_url,
+	"data": file_object
 }
 ```
 
@@ -531,16 +699,11 @@ type Mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, importFile } from '@directus/sdk/rest';
+import { createDirectus, rest, importFile } from '@directus/sdk';
 
-const client = createDirectus('https://directus.example.com').with(rest());
+const client = createDirectus('directus_project_url').with(rest());
 
-const result = await client.request(
-	importFile('file_url', {
-		file_field: 'value',
-	})
-);
+const result = await client.request(importFile(file_url, file_object));
 ```
 
 </template>
@@ -564,7 +727,7 @@ Returns the [file object](#the-file-object) for the imported file.
 
 ### Example
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `POST /files/import`
@@ -595,8 +758,7 @@ mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, importFile } from '@directus/sdk/rest';
+import { createDirectus, rest, importFile } from '@directus/sdk';
 
 const client = createDirectus('https://directus.example.com').with(rest());
 
@@ -616,16 +778,12 @@ Update an existing file, and/or replace it's file contents.
 
 ### Request
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `PATCH /files/:id`
 
-```json
-{
-	"field": "value"
-}
-```
+Provide a partial [file object](#the-file-object) as the body of your request.
 
 </template>
 <template #graphql>
@@ -642,16 +800,11 @@ type Mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, updateFile } from '@directus/sdk/rest';
+import { createDirectus, rest, updateFile } from '@directus/sdk';
 
-const client = createDirectus('https://directus.example.com').with(rest());
+const client = createDirectus('directus_project_url').with(rest());
 
-const result = await client.request(
-	updateFile('file_id', {
-		file_field: 'value',
-	})
-);
+const result = await client.request(updateFile(file_id, partial_file_object));
 ```
 
 </template>
@@ -673,7 +826,7 @@ Returns the [file object](#the-file-object) for the updated file.
 
 ### Example
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `PATCH /files/0fca80c4-d61c-4404-9fd7-6ba86b64154d`
@@ -702,8 +855,7 @@ mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, updateFile } from '@directus/sdk/rest';
+import { createDirectus, rest, updateFile } from '@directus/sdk';
 
 const client = createDirectus('https://directus.example.com').with(rest());
 
@@ -723,17 +875,15 @@ Update multiple files at the same time.
 
 ### Request
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `PATCH /files`
 
 ```json
 {
-	"keys": ["file_id", "file_id_2"],
-	"data": {
-		"item_field": ["value"]
-	}
+	"keys": file_id_array ,
+	"data": partial_file_object
 }
 ```
 
@@ -752,16 +902,11 @@ type Mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, updateFiles } from '@directus/sdk/rest';
+import { createDirectus, rest, updateFiles } from '@directus/sdk';
 
-const client = createDirectus('https://directus.example.com').with(rest());
+const client = createDirectus('directus_project_url').with(rest());
 
-const result = await client.request(
-	updateFiles(['file_id', 'file_id_2'], {
-		item_field: ['value'],
-	})
-);
+const result = await client.request(updateFiles(file_id_array, partial_file_object));
 ```
 
 </template>
@@ -785,7 +930,7 @@ Returns the [file objects](#the-file-object) for the updated files.
 
 ### Example
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `PATCH /files`
@@ -817,8 +962,7 @@ mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, updateFiles } from '@directus/sdk/rest';
+import { createDirectus, rest, updateFiles } from '@directus/sdk';
 
 const client = createDirectus('https://directus.example.com').with(rest());
 
@@ -844,7 +988,7 @@ This will also delete the file from disk.
 
 ### Request
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `DELETE /files/:id`
@@ -864,12 +1008,11 @@ type Mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, deleteFile } from '@directus/sdk/rest';
+import { createDirectus, rest, deleteFile } from '@directus/sdk';
 
-const client = createDirectus('https://directus.example.com').with(rest());
+const client = createDirectus('directus_project_url').with(rest());
 
-const result = await client.request(deleteFile('file_id'));
+const result = await client.request(deleteFile(file_id));
 ```
 
 </template>
@@ -885,7 +1028,7 @@ Empty response.
 
 ### Example
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `DELETE /files/0fca80c4-d61c-4404-9fd7-6ba86b64154d`
@@ -907,8 +1050,7 @@ mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, deleteFile } from '@directus/sdk/rest';
+import { createDirectus, rest, deleteFile } from '@directus/sdk';
 
 const client = createDirectus('https://directus.example.com').with(rest());
 
@@ -930,14 +1072,12 @@ This will also delete the files from disk.
 
 ### Request
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `DELETE /files`
 
-```json
-["file_id", "file_id"]
-```
+Provide an array of file IDs as the body of your request.
 
 </template>
 <template #graphql>
@@ -954,24 +1094,15 @@ type Mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, deleteFiles } from '@directus/sdk/rest';
+import { createDirectus, rest, deleteFiles } from '@directus/sdk';
 
-const client = createDirectus('https://directus.example.com').with(rest());
+const client = createDirectus('directus_project_url').with(rest());
 
-const result = await client.request(deleteFiles(['file_id_1', 'file_id_2']));
+const result = await client.request(deleteFiles(file_id_array));
 
 //or
 
-const result = await client.request(
-	deleteFiles({
-		query_type: {
-			field: {
-				query_operator: 'value',
-			},
-		},
-	})
-);
+const result = await client.request(deleteFiles(query_object));
 ```
 
 </template>
@@ -991,7 +1122,7 @@ Empty response.
 
 ### Example
 
-<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" label="API">
+<SnippetToggler :choices="['REST', 'GraphQL', 'SDK']" group="api">
 <template #rest>
 
 `DELETE /files`
@@ -1017,8 +1148,7 @@ mutation {
 <template #sdk>
 
 ```js
-import { createDirectus } from '@directus/sdk';
-import { rest, deleteFiles } from '@directus/sdk/rest';
+import { createDirectus, rest, deleteFiles } from '@directus/sdk';
 
 const client = createDirectus('https://directus.example.com').with(rest());
 

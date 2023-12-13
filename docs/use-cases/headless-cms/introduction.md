@@ -1,9 +1,5 @@
 ---
 description: Directus' Data Studio and APIs are the perfect choice for your Headless CMS.
-tags: []
-skill_level:
-directus_version:
-author_override:
 author: Bryant Gillespie
 ---
 
@@ -34,6 +30,7 @@ Learn more about [Headless CMS Concepts](/use-cases/headless-cms/concepts).
 ### Learn Directus
 
 - [Create Re-Usable Page Components](/guides/headless-cms/reusable-components)
+- [Implementing Content Versioning](/guides/headless-cms/content-versioning)
 - [Build Approval Workflows](/guides/headless-cms/approval-workflows)
 - [Schedule Future Content For Dynamic Sites](/guides/headless-cms/schedule-content/dynamic-sites)
 - [Schedule Future Content For Static Sites](/guides/headless-cms/schedule-content/static-sites)

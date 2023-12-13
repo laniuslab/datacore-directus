@@ -1,35 +1,30 @@
+import type { Manifest } from '@npm/types';
+import Axios from 'axios';
+import { setupCache } from 'axios-cache-interceptor';
 import boxen, { type Options as BoxenOptions } from 'boxen';
 import chalk from 'chalk';
-import type { Manifest } from '@npm/types';
-import findCacheDirectory from 'find-cache-dir';
-import { fetchBuilder, FileSystemCache } from 'node-fetch-cache';
 import { gte, prerelease } from 'semver';
+import { getCache } from './cache.js';
 
-const cacheDirectory = findCacheDirectory({ name: 'directus' });
-
-const fetch = fetchBuilder.withCache(new FileSystemCache({ ttl: 60 * 60, ...(cacheDirectory && { cacheDirectory }) }));
+const cache = await getCache();
+const instance = Axios.create();
+// @ts-ignore TODO Remove once type is fixed in axios-cache-interceptor
+const axios = setupCache(instance, { storage: cache });
 
 export async function updateCheck(currentVersion: string) {
-	let packageManifest: Manifest | undefined = undefined;
+	let response;
 
 	try {
-		const response = await fetch('https://registry.npmjs.org/directus', {
+		response = await axios.get<Manifest>('https://registry.npmjs.org/directus', {
 			headers: { accept: 'application/vnd.npm.install-v1+json; q=1.0, application/json; q=0.8, */*' },
+			timeout: 8_000,
 		});
-
-		if (!response.ok) {
-			response.ejectFromCache();
-			return;
-		}
-
-		packageManifest = await response.json();
-	} catch (error) {
-		// Ignore
-	}
-
-	if (!packageManifest) {
+	} catch {
+		// Errors are intentionally ignored and update check is skipped
 		return;
 	}
+
+	const packageManifest = response.data;
 
 	const latestVersion = packageManifest['dist-tags']['latest'];
 
