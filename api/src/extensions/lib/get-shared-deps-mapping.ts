@@ -11,7 +11,7 @@ import { fileURLToPath } from 'node:url';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 export const getSharedDepsMapping = async (deps: string[]): Promise<Record<string, string>> => {
-	const appDir = await readdir(path.join(resolvePackage('@directus/app', __dirname), 'dist', 'assets'));
+	const appDir = await readdir(path.join(resolvePackage('@new-mv-datacore/app', __dirname), 'dist', 'assets'));
 
 	const depsMapping: Record<string, string> = {};
 
