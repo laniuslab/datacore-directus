@@ -25,6 +25,8 @@ jobs:
   publish-npm:
     name: Publish to NPM
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
