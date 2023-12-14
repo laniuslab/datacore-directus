@@ -43,9 +43,7 @@ jobs:
         run: |
           pnpm --recursive publish \
             --access=public \
-            --no-git-checks \
-            --tag ${{ needs.check-version.outputs.prerelease == 'true' && 'canary'  || 'latest' }}
-
+            --no-git-checks
   # build-images:
   #   name: Build Images
   #   runs-on: ubuntu-latest
