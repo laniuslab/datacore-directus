@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { getRootPath } from '@/utils/get-root-path'; // MV-DATACORE
 
 const version = __DIRECTUS_VERSION__;
 
@@ -72,12 +71,6 @@ const externalItems = computed(() => {
 		},
 	];
 });
-
-// MV-DATACORE
-const initialLogoPath = computed(() => {
-	return `${getRootPath()}admin/mv.ico`;
-});
-// MV-DATACORE [END]
 </script>
 
 <template>
