@@ -9,7 +9,7 @@ import type {
 	HybridExtension,
 	OperationApiConfig,
 } from '@directus/extensions';
-import { APP_SHARED_DEPS, HYBRID_EXTENSION_TYPES, NESTED_EXTENSION_TYPES } from '@directus/extensions';
+import { HYBRID_EXTENSION_TYPES, NESTED_EXTENSION_TYPES } from '@directus/extensions';
 import { generateExtensionsEntrypoint } from '@directus/extensions/node';
 import type {
 	ActionHandler,
@@ -55,6 +55,8 @@ import { instantiateSandboxSdk } from './lib/sandbox/sdk/instantiate.js';
 import { syncExtensions } from './lib/sync-extensions.js';
 import { wrapEmbeds } from './lib/wrap-embeds.js';
 import type { BundleConfig, ExtensionManagerOptions } from './types.js';
+
+const APP_SHARED_DEPS = ['@new-mv-datacore/extensions-sdk', 'vue', 'vue-router', 'vue-i18n', 'pinia']; // MV-DATACORE
 
 // Workaround for https://github.com/rollup/plugins/issues/1329
 const virtual = virtualDefault as unknown as typeof virtualDefault.default;

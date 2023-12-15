@@ -7,7 +7,6 @@ import type {
 import {
 	API_SHARED_DEPS,
 	APP_EXTENSION_TYPES,
-	APP_SHARED_DEPS,
 	EXTENSION_PKG_KEY,
 	EXTENSION_TYPES,
 	ExtensionManifest,
@@ -37,6 +36,8 @@ import tryParseJson from '../utils/try-parse-json.js';
 import generateBundleEntrypoint from './helpers/generate-bundle-entrypoint.js';
 import loadConfig from './helpers/load-config.js';
 import { validateSplitEntrypointOption } from './helpers/validate-cli-options.js';
+
+const APP_SHARED_DEPS = ['@new-mv-datacore/extensions-sdk', 'vue', 'vue-router', 'vue-i18n', 'pinia']; // MV-DATACORE
 
 // Workaround for https://github.com/rollup/plugins/issues/1329
 const virtual = virtualDefault as unknown as typeof virtualDefault.default;

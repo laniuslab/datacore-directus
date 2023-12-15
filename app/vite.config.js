@@ -1,7 +1,6 @@
 import {
 	APP_OR_HYBRID_EXTENSION_PACKAGE_TYPES,
 	APP_OR_HYBRID_EXTENSION_TYPES,
-	APP_SHARED_DEPS,
 	NESTED_EXTENSION_TYPES,
 } from '@directus/extensions';
 import {
@@ -22,6 +21,7 @@ import { version } from '../directus/package.json';
 
 const API_PATH = path.join('..', 'api');
 const EXTENSIONS_PATH = path.join(API_PATH, 'extensions');
+const APP_SHARED_DEPS = ['@new-mv-datacore/extensions-sdk', 'vue', 'vue-router', 'vue-i18n', 'pinia']; // MV-DATACORE
 
 // https://vitejs.dev/config/
 export default defineConfig({
