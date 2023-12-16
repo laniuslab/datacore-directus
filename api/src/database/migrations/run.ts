@@ -21,7 +21,7 @@ export default async function run(
 ): Promise<void> {
 	let migrationFiles = await fse.readdir(__dirname);
 
-	const customMigrationsPath = path.resolve(getExtensionsPath(), 'migrations', folder);
+	const customMigrationsPath = path.resolve(getExtensionsPath(), folder);
 
 	let customMigrationFiles =
 		((await fse.pathExists(customMigrationsPath)) && (await fse.readdir(customMigrationsPath))) || [];
