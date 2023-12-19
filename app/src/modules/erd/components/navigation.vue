@@ -53,7 +53,7 @@ const matchesSearch = computed(() => {
 	position: sticky;
 	top: 0;
 	z-index: 2;
-	padding: 10px;
+	padding: 12px;
 	padding-bottom: 0;
 	background-color: var(--background-normal);
 }

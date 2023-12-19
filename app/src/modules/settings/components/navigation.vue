@@ -56,21 +56,6 @@ const appItems = [
 		to: `/settings/translations`,
 	},
 ];
-
-const externalItems = computed(() => {
-	return [
-		{
-			icon: 'bug_report',
-			name: t('report_bug'),
-			href: 'https://github.com/directus/directus/issues/new?template=bug_report.yml',
-		},
-		{
-			icon: 'new_releases',
-			name: t('request_feature'),
-			href: 'https://github.com/directus/directus/discussions/new?category=feature-requests',
-		},
-	];
-});
 </script>
 
 <template>
@@ -92,13 +77,6 @@ const externalItems = computed(() => {
 		</v-list-item>
 
 		<v-divider />
-
-		<v-list-item v-for="item in externalItems" :key="item.href" :href="item.href">
-			<v-list-item-icon><v-icon :name="item.icon" /></v-list-item-icon>
-			<v-list-item-content>
-				<v-text-overflow :text="item.name" />
-			</v-list-item-content>
-		</v-list-item>
 
 		<!-- MV-DATACORE -->
 		<v-list-item href="https://github.com/directus/directus/releases" class="version">

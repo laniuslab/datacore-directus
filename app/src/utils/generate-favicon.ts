@@ -10,7 +10,7 @@ const svg = () => `
 <rect width="193" height="218" fill="white"/>
 </clipPath>
 </defs>
-</svg>`;
+</svg>`; // MV-DATACORE
 
 export const generateFavicon = () => {
 	const icon = svg();

@@ -13,6 +13,7 @@ const isActive = ref<IIsActive>({
 	public: false,
 	datacore: false,
 	configuration: false,
+	advanced: false,
 });
 // MV-DATACORE [END]
 

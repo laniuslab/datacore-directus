@@ -1,6 +1,6 @@
 {
 	"name": "@new-mv-datacore/api",
-	"version": "12.1.6",
+	"version": "12.1.7",
 	"description": "Directus is a real-time API and App dashboard for managing SQL database content",
 	"keywords": [
 		"directus",
@@ -127,7 +127,7 @@
 		"json2csv": "5.0.7",
 		"jsonwebtoken": "9.0.2",
 		"keyv": "4.5.4",
-		"knex": "2.5.1",
+		"knex": "3.1.0",
 		"ldapjs": "2.3.3",
 		"liquidjs": "10.9.4",
 		"lodash-es": "4.17.21",
@@ -150,7 +150,7 @@
 		"pino": "8.16.2",
 		"pino-http": "8.5.1",
 		"pino-http-print": "3.1.0",
-		"pino-pretty": "10.2.3",
+		"pino-pretty": "10.3.0",
 		"qs": "6.11.2",
 		"rate-limiter-flexible": "2.4.2",
 		"rollup": "3.29.4",
@@ -164,7 +164,7 @@
 		"uuid": "9.0.1",
 		"uuid-validate": "0.0.3",
 		"wellknown": "0.5.0",
-		"ws": "8.15.0",
+		"ws": "8.15.1",
 		"zod": "3.22.4",
 		"zod-validation-error": "1.5.0"
 	},

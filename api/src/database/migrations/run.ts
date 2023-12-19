@@ -17,7 +17,7 @@ export default async function run(
 	database: Knex,
 	direction: 'up' | 'down' | 'latest',
 	log = true,
-	folder = 'migrations'
+	folder = 'migrations',
 ): Promise<void> {
 	let migrationFiles = await fse.readdir(__dirname);
 

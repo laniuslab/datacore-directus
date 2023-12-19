@@ -82,14 +82,6 @@ export const MODULE_BAR_DEFAULT = [
 	},
 	// MV-DATACORE [END]
 	{
-		type: 'link',
-		id: 'docs',
-		enabled: true,
-		name: '$t:documentation',
-		icon: 'help',
-		url: 'https://docs.directus.io',
-	},
-	{
 		type: 'module',
 		id: 'settings',
 		enabled: true,

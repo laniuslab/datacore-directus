@@ -27,5 +27,5 @@ export type CollectionMeta = {
 	group: string | null;
 	collapse: 'open' | 'closed' | 'locked';
 	tags: string[];
-	schema: 'public' | 'datacore' | 'configuration';
+	schema: 'public' | 'datacore' | 'configuration' | 'advanced';
 };

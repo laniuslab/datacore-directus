@@ -1,6 +1,6 @@
 {
 	"name": "@new-mv-datacore/app",
-	"version": "10.13.5",
+	"version": "10.13.7",
 	"description": "App dashboard for Directus",
 	"homepage": "https://directus.io",
 	"repository": {
@@ -136,7 +136,7 @@
 		"typescript": "5.3.3",
 		"v-viewer": "3.0.11",
 		"viewerjs": "1.11.6",
-		"vite": "4.5.1",
+		"vite": "5.0.10",
 		"vitest": "1.0.4",
 		"vue": "3.3.11",
 		"vue-i18n": "9.8.0",

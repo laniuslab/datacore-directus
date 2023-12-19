@@ -17,6 +17,7 @@ withDefaults(
 	<v-list-item-icon>
 		<v-icon :name="icon" :color="color" />
 	</v-list-item-icon>
+	<!-- MV-DATACORE -->
 	<v-list-item-content>
 		<v-text-overflow :text="name" :highlight="search" />
 		<div v-if="tags">
@@ -33,4 +34,5 @@ withDefaults(
 			</span>
 		</div>
 	</v-list-item-content>
+	<!-- MV-DATACORE [END] -->
 </template>

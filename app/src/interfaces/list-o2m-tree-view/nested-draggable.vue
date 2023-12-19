@@ -110,6 +110,7 @@ const dragOptions = {
 	group: 'description',
 	disabled: false,
 	ghostClass: 'ghost',
+	forceFallback: true,
 };
 
 const filteredDisplayItems = computed(() => {

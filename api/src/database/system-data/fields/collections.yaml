@@ -246,6 +246,8 @@ fields:
           value: datacore
         - text: Configuration
           value: configuration
+        - text: Advanced
+          value: advanced
     width: half
   # MV-DATACORE [END]
 

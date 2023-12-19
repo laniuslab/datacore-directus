@@ -1,6 +1,6 @@
 {
 	"name": "@new-mv-datacore/extensions-sdk",
-	"version": "10.2.1",
+	"version": "10.2.2",
 	"description": "A toolkit to develop extensions to extend Directus",
 	"homepage": "https://directus.io",
 	"repository": {
@@ -38,7 +38,7 @@
 		"@directus/types": "workspace:*",
 		"@directus/utils": "workspace:*",
 		"@rollup/plugin-commonjs": "25.0.7",
-		"@rollup/plugin-json": "6.0.1",
+		"@rollup/plugin-json": "6.1.0",
 		"@rollup/plugin-node-resolve": "15.2.3",
 		"@rollup/plugin-replace": "5.0.5",
 		"@rollup/plugin-terser": "0.4.4",

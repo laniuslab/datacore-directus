@@ -72,7 +72,7 @@ const currentTab = ref(['collection_setup']);
 const collectionName = ref<string | null>(null);
 const singleton = ref(false);
 const primaryKeyFieldName = ref('id');
-const schema = ref<'public' | 'datacore' | 'configuration'>('public'); // MV-DATACORE
+const schema = ref<'public' | 'datacore' | 'configuration' | 'advanced'>('public'); // MV-DATACORE
 const primaryKeyFieldType = ref<'auto_int' | 'auto_big_int' | 'uuid' | 'manual'>('auto_int');
 
 const sortField = ref<string>();
@@ -424,6 +424,10 @@ function getSystemRelations() {
 								{
 									text: 'Configuration',
 									value: 'configuration',
+								},
+								{
+									text: 'Advanced',
+									value: 'advanced',
 								},
 							]"
 						/>
