@@ -41,7 +41,7 @@ async function init() {
 	const app = createApp(App);
 
 	app.use(i18n);
-	app.use(VueViewer.setDefaults); // MV-DATACORE
+	app.use(VueViewer); // MV-DATACORE
 	app.use(createPinia());
 	app.use(createHead());
 
