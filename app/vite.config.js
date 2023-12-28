@@ -59,7 +59,7 @@ export default defineConfig({
 			port: 8080,
 			proxy: {
 				'^/(?!admin)': {
-					target: process.env.API_URL ? process.env.API_URL : 'http://127.0.0.1:8055/',
+					target: process.env.API_URL ? process.env.API_URL : 'http://127.0.0.1:8056/',
 					changeOrigin: true,
 				},
 			},

@@ -24,6 +24,10 @@ const querySchema = Joi.object({
 	aggregate: Joi.object(),
 	deep: Joi.object(),
 	alias: Joi.object(),
+	// MV-DATACORE
+	showSoftDelete: Joi.boolean(),
+	forceDelete: Joi.boolean(),
+	// MV-DATACORE
 }).id('query');
 
 export function validateQuery(query: Query): Query {

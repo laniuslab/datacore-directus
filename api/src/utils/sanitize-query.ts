@@ -1,9 +1,10 @@
-import type { Accountability, Aggregate, Filter, Query } from '@directus/types';
+import type { Accountability, Aggregate, Filter } from '@directus/types';
 import { parseFilter, parseJSON } from '@directus/utils';
 import { flatten, get, isPlainObject, merge, set } from 'lodash-es';
 import env from '../env.js';
 import logger from '../logger.js';
 import { Meta } from '../types/index.js';
+import type { Query } from '../__mv/index.js'; // MV-DATACORE
 
 export function sanitizeQuery(rawQuery: Record<string, any>, accountability?: Accountability | null): Query {
 	const query: Query = {};
@@ -31,6 +32,16 @@ export function sanitizeQuery(rawQuery: Record<string, any>, accountability?: Ac
 	if (rawQuery['groupBy']) {
 		query.group = sanitizeFields(rawQuery['groupBy']);
 	}
+
+	// MV-DATACORE
+	if (rawQuery['showSoftDelete']) {
+		query.showSoftDelete = sanitizeBoolean(rawQuery['showSoftDelete']);
+	}
+
+	if (rawQuery['forceDelete']) {
+		query.forceDelete = sanitizeBoolean(rawQuery['forceDelete']);
+	}
+	// [END] MV-DATACORE
 
 	if (rawQuery['aggregate']) {
 		query.aggregate = sanitizeAggregate(rawQuery['aggregate']);
@@ -228,3 +239,17 @@ function sanitizeAlias(rawAlias: any) {
 
 	return alias;
 }
+
+// MV-DATACORE
+function sanitizeBoolean(rawBoolean: any): boolean {
+	if (typeof rawBoolean === 'boolean') {
+		return rawBoolean;
+	}
+
+	if (typeof rawBoolean === 'string') {
+		return rawBoolean.toLowerCase() === 'true';
+	}
+
+	return false;
+}
+// [END] MV-DATACORE

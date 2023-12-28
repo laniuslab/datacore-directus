@@ -64,6 +64,13 @@ export type MutationOptions = {
 	preMutationError?: DirectusError | undefined;
 
 	bypassAutoIncrementSequenceReset?: boolean;
+
+	// MV-DATACORE
+	/**
+	 * Flag to force delete or soft delete
+	 */
+	forceDelete?: boolean | null | undefined;
+	// [END] MV-DATACORE
 };
 
 export type ActionEventParams = {

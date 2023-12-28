@@ -14,8 +14,8 @@ import { useRouter } from 'vue-router';
 
 const defaultSystemFields = {
 	status: {
-		enabled: false,
-		inputDisabled: false,
+		enabled: true,
+		inputDisabled: true,
 		name: 'status',
 		label: 'status',
 		icon: 'flag',
@@ -55,6 +55,22 @@ const defaultSystemFields = {
 		label: 'updated_by',
 		icon: 'account_circle',
 	},
+	// MV-DATACORE
+	dateDeleted: {
+		enabled: true,
+		inputDisabled: true,
+		name: 'date_deleted',
+		label: 'deleted_on',
+		icon: 'access_time',
+	},
+	userDeleted: {
+		enabled: true,
+		inputDisabled: true,
+		name: 'user_deleted',
+		label: 'deleted_by',
+		icon: 'account_circle',
+	},
+	// [END] MV-DATACORE
 };
 
 const { t } = useI18n();
@@ -338,6 +354,46 @@ function getSystemFields() {
 		});
 	}
 
+	// MV-DATACORE
+	if (systemFields.userDeleted.enabled === true) {
+		fields.push({
+			field: systemFields.userDeleted.name,
+			type: 'uuid',
+			meta: {
+				special: ['user-deleted'],
+				interface: 'select-dropdown-m2o',
+				options: {
+					template: '{{avatar.$thumbnail}} {{first_name}} {{last_name}}',
+				},
+				display: 'user',
+				readonly: true,
+				hidden: true,
+				width: 'half',
+			},
+			schema: {},
+		});
+	}
+
+	if (systemFields.dateDeleted.enabled === true) {
+		fields.push({
+			field: systemFields.dateDeleted.name,
+			type: 'timestamp',
+			meta: {
+				special: ['date-deleted'],
+				interface: 'datetime',
+				readonly: true,
+				hidden: true,
+				width: 'half',
+				display: 'datetime',
+				display_options: {
+					relative: true,
+				},
+			},
+			schema: {},
+		});
+	}
+	// [END] MV-DATACORE
+
 	return fields;
 }
 
@@ -361,6 +417,17 @@ function getSystemRelations() {
 			schema: {},
 		});
 	}
+
+	// MV-DATACORE
+	if (systemFields.userDeleted.enabled === true) {
+		relations.push({
+			collection: collectionName.value!,
+			field: systemFields.userDeleted.name,
+			related_collection: 'directus_users',
+			schema: {},
+		});
+	}
+	// MV-DATACORE
 
 	return relations;
 }

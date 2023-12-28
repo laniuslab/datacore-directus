@@ -208,10 +208,16 @@ router.delete(
 			schema: req.schema,
 		});
 
+		// MV-DATACORE
 		if (Array.isArray(req.body)) {
-			await service.deleteMany(req.body);
+			await service.deleteMany(req.body, {
+				forceDelete: req.sanitizedQuery.forceDelete,
+			});
 		} else if (req.body.keys) {
-			await service.deleteMany(req.body.keys);
+			await service.deleteMany(req.body.keys, {
+				forceDelete: req.sanitizedQuery.forceDelete,
+			});
+			// [END] MV-DATACORE
 		} else {
 			const sanitizedQuery = sanitizeQuery(req.body.query, req.accountability);
 			await service.deleteByQuery(sanitizedQuery);
@@ -233,7 +239,12 @@ router.delete(
 			schema: req.schema,
 		});
 
-		await service.deleteOne(req.params['pk']!);
+		// MV-DATACORE
+		await service.deleteOne(req.params['pk']!, {
+			forceDelete: req.sanitizedQuery.forceDelete,
+		});
+		// [END] MV-DATACORE
+
 		return next();
 	}),
 	respond,

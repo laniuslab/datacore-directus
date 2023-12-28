@@ -2,7 +2,8 @@
  * Custom properties on the req object in express
  */
 
-import { Accountability, Query, SchemaOverview } from '@directus/types';
+import { Accountability, SchemaOverview } from '@directus/types';
+import { Query } from '../__mv/index.ts'; // MV-DATACORE
 
 export {};
 

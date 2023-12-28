@@ -1,5 +1,6 @@
 import { Action } from '@directus/constants';
-import type { Accountability, PermissionsAction, Query, SchemaOverview } from '@directus/types';
+import type { Accountability, PermissionsAction, SchemaOverview } from '@directus/types';
+import type { Query } from '../__mv/index.js'; // MV-DATACORE
 import type Keyv from 'keyv';
 import type { Knex } from 'knex';
 import { assign, clone, cloneDeep, omit, pick, without } from 'lodash-es';
@@ -393,13 +394,23 @@ export class ItemsService<Item extends AnyItem = AnyItem> implements AbstractSer
 	 * Get items by query
 	 */
 	async readByQuery(query: Query, opts?: QueryOptions): Promise<Item[]> {
+		// MV-DATACORE
+		let filteredQuery = { ...query };
+
+		if (!this.collection.includes('directus_') && !query.showSoftDelete) {
+			filteredQuery = { ...query, filter: { _and: [{ ...query.filter }, { ['status']: { _neq: 'archived' } }] } };
+		} else if (query.showSoftDelete) {
+			filteredQuery = { ...query, filter: { _and: [{ ...query.filter }, { ['status']: { _eq: 'archived' } }] } };
+		}
+		// [END] MV-DATACORE
+
 		const updatedQuery =
 			opts?.emitEvents !== false
 				? await emitter.emitFilter(
 						this.eventScope === 'items'
 							? ['items.query', `${this.collection}.items.query`]
 							: `${this.eventScope}.query`,
-						query,
+						filteredQuery,
 						{
 							collection: this.collection,
 						},
@@ -409,7 +420,7 @@ export class ItemsService<Item extends AnyItem = AnyItem> implements AbstractSer
 							accountability: this.accountability,
 						},
 				  )
-				: query;
+				: filteredQuery;
 
 		let ast = await getASTFromQuery(this.collection, updatedQuery, this.schema, {
 			accountability: this.accountability,
@@ -920,8 +931,45 @@ export class ItemsService<Item extends AnyItem = AnyItem> implements AbstractSer
 			);
 		}
 
+		// MV-DATACORE
+		const fields = this.schema.collections[this.collection]?.fields;
+		let isSoftDelete: boolean = false;
+		let deletedByField: string | null = null;
+
+		for (const fieldName in fields) {
+			const special = fields[fieldName]?.special;
+
+			if (special?.includes('date-deleted')) {
+				isSoftDelete = true;
+			}
+
+			if (special?.includes('user-deleted')) {
+				deletedByField = 'user_deleted';
+			}
+		}
+		// [END] MV-DATACORE
+
 		await this.knex.transaction(async (trx) => {
-			await trx(this.collection).whereIn(primaryKeyField, keys).delete();
+			// MV-DATACORE
+			if (isSoftDelete) {
+				if (opts?.forceDelete) {
+					await trx(this.collection).whereIn(primaryKeyField, keys).delete();
+				} else {
+					const query = trx(this.collection).whereIn(primaryKeyField, keys);
+
+					const payload = {
+						...(deletedByField ? { [deletedByField]: this.accountability?.user } : {}),
+					};
+
+					payload['date_deleted'] = new Date().toISOString();
+					payload['status'] = 'archived';
+
+					await query.update(payload);
+				}
+			} else {
+				await trx(this.collection).whereIn(primaryKeyField, keys).delete();
+			}
+			// [END] MV-DATACORE
 
 			if (this.accountability && this.schema.collections[this.collection]!.accountability !== null) {
 				const activityService = new ActivityService({

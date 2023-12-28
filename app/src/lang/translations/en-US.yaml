@@ -384,6 +384,8 @@ readonly: Readonly
 unique: Unique
 updated_on: Updated On
 updated_by: Updated By
+deleted_on: Deleted On
+deleted_by: Deleted By
 primary_key: Primary Key
 foreign_key: Foreign Key
 field_key: Field Key
