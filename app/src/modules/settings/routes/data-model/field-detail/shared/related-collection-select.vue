@@ -116,7 +116,7 @@ const systemCollections = computed(() => {
 							@click="$emit('update:modelValue', systemCollection.collection)"
 						>
 							<v-list-item-content>
-								{{ systemCollection.collection }}
+								{{ systemCollection.collection.replace('directus', 'datacore') }}
 							</v-list-item-content>
 						</v-list-item>
 					</v-list-group>

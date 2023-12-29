@@ -63,7 +63,7 @@ function onGroupSortChange(collections: Collection[]) {
 				<v-highlight
 					ref="collectionName"
 					:query="visibilityTree.search"
-					:text="collection.collection"
+					:text="collection.collection.replace('directus', 'datacore')"
 					class="collection-name"
 				/>
 				<!-- MV-DATACORE -->
